@@ -5,5 +5,4 @@
 #' @import ecr
 #' @importFrom stats dist runif
 #' @importFrom utils read.csv write.table
-
 NULL
