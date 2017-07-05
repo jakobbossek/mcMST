@@ -23,7 +23,7 @@ enumerateTSP = function(n) {
 
 #' @rdname enumerators
 #' @export
-enumerateMCMST = function(n) {
+enumerateMST = function(n) {
   n = asInt(n, lower = 3L)
   requirePackages("gtools", why = "rmoco::enumerateMCMST")
   gtools::permutations(n, n - 2L, seq_len(n), repeats.allowed = TRUE)

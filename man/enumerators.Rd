@@ -2,12 +2,12 @@
 % Please edit documentation in R/enumerator.R
 \name{enumerateTSP}
 \alias{enumerateTSP}
-\alias{enumerateMCMST}
+\alias{enumerateMST}
 \title{Enumerate all solution candidates}
 \usage{
 enumerateTSP(n)
 
-enumerateMCMST(n)
+enumerateMST(n)
 }
 \arguments{
 \item{n}{[\code{integer(1)}]\cr
