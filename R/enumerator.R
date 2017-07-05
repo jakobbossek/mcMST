@@ -7,7 +7,7 @@
 #' @param n [\code{integer(1)}]\cr
 #'   Instance size.
 #' @return [\code{matrix}] Each row contains a candidate solution.
-#' @example
+#' @examples
 #' sols = enumerateTSP(4L)
 #' @rdname enumerators
 #' @export

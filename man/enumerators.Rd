@@ -21,3 +21,6 @@ These functions enumerate all candidate solutions for
 a certain combinatorial optimization problem, e.g., all permutations
 for a TSP or all Pruefer-codes for a MST problem.
 }
+\examples{
+sols = enumerateTSP(4L)
+}

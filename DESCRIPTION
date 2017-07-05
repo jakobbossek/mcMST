@@ -18,7 +18,8 @@ Imports:
     reshape2 (>= 1.4.1),
     ggplot2 (>= 1.0.0),
     ecr,
-    gtools
+    gtools,
+    vegan
 Suggests:
     testthat (>= 0.9.1),
     knitr,
