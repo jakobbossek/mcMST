@@ -1,23 +1,34 @@
-# Determine exact Pareto-front.
-#
-# Note: the instance size needs to be really low,
-# since we exhaustively enumerate all solutions.
-#
-# @param instance [any]
-#   Problem instance.
-# @param obj.fun [function]
-#   Objective function which expects a numeric vector and an instance.
-# @param enumerator.fun [function(n)]
-#   Function to exhaustively generate all possible solutions.
-#   Expects a single integer value n, i.e., the instance size, e.g., the
-#   number of nodes for a graph problem.
-# @return [list] List with elements pareto.set (matrix of Pruefer codes) and
-# pareto.front (matrix of weight vectors).
+#' @title Enumerate all Pareto-optimal solutions.
+#'
+#' @description Function which expects an problem instance of a combinatorial optimization
+#' problem (e.g., TSP), an multi-objective function and a solution enumerator, i.e., a function
+#' which enumerates all possible solutions (e.g., all permutations in case of a
+#' TSP problem) and  determines both the Pareto front and Pareto set by
+#' exhaustive enumeration.
+#'
+#' @note This method exhaustively enumerates all possible solutions
+#' of a given multi-objective combinatorial optimization problem. Thus,
+#' it is limited to small input size due to combinatorial explosion.
+#'
+#' @param instance [any]\cr
+#'   Problem instance.
+#' @param obj.fun [\code{function(solution, instance)}]\cr
+#'   Objective function which expects a numeric vector \code{solution} encoding a
+#'   solution candidate and a problem instance \code{instance}. The function should
+#'   return a numeric vector of length \code{n.objectives}.
+#' @param enumerator.fun [\code{function(n)}]\cr
+#'   Function to exhaustively generate all possible candidate solutions.
+#'   Expects a single integer value n, i.e., the instance size, e.g., the
+#'   number of nodes for a graph problem.
+#' @param n.objectives [\code{integer(1)}]\cr
+#'   Number of objectives of problem.
+#' @return [\code{list}] List with elements \code{pareto.set} (matrix of Pareto-optimal solutions)
+#' and \code{pareto.front} (matrix of weight vectors).
+#' @export
 getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives) {
   assertFunction(obj.fun)
   assertFunction(enumerator.fun, args = "n")
   n.objectives = asInt(n.objectives, lower = 2L)
-
 
   n = instance$n
   if (n > 10L)
