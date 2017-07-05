@@ -1,12 +1,9 @@
-# @title Pruefer code to edge list
-#
-# @description Function to transform a length (n-2) Prüfer code into an edge list of length
-# (n-1)
-#
-# An edge list is stored as a (2 x (n-1)) matrix (each column represents one edge (i,j)).
-# @param pcode [integer]
-#   Spanning tree as a Pruefer code.
-# @return [matrix] Edgelist.
+#' Convert Pruefer code to edge list.
+#'
+#' @template arg_pcode
+#' @return [\code{matrix(2, length(pcode) + 1)}] Edge list.
+#' @family transformation functions
+#' @export
 prueferToEdgelist = function(pcode) {
   n = length(pcode) + 2L
   # n = instance$n
@@ -61,11 +58,13 @@ prueferToEdgelist = function(pcode) {
   return(edges)
 }
 
-# Get an edge-list and convert it into a characteristic vector.
-#
-# @param edgelist [(2 x n) matrix]
-#   Matrix of edges (each column is one edge (i, j)).
-# @return [integer] Characteristic vector cv with cv[i] = 1 if the i-th edge is in the tree.
+#' Convert edge list to characteristic vector.
+#'
+#' @template arg_edgelist
+#' @template arg_n
+#' @template ret_charvec
+#' @family transformation functions
+#' @export
 edgeListToCharVec = function(edgelist, n = NULL) {
   # number of nodes is |E| + 1
   if (is.null(n))
@@ -82,10 +81,22 @@ edgeListToCharVec = function(edgelist, n = NULL) {
   return(as.integer(mat))
 }
 
+#' Convert Pruefer code to characteristic vector.
+#'
+#' @template arg_pcode
+#' @template ret_charvec
+#' @family transformation functions
+#' @export
 prueferToCharVec = function(pcode) {
   edgeListToCharVec(prueferToEdgelist(pcode))
 }
 
+#' Convert permutation to edge list.
+#'
+#' @template arg_perm
+#' @return [\code{matrix(2, length(perm))}] Edge list.
+#' @family transformation functions
+#' @export
 permutationToEdgelist = function(perm) {
   n = length(perm)
   # close path
@@ -97,6 +108,13 @@ permutationToEdgelist = function(perm) {
   return(edgelist)
 }
 
+#' Convert permutation to characteristic vector.
+#'
+#' @template arg_perm
+#' @template arg_n
+#' @template ret_charvec
+#' @family transformation functions
+#' @export
 permutationToCharVec = function(perm, n) {
   edgeListToCharVec(permutationToEdgelist(perm), n)
 }
