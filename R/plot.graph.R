@@ -31,7 +31,6 @@ plotGraph = function(graph, show.cluster.centers = TRUE, ...) {
       dd$Cluster = as.factor(graph$membership)
     pl.coords = ggplot(dd, aes_string(x = "x1", y = "x2"))
     pl.coords = if (n.clusters > 0L) pl.coords + geom_point(aes_string(colour = "Cluster")) else pl.coords + geom_point()
-    catf("hdsd")
     if (n.clusters > 0L & show.cluster.centers) {
       ddc = as.data.frame(graph$center.coordinates)
       names(ddc) = c("x1", "x2")

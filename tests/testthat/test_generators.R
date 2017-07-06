@@ -17,6 +17,9 @@ test_that("graph generation: simple 2o graph", {
   expect_true(isSymmetricMatrix(g$weights[[1L]]))
   expect_true(isSymmetricMatrix(g$weights[[2L]]))
   expect_output(print(g), regexp = "MULTI")
+
+  pls = plotGraph(g)
+  expect_list(pls, types = "ggplot", len = 2L, any.missing = FALSE, all.missing = FALSE)
 })
 
 test_that("graph generation: complex clustered graph", {
@@ -39,7 +42,7 @@ test_that("graph generation: complex clustered graph", {
   expect_true(isSymmetricMatrix(g$weights[[2L]]))
   expect_true(isSymmetricMatrix(g$weights[[3L]])) # distance based are always symmetric
 
-  #expect_true(all(sapply(g$weights, function(w) all(dim))))
+  expect_error(plotGraph(g), regexpr = "not supported")
 })
 
 test_that("graph generation: check correct error messages", {
