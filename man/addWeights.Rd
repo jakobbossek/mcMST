@@ -12,8 +12,11 @@ addWeights(graph, method = "euclidean", weight.fun = NULL,
 Multi-objective graph problem.}
 
 \item{method}{[\code{character(1)}]\cr
-Method to generate weights based on node coordinates. See \code{method} argument
-of \code{\link[stats]{dist}}.}
+Method used to generate weights. Possible values are \dQuote{euclidean}, \dQuote{maximum},
+\dQuote{manhatten}, \dQuote{canberra}, \dQuote{binary}, \code{minkowski} or \code{random}.
+The latter generates (random) weights utilizing \code{weight.fun}. The remaining
+options are passed down to \code{\link[stats]{dist}}, i.e., weights are generated
+as distances between the node coordinates.}
 
 \item{weight.fun}{[\code{function(m, ...) | NULL}]\cr
 Function used to generate weights. The first arument needs to be number of weights
@@ -24,7 +27,8 @@ Should the weights be symmetric, i.e., w(i, j) = w(j, i) for each pair i, j of n
 Default is \code{TRUE}.}
 
 \item{...}{[any]\cr
-Additional arguments passed down to \code{weight.fun}.}
+Additional arguments passed down to \code{weight.fun} or \code{\link[stats]{dist}}. See
+documentation of argument \code{method} for details.}
 }
 \value{
 [\code{mcGP}] Multi-objective graph problem.

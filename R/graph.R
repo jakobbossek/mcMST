@@ -16,11 +16,17 @@ mcGP = function(lower, upper) {
     lower = rep(lower, 2L)
   if (length(upper) == 1L)
     upper = rep(upper, 2L)
+  assertNumeric(lower, len = 2L, any.missing = FALSE, all.missing = FALSE)
+  assertNumeric(upper, len = 2L, any.missing = FALSE, all.missing = FALSE)
+  if (any(lower >= upper))
+    stopf("mcGP: all elements of lower need to be stricly lower than the corresponding
+      value in upper!")
   BBmisc::makeS3Obj(
     lower = lower,
     upper = upper,
-    n.clusters = 0,
-    n.nodes = 0,
+    n.clusters = 0L,
+    n.nodes = 0L,
+    n.weights = 0L,
     weight.types = character(0L),
     weights = list(),
     classes = "mcGP")
@@ -78,6 +84,12 @@ coordGrid = function(n, lower, upper) {
 #' @template ret_mcGP
 #' @export
 addCenters = function(graph, n.centers, generator, ...) {
+  # sanity checks
+  assertClass(graph, "mcGP")
+  n.centers = asInt(n.centers, lower = 2L)
+  assertFunction(generator)
+
+  # more sanity checks
   if (!is.null(graph$coordinates))
     stopf("Graph already has coordinates! Place centers before coordinates.")
   if (!is.null(graph$center.coordinates))
@@ -87,8 +99,8 @@ addCenters = function(graph, n.centers, generator, ...) {
   center.coordinates = generator(n.centers, lower = graph$lower, upper = graph$upper, ...)
   graph$center.coordinates = center.coordinates
   graph$n.cluster = n.centers
-  if (!("Clusteredgraph" %in% class(graph)))
-    graph = addClasses(graph, "Clusteredgraph")
+  if (!("mcGP_clustered" %in% class(graph)))
+    graph = addClasses(graph, "mcGP_clustered")
   return(graph)
 }
 
@@ -120,8 +132,20 @@ addCenters = function(graph, n.centers, generator, ...) {
 #' @template ret_mcGP
 #' @export
 addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NULL, ...) {
+  assertClass(graph, "mcGP")
+  n = asInteger(n, lower = 1L, any.missing = FALSE, all.missing = FALSE)
+  if (length(n) > 1L & !by.centers)
+    stopf("addCoordinates: vector of length > 1 for n only allowed if by.centers = TRUE.")
+  assertFlag(by.centers)
+  assertFunction(par.fun, null.ok = TRUE)
+
   membership = NULL
 
+  # Helper function which aligns points with lower left point in [0,0].
+  #
+  # @param cluster.centers [matrix(2, n)]
+  #   Matrix of city coordinates.
+  # @return [matrix(2, n)]
   moveToOrigin = function(cluster.centers) {
     offset = abs(apply(cluster.centers, 2L, min))
     t(t(cluster.centers) + offset)
@@ -183,6 +207,8 @@ addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NUL
 #'   Method applied to \code{graph} in order to determine which edges to keep.
 #' @template ret_mcGP
 addEdges = function(graph, method = NULL) {
+  assertClass(graph, "mcGP")
+  assertFunction(method, null.ok = TRUE)
   adj.mat = matrix(1L, ncol = graph$n.nodes, nrow = graph$n.nodes)
   diag(adj.mat) = 0
   graph$adj.mat = adj.mat
@@ -198,8 +224,11 @@ addEdges = function(graph, method = NULL) {
 #'
 #' @template arg_mcGP
 #' @param method [\code{character(1)}]\cr
-#'   Method to generate weights based on node coordinates. See \code{method} argument
-#'   of \code{\link[stats]{dist}}.
+#'   Method used to generate weights. Possible values are \dQuote{euclidean}, \dQuote{maximum},
+#'   \dQuote{manhatten}, \dQuote{canberra}, \dQuote{binary}, \code{minkowski} or \code{random}.
+#'   The latter generates (random) weights utilizing \code{weight.fun}. The remaining
+#'   options are passed down to \code{\link[stats]{dist}}, i.e., weights are generated
+#'   as distances between the node coordinates.
 #' @param weight.fun [\code{function(m, ...) | NULL}]\cr
 #'   Function used to generate weights. The first arument needs to be number of weights
 #'   to generate.
@@ -207,18 +236,22 @@ addEdges = function(graph, method = NULL) {
 #'   Should the weights be symmetric, i.e., w(i, j) = w(j, i) for each pair i, j of nodes?
 #'   Default is \code{TRUE}.
 #' @param ... [any]\cr
-#'   Additional arguments passed down to \code{weight.fun}.
+#'   Additional arguments passed down to \code{weight.fun} or \code{\link[stats]{dist}}. See
+#'   documentation of argument \code{method} for details.
 #' @template ret_mcGP
 #' @export
 addWeights = function(graph, method = "euclidean", weight.fun = NULL, symmetric = TRUE, ...) {
+  assertClass(graph, "mcGP")
+  assertChoice(method, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski", "random"))
+
   n = graph$n.nodes
   ws = graph$weights
   n.weights = if (is.null(ws)) 0L else length(ws)
 
-  if (method %in% "euclidean") {
+  if (method != "random") {
     if (is.null(graph$coordinates))
-      stopf("Methods 'euclidean' needs coordinates.")
-    ww = as.matrix(dist(graph$coordinates, method = method))
+      stopf("Method '%s' needs coordinates.", method)
+    ww = as.matrix(dist(graph$coordinates, method = method, ...))
     # if not all edges exist, set the remaining to infinifty
     # but keep zero distances on the diagonal
     if (!is.null(graph$adj.mat)) {
@@ -228,6 +261,7 @@ addWeights = function(graph, method = "euclidean", weight.fun = NULL, symmetric 
   } else {
     if (is.null(weight.fun))
       stopf("You need to pass a weight fun.")
+
     # default to asymmetric weight matrix
     m = n * n - n
 
@@ -248,7 +282,6 @@ addWeights = function(graph, method = "euclidean", weight.fun = NULL, symmetric 
   }
   graph$weights[[n.weights + 1L]] = ww
   graph$weight.types = c(graph$weight.types, ifelse(is.null(weight.fun), "euclidean", "random"))
-  if (!("mograph" %in% class(graph)))
-    graph = BBmisc::addClasses(graph, "mograph")
+  graph$n.weights = graph$n.weights + 1L
   return(graph)
 }
