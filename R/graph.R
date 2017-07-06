@@ -1,33 +1,57 @@
-#' Generate a bare network (only the number of nodes is known).
+#' @title Generate a bare multi-objective graph.
 #'
-#' @param n [\code{integer(1)}]\cr
-#'   Number of nodes.
-#' @return [\code{Network}]
-network = function(n.dims = 2L, lower, upper) {
+#' @description This function generates a bare multi-objective weights. The generated
+#' object does not contains nodes, edges / edge weights. It serves as a starting
+#' point for the step-by-step construction of multi-objective graph instances.
+#'
+#' @param lower [\code{integer(1)}]\cr
+#'   Lower bounds for coordinates.
+#' @param upper [\code{integer(1)}]\cr
+#'   Upper bounds for coordinates.
+#' @template ret_mcGP
+#' @export
+mcGP = function(lower, upper) {
   #n = asInt(n, lower = 2L)
   if (length(lower) == 1L)
-    lower = rep(lower, n.dims)
+    lower = rep(lower, 2L)
   if (length(upper) == 1L)
-    upper = rep(upper, n.dims)
-  BBmisc::makeS3Obj(lower = lower, upper = upper, classes = "Network")
+    upper = rep(upper, 2L)
+  BBmisc::makeS3Obj(
+    lower = lower,
+    upper = upper,
+    n.clusters = 0,
+    n.nodes = 0,
+    weight.types = character(0L),
+    weights = list(),
+    classes = "mcGP")
 }
 
-coordLHS = function(n, n.dims, lower = 0, upper = 1, method = lhs::maximinLHS) {
-  coords = method(n, n.dims)
+#' @export
+print.mcGP = function(x, ...) {
+  catf("MULTI-OBJECTIVE GRAPH PROBLEM")
+  catf("Number of nodes: %i", x$n.nodes)
+  if (x$n.cluster > 0L)
+    catf("Number of clusters: %i", x$n.cluster)
+  n.weights = length(x$weights)
+  catf("Weights per edge: %i (%s)", n.weights, BBmisc::collapse(x$weight.types))
+}
+
+coordLHS = function(n, lower = 0, upper = 1, method = lhs::maximinLHS) {
+  coords = method(n, 2L)
   # stretch
   coords = lower + (upper - lower) * coords
   return(coords)
 }
 
-coordUniform = function(n, n.dims, lower, upper) {
-  coords = lapply(seq_len(n.dims), function(i) {
+coordUniform = function(n, lower, upper) {
+  coords = lapply(seq_len(2L), function(i) {
     runif(n, min = lower[i], max = upper[i])
   })
   coords = do.call(cbind, coords)
   return(coords)
 }
 
-coordGrid = function(n, n.dims, lower, upper) {
+coordGrid = function(n, lower, upper) {
   m = sqrt(n)
   x1 = seq(lower[1], upper[2], length.out = m)
   x2 = seq(lower[2], upper[2], length.out = m)
@@ -37,27 +61,76 @@ coordGrid = function(n, n.dims, lower, upper) {
   return(coords)
 }
 
-addCenters = function(network, n.centers, generator, ...) {
-  if (!is.null(network$coordinates))
-    stopf("Network already has coordinates! Place centers before coordinates.")
-  if (!is.null(network$center.coordinates))
+#' @title Add cluster centers to graph.
+#'
+#' @description Places \code{n.centers} cluster centers in the two-dimensional
+#' euclidean plane by means of a \code{generator}, e.g., by Latin-Hypercube-Sampling (LHS).
+#'
+#' @template arg_mcGP
+#' @param n.centers [\code{integer(1)}]\cr
+#'   Number of cluster centers.
+#' @param generator [\code{function(n, ...)}]\cr
+#'   Function used to generate cluster centers. The generator needs to expect the number
+#'   of points to generate as the first argument \code{n}. Additional control argument are
+#'   possible.
+#' @param ... [any]\cr
+#'   Additional arguments passed down to \code{generator}.
+#' @template ret_mcGP
+#' @export
+addCenters = function(graph, n.centers, generator, ...) {
+  if (!is.null(graph$coordinates))
+    stopf("Graph already has coordinates! Place centers before coordinates.")
+  if (!is.null(graph$center.coordinates))
     stopf("Cluster centers already placed.")
 
   # generate cluster centers
-  center.coordinates = generator(n.centers, n.dims = 2L, lower = network$lower, upper = network$upper, ...)
-  network$center.coordinates = center.coordinates
-  network$n.cluster = n.centers
-  if (!("ClusteredNetwork" %in% class(network)))
-    network = addClasses(network, "ClusteredNetwork")
-  return(network)
+  center.coordinates = generator(n.centers, lower = graph$lower, upper = graph$upper, ...)
+  graph$center.coordinates = center.coordinates
+  graph$n.cluster = n.centers
+  if (!("Clusteredgraph" %in% class(graph)))
+    graph = addClasses(graph, "Clusteredgraph")
+  return(graph)
 }
 
-addCoordinates = function(network, n, generator, by.centers = FALSE, par.fun = NULL, ...) {
+#' @title Add node coordinates to graph.
+#'
+#' @description Places node coordinates in the two-dimensional euclidean plane.
+#'
+#' @template arg_mcGP
+#' @param n [\code{integer}]\cr
+#'   Number of coordinates to place. If \code{by.centers} is \code{FALSE} a single
+#'   integer value is expected. Otherwise, a vector v may be passed. In this case
+#'   v[i] coordinates are generated for each cluster. However, if a single value is
+#'   passed and \code{by.center == TRUE}, each cluster is assigned the same number of
+#'   coordinates.
+#' @param generator [\code{function(n, ...)}]\cr
+#'   Function used to generate coordinates. The generator needs to expect the number
+#'   of points to generate as the first argument \code{n}. Additional control argument are
+#'   possible.
+#' @param by.centers [\code{logical(1)}]\cr
+#'   Should coordinates be placed for each cluster center seperately? This enables
+#'   geneation of clustered coordinates.
+#'   Default is \code{FALSE}.
+#' @param par.fun [\code{function(cc) | NULL}]\cr
+#'   Optional function which is applied to each cluster center \code{cc} before the generation
+#'   of coordinates in case \code{by.centers} is \code{TRUE}. This enables to specifically
+#'   determine additional parameters for the \code{generator} for each cluster.
+#' @param ... [any]\cr
+#'   Furhter arguments passed down to \code{generator}.
+#' @template ret_mcGP
+#' @export
+addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NULL, ...) {
   membership = NULL
+
+  moveToOrigin = function(cluster.centers) {
+    offset = abs(apply(cluster.centers, 2L, min))
+    t(t(cluster.centers) + offset)
+  }
+
   if (!by.centers) {
-    coords = generator(n, n.dim = 2L, lower = network$lower, upper = network$upper, ...)
+    coords = generator(n, lower = graph$lower, upper = graph$upper, ...)
   } else {
-    nc = network$n.cluster
+    nc = graph$n.cluster
     if (length(n) == nc) {
       n.per.cluster2 = n
     } else {
@@ -71,41 +144,85 @@ addCoordinates = function(network, n, generator, by.centers = FALSE, par.fun = N
     catf("n per cluster %s", collapse(n))
     coords = lapply(seq_len(nc), function(i) {
       gen.args = list(n = n.per.cluster2[i], n.dim = 2L)
+      # generate coordinates in origin
       if (!is.null(par.fun))
-        gen.args = c(gen.args, par.fun(network$center.coordinates[i, ]))
+        gen.args = c(gen.args, par.fun(graph$center.coordinates[i, ]))
       gen.args = c(gen.args, list(...))
-      do.call(generator, gen.args)
+      coords.cluster = do.call(generator, gen.args)
+
+      coords.cluster = moveToOrigin(coords.cluster)
+      rects = apply(apply(coords.cluster, 2L, range), 2L, diff)
+      cl.center = graph$center.coordinates[i, ]
+      # now move the way that centers are in fact centers
+      #FIXME: ugly as hell
+      coords.cluster = t(t(coords.cluster) + cl.center - rects / 2)
+      return(coords.cluster)
     })
+    # concatenate coordinates
     coords = do.call(rbind, coords)
+    # assign membership (we know which cluster belongs to which center)
     membership = rep(1:nc, n.per.cluster2)
   }
-  catf("n is %i", network$n.nodes)
-  network$n.nodes = if (!is.null(network$n.nodes)) network$n.nodes + sum(n) else sum(n)
-  network$coordinates = if (!is.null(network$coordinates)) rbind(network$coordinates, coords) else coords
-  network$membership = if (!is.null(network$membership)) c(network$membership, if (by.centers) membership else rep(0, nrow(coords))) else membership
-  return(network)
+  # update meta data of graph
+  graph$n.nodes = if (!is.null(graph$n.nodes)) graph$n.nodes + sum(n) else sum(n)
+  graph$coordinates = if (!is.null(graph$coordinates)) rbind(graph$coordinates, coords) else coords
+  graph$membership = if (!is.null(graph$membership)) c(graph$membership, if (by.centers) membership else rep(0, nrow(coords))) else membership
+  return(graph)
 }
 
-addEdges = function(network, method = NULL) {
-  adj.mat = matrix(1L, ncol = network$n.nodes, nrow = network$n.nodes)
+#' @title Define edges in multi-objective graph.
+#'
+#' @description By default \code{\link{addWeights}} generates n(n-1)/2 weights, i.e.,
+#' the graph is assumed to be complete. This method allows to defne an adjacency
+#' matrix to make the graph more sparse.
+#'
+#' @note Minimal implementation. No support so far.
+#'
+#' @template arg_mcGP
+#' @param method [\code{function(...)}]\cr
+#'   Method applied to \code{graph} in order to determine which edges to keep.
+#' @template ret_mcGP
+addEdges = function(graph, method = NULL) {
+  adj.mat = matrix(1L, ncol = graph$n.nodes, nrow = graph$n.nodes)
   diag(adj.mat) = 0
-  network$adj.mat = adj.mat
-  return(network)
+  graph$adj.mat = adj.mat
+  return(graph)
 }
 
-addWeights = function(network, method = "euclidean", weight.fun = NULL, symmetric = TRUE, ...) {
-  n = network$n.nodes
-  ws = network$weights
+#' @title Add weights to a multi-objective graph.
+#'
+#' @description \code{addWeights} allows to generate edge weights for a multi-objective
+#' graph instance. The weights can be generated on basis of the node coordinates (in this
+#' case \code{\link[stats]{dist}} is applied with the cooresponding \code{method}).
+#' Alternatively, all kinds of random weights can be generated.
+#'
+#' @template arg_mcGP
+#' @param method [\code{character(1)}]\cr
+#'   Method to generate weights based on node coordinates. See \code{method} argument
+#'   of \code{\link[stats]{dist}}.
+#' @param weight.fun [\code{function(m, ...) | NULL}]\cr
+#'   Function used to generate weights. The first arument needs to be number of weights
+#'   to generate.
+#' @param symmetric [\code{logical(1)}]\cr
+#'   Should the weights be symmetric, i.e., w(i, j) = w(j, i) for each pair i, j of nodes?
+#'   Default is \code{TRUE}.
+#' @param ... [any]\cr
+#'   Additional arguments passed down to \code{weight.fun}.
+#' @template ret_mcGP
+#' @export
+addWeights = function(graph, method = "euclidean", weight.fun = NULL, symmetric = TRUE, ...) {
+  n = graph$n.nodes
+  ws = graph$weights
   n.weights = if (is.null(ws)) 0L else length(ws)
 
   if (method %in% "euclidean") {
-    if (is.null(network$coordinates))
+    if (is.null(graph$coordinates))
       stopf("Methods 'euclidean' needs coordinates.")
-    ww = as.matrix(dist(network$coordinates, method = method))
+    ww = as.matrix(dist(graph$coordinates, method = method))
     # if not all edges exist, set the remaining to infinifty
     # but keep zero distances on the diagonal
-    if (!is.null(network$adj.mat)) {
-      ww[network$adj.mat == 0] = Inf
+    if (!is.null(graph$adj.mat)) {
+      ww[graph$adj.mat == 0] = Inf
       diag(ww) = 0
     }
   } else {
@@ -115,8 +232,8 @@ addWeights = function(network, method = "euclidean", weight.fun = NULL, symmetri
     m = n * n - n
 
     # extract number of edges if adjacency matrix is available
-    if (!is.null(network$adj.mat))
-      m = sum(network$adj.mat)
+    if (!is.null(graph$adj.mat))
+      m = sum(graph$adj.mat)
 
     # save half of the work if matrix is symmetric
     if (symmetric)
@@ -129,8 +246,9 @@ addWeights = function(network, method = "euclidean", weight.fun = NULL, symmetri
     ww[upper.tri(ww)] = weights
     ww[lower.tri(ww)] = t(ww[upper.tri(ww)])
   }
-  network$weights[[n.weights + 1L]] = ww
-  if (!("moNetwork" %in% class(network)))
-    network = BBmisc::addClasses(network, "moNetwork")
-  return(network)
+  graph$weights[[n.weights + 1L]] = ww
+  graph$weight.types = c(graph$weight.types, ifelse(is.null(weight.fun), "euclidean", "random"))
+  if (!("mograph" %in% class(graph)))
+    graph = BBmisc::addClasses(graph, "mograph")
+  return(graph)
 }
