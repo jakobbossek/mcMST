@@ -1,7 +1,7 @@
 #' @import BBmisc
 #' @import ggplot2
 #' @import checkmate
-#' @import gtools
+#' @importFrom gtools permutations
 #' @import ecr
 #' @importFrom vegan spantree
 #' @importFrom stats dist runif
