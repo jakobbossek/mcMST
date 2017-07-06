@@ -4,7 +4,7 @@
 \alias{addWeights}
 \title{Add weights to a multi-objective graph.}
 \usage{
-addWeights(graph, method = "euclidean", weight.fun = NULL,
+addWeights(graph, method = "euclidean", weight.fun = NULL, n = NULL,
   symmetric = TRUE, ...)
 }
 \arguments{
@@ -22,6 +22,11 @@ as distances between the node coordinates.}
 Function used to generate weights. The first arument needs to be number of weights
 to generate.}
 
+\item{n}{[\code{integer(1)}]\cr
+Number of nodes. This is required only if there are no coordinates or no weights
+until now.
+Default is \code{NULL}, i.e., the number of nodes is extracted from \code{graph}.}
+
 \item{symmetric}{[\code{logical(1)}]\cr
 Should the weights be symmetric, i.e., w(i, j) = w(j, i) for each pair i, j of nodes?
 Default is \code{TRUE}.}
@@ -38,4 +43,9 @@ documentation of argument \code{method} for details.}
 graph instance. The weights can be generated on basis of the node coordinates (in this
 case \code{\link[stats]{dist}} is applied with the cooresponding \code{method}).
 Alternatively, all kinds of random weights can be generated.
+}
+\seealso{
+Other graph generators: \code{\link{addCenters}},
+  \code{\link{addCoordinates}}, \code{\link{addEdges}},
+  \code{\link{mcGP}}
 }

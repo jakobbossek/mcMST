@@ -4,17 +4,17 @@
 \alias{getWeight}
 \title{Get the overall costs/weight of a suggraph given its edgelist.}
 \usage{
-getWeight(instance, edgelist)
+getWeight(graph, edgelist)
 }
 \arguments{
-\item{instance}{[\code{any}]\cr
-Multi-obective graph problem.}
+\item{graph}{[\code{mcGP}]\cr
+Multi-objective graph problem.}
 
 \item{edgelist}{[\code{matrix(2, k)}]
 Matrix of edges (each column is one edge).}
 }
 \value{
-[numeric(2)] Weight vector.
+[\code{numeric(2)}] Weight vector.
 }
 \description{
 Get the overall costs/weight of a suggraph given its edgelist.

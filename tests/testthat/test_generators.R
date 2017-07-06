@@ -49,5 +49,5 @@ test_that("graph generation: check correct error messages", {
   expect_error(mcGP(lower = 10, upper = 5))
 
   g = mcGP(lower = 0, upper = 100)
-  expect_error(addWeights(g, method = "euclidean"), regexp = "needs coordinates")
+  expect_error(addWeights(g, method = "euclidean"), regexp = "number of nodes")
 })

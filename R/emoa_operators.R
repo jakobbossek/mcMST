@@ -143,9 +143,9 @@ mutSubgraphMST = makeMutator(
     obj = if (runif(1L) < 0.5) 1L else 2L
     dd = if (obj == 1L) {
       #catf("first obj.")
-      instance$w1[sel.nodes, sel.nodes]
+      instance$weights[[1L]][sel.nodes, sel.nodes]
     } else {
-      instance$w2[sel.nodes, sel.nodes]
+      instance$weights[[2L]][sel.nodes, sel.nodes]
     }
     #catf("submatrix:")
     #print(dd)

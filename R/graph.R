@@ -9,6 +9,7 @@
 #' @param upper [\code{integer(1)}]\cr
 #'   Upper bounds for coordinates.
 #' @template ret_mcGP
+#' @family graph generators
 #' @export
 mcGP = function(lower, upper) {
   #n = asInt(n, lower = 2L)
@@ -83,6 +84,7 @@ coordGrid = function(n, lower, upper) {
 #' @param ... [any]\cr
 #'   Additional arguments passed down to \code{generator}.
 #' @template ret_mcGP
+#' @family graph generators
 #' @export
 addCenters = function(graph, n.centers, generator, ...) {
   # sanity checks
@@ -131,6 +133,7 @@ addCenters = function(graph, n.centers, generator, ...) {
 #' @param ... [any]\cr
 #'   Furhter arguments passed down to \code{generator}.
 #' @template ret_mcGP
+#' @family graph generators
 #' @export
 addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NULL, ...) {
   assertClass(graph, "mcGP")
@@ -205,6 +208,7 @@ addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NUL
 #' @template arg_mcGP
 #' @param method [\code{function(...)}]\cr
 #'   Method applied to \code{graph} in order to determine which edges to keep.
+#' @family graph generators
 #' @template ret_mcGP
 addEdges = function(graph, method = NULL) {
   assertClass(graph, "mcGP")
@@ -232,6 +236,10 @@ addEdges = function(graph, method = NULL) {
 #' @param weight.fun [\code{function(m, ...) | NULL}]\cr
 #'   Function used to generate weights. The first arument needs to be number of weights
 #'   to generate.
+#' @param n [\code{integer(1)}]\cr
+#'   Number of nodes. This is required only if there are no coordinates or no weights
+#'   until now.
+#'   Default is \code{NULL}, i.e., the number of nodes is extracted from \code{graph}.
 #' @param symmetric [\code{logical(1)}]\cr
 #'   Should the weights be symmetric, i.e., w(i, j) = w(j, i) for each pair i, j of nodes?
 #'   Default is \code{TRUE}.
@@ -239,12 +247,20 @@ addEdges = function(graph, method = NULL) {
 #'   Additional arguments passed down to \code{weight.fun} or \code{\link[stats]{dist}}. See
 #'   documentation of argument \code{method} for details.
 #' @template ret_mcGP
+#' @family graph generators
 #' @export
-addWeights = function(graph, method = "euclidean", weight.fun = NULL, symmetric = TRUE, ...) {
+addWeights = function(graph, method = "euclidean", weight.fun = NULL, n = NULL, symmetric = TRUE, ...) {
   assertClass(graph, "mcGP")
   assertChoice(method, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski", "random"))
 
-  n = graph$n.nodes
+  n.nodes = graph$n.nodes
+  # check if graph has coordinates or weights already
+  if (n.nodes == 0L) {
+    n.nodes = n
+    if (is.null(n.nodes))
+      stopf("addWeights: number of nodes unknown. Please pass parameter 'n'.")
+  }
+
   ws = graph$weights
   n.weights = if (is.null(ws)) 0L else length(ws)
 
@@ -263,12 +279,12 @@ addWeights = function(graph, method = "euclidean", weight.fun = NULL, symmetric 
       stopf("You need to pass a weight fun.")
 
     # always generate n^2 weights
-    m = n * n
+    m = n.nodes * n.nodes
 
     weights = weight.fun(m, ...)
 
     #if (!is.null(adj.mat)) {
-    ww = matrix(weights, ncol = n, nrow = n)
+    ww = matrix(weights, ncol = n.nodes, nrow = n.nodes)
     diag(ww) = .0
     if (symmetric) {
       ww[lower.tri(ww)] = t(ww)[lower.tri(t(ww))]
@@ -280,5 +296,8 @@ addWeights = function(graph, method = "euclidean", weight.fun = NULL, symmetric 
   graph$weights[[n.weights + 1L]] = ww
   graph$weight.types = c(graph$weight.types, ifelse(method != "random", "distance", "random"))
   graph$n.weights = graph$n.weights + 1L
+
+  if (graph$n.nodes == 0L)
+    graph$n.nodes = graph$n.nodes + n
   return(graph)
 }

@@ -41,3 +41,8 @@ Furhter arguments passed down to \code{generator}.}
 \description{
 Places node coordinates in the two-dimensional euclidean plane.
 }
+\seealso{
+Other graph generators: \code{\link{addCenters}},
+  \code{\link{addEdges}}, \code{\link{addWeights}},
+  \code{\link{mcGP}}
+}

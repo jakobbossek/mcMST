@@ -33,7 +33,7 @@ emoaMST_Zhou = function(instance, n.objectives = 2L,
   }
 
   # get number of nodes
-  n = instance$n
+  n = instance$n.nodes
 
   # now generate an initial population of Pruefer-numbers/codes
   population = lapply(1:mu, function(i) {

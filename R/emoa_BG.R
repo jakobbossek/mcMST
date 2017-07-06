@@ -46,7 +46,7 @@ emoaMST_BG = function(instance, n.objectives = 2L,
   max.iter = 100L) {
 
   # get number of nodes
-  n = instance$n
+  n = instance$n.nodes
 
   force(instance)
 

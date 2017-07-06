@@ -24,3 +24,8 @@ matrix to make the graph more sparse.
 \note{
 Minimal implementation. No support so far.
 }
+\seealso{
+Other graph generators: \code{\link{addCenters}},
+  \code{\link{addCoordinates}}, \code{\link{addWeights}},
+  \code{\link{mcGP}}
+}

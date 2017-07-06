@@ -28,3 +28,8 @@ Additional arguments passed down to \code{generator}.}
 Places \code{n.centers} cluster centers in the two-dimensional
 euclidean plane by means of a \code{generator}, e.g., by Latin-Hypercube-Sampling (LHS).
 }
+\seealso{
+Other graph generators: \code{\link{addCoordinates}},
+  \code{\link{addEdges}}, \code{\link{addWeights}},
+  \code{\link{mcGP}}
+}
