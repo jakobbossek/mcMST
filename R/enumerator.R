@@ -9,6 +9,7 @@
 #' @return [\code{matrix}] Each row contains a candidate solution.
 #' @examples
 #' sols = enumerateTSP(4L)
+#' sols = enumerateMST(4L)
 #' @rdname enumerators
 #' @export
 enumerateTSP = function(n) {

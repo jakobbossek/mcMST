@@ -23,4 +23,5 @@ for a TSP or all Pruefer-codes for a MST problem.
 }
 \examples{
 sols = enumerateTSP(4L)
+sols = enumerateMST(4L)
 }

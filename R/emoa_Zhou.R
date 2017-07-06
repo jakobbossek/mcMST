@@ -11,11 +11,13 @@
 #'
 #' @references Zhou, G. and Gen, M. Genetic Algorithm Approach on Multi-Criteria
 #' Minimum Spanning Tree Problem. In: European Journal of Operational Research (1999).
+#'
 #' @param mut [\code{ecr_mutator}]\cr
 #'   Mutation operator.
 #'   Defaults to \code{\link{mutUniform2}}, i.e., each digit of the Pruefer encoding
 #'   is replaced with some probability with a random number from \eqn{V = \{1, \ldots, n\}}.
 #' @inheritParams emoaMST_BG
+#' @family mcMST EMOAs
 #' @export
 emoaMST_Zhou = function(instance, n.objectives = 2L,
   mu, lambda = mu,
@@ -38,7 +40,6 @@ emoaMST_Zhou = function(instance, n.objectives = 2L,
     sample(1:n, n - 2L, replace = TRUE)
   })
 
-  #FIXME: need to pass down HV logger
   res = ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,
     mu = mu, lambda = lambda, survival.strategy = "plus", representation = "custom",
     initial.solutions = population,

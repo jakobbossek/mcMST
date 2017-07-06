@@ -23,7 +23,7 @@
 #' @param n.objectives [\code{integer(1)}]\cr
 #'   Number of objectives of problem.
 #' @return [\code{list}] List with elements \code{pareto.set} (matrix of Pareto-optimal solutions)
-#' and \code{pareto.front} (matrix of weight vectors).
+#' and \code{pareto.front} (matrix of corresponding weight vectors).
 #' @export
 getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives) {
   assertFunction(obj.fun)

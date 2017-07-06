@@ -59,3 +59,6 @@ res = emoaMST_BG(inst, mu = 20L, ref.point = c(1e5, 1e5), max.iter = 100L)
 print(res$pareto.front)
 print(tail(getStatistics(res$log)))
 }
+\seealso{
+Other mcMST EMOAs: \code{\link{emoaMST_Zhou}}
+}

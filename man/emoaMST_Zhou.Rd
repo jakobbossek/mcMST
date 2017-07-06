@@ -56,3 +56,6 @@ uniformly at random with another node number from \eqn{V}.
 Zhou, G. and Gen, M. Genetic Algorithm Approach on Multi-Criteria
 Minimum Spanning Tree Problem. In: European Journal of Operational Research (1999).
 }
+\seealso{
+Other mcMST EMOAs: \code{\link{emoaMST_BG}}
+}

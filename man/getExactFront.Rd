@@ -25,7 +25,7 @@ Number of objectives of problem.}
 }
 \value{
 [\code{list}] List with elements \code{pareto.set} (matrix of Pareto-optimal solutions)
-and \code{pareto.front} (matrix of weight vectors).
+and \code{pareto.front} (matrix of corresponding weight vectors).
 }
 \description{
 Function which expects an problem instance of a combinatorial optimization
