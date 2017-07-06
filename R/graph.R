@@ -29,6 +29,7 @@ mcGP = function(lower, upper) {
     n.weights = 0L,
     weight.types = character(0L),
     weights = list(),
+    membership = NULL,
     classes = "mcGP")
 }
 
@@ -165,9 +166,8 @@ addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NUL
         n.per.cluster2[idx] = n.per.cluster2[idx] + 1L
       }
     }
-    catf("n per cluster %s", collapse(n))
     coords = lapply(seq_len(nc), function(i) {
-      gen.args = list(n = n.per.cluster2[i], n.dim = 2L)
+      gen.args = list(n = n.per.cluster2[i])
       # generate coordinates in origin
       if (!is.null(par.fun))
         gen.args = c(gen.args, par.fun(graph$center.coordinates[i, ]))
@@ -262,26 +262,23 @@ addWeights = function(graph, method = "euclidean", weight.fun = NULL, symmetric 
     if (is.null(weight.fun))
       stopf("You need to pass a weight fun.")
 
-    # default to asymmetric weight matrix
-    m = n * n - n
-
-    # extract number of edges if adjacency matrix is available
-    if (!is.null(graph$adj.mat))
-      m = sum(graph$adj.mat)
-
-    # save half of the work if matrix is symmetric
-    if (symmetric)
-      m = m / 2L
+    # always generate n^2 weights
+    m = n * n
 
     weights = weight.fun(m, ...)
 
     #if (!is.null(adj.mat)) {
-    ww = matrix(0, ncol = n, nrow = n)
-    ww[upper.tri(ww)] = weights
-    ww[lower.tri(ww)] = t(ww[upper.tri(ww)])
+    ww = matrix(weights, ncol = n, nrow = n)
+    diag(ww) = .0
+    if (symmetric) {
+      ww[lower.tri(ww)] = t(ww)[lower.tri(t(ww))]
+    }
+
+    if (!is.null(graph$adj.mat))
+      ww[graph$adj.mat == 0] = Inf #FIXME: numeric infinity value
   }
   graph$weights[[n.weights + 1L]] = ww
-  graph$weight.types = c(graph$weight.types, ifelse(is.null(weight.fun), "euclidean", "random"))
+  graph$weight.types = c(graph$weight.types, ifelse(method != "random", "distance", "random"))
   graph$n.weights = graph$n.weights + 1L
   return(graph)
 }
