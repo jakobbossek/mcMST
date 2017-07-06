@@ -8,9 +8,26 @@
 [![Coverage Status](https://coveralls.io/repos/github/jakobbossek/rmoco/badge.svg?branch=master)](https://coveralls.io/github/jakobbossek/rmoco?branch=master)
 [![Research software impact](http://depsy.org/api/package/cran/rmoco/badge.svg)](http://depsy.org/package/r/rmoco)
 
-## A gentle introduction
+The **rmoco** package for the statistical programming language [R](https://www.r-project.org) contains methods for benchmark instance generation of multi-objective graph problems and methods for solving the multi-criteria Spanning Tree problem (mcMST).
 
-...
+## Example
+
+Here we first generate a bi-criteria graph problem with n = 25 nodes. The first objective is the euclidean distance of node coordinates in [0, 10] x [0, 10] in the euclidean plane. The second objective follows a normal distribution (N(5, 1.5)). The instance generation process is modular and thus highly flexible.
+```r
+set.seed(1)
+g = mcGP(lower = 0, upper = 10)
+g = addCoordinates(g, n = 25, generator = coordUniform)
+g = addWeights(g, method = "euclidean")
+g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.5)
+print(g)
+```
+
+Next, we apply the Genetic Algorithm proposed by Zhou & Gen with population size `mu = 10`, number of offspring `lambda = 10` for `max.iter = 100` generations. Additionally, a reference point `ref.point` is used for tracking the dominated hypervolume.
+```r
+library(ggplot2)
+res = emoaMST_Zhou(g, mu = 10L, lambda = 10L, max.iter = 100L, ref.point = c(1000, 1000))
+ecr::plotFront(res$pareto.front)
+```
 
 ## Installation Instructions
 
