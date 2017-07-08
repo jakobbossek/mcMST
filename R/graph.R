@@ -44,7 +44,12 @@ print.mcGP = function(x, ...) {
   catf("Weights per edge: %i (%s)", n.weights, BBmisc::collapse(x$weight.types))
 }
 
-coordLHS = function(n, lower = 0, upper = 1, method = lhs::maximinLHS) {
+coordLHS = function(n, lower = 0, upper = 1, method = NULL) {
+  if (is.null(method)) {
+    requirePackages("lhs", why = "rmoco::coordLHS", default.method = "load")
+    method = lhs::maximinLHS
+  }
+
   coords = method(n, 2L)
   # stretch
   coords = lower + (upper - lower) * coords
@@ -218,6 +223,10 @@ addEdges = function(graph, method = NULL) {
   graph$adj.mat = adj.mat
   return(graph)
 }
+
+# edgesGrid = function(coordinates) {
+
+# }
 
 #' @title Add weights to a multi-objective graph.
 #'
