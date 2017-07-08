@@ -19,7 +19,8 @@ Imports:
     reshape2 (>= 1.4.1),
     ggplot2 (>= 1.0.0),
     gtools,
-    vegan
+    vegan,
+    lhs
 Suggests:
     testthat (>= 0.9.1),
     knitr,
