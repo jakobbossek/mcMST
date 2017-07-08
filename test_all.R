@@ -5,7 +5,7 @@ library(testthat)
 if (interactive()) {
   load_all(".")
 } else {
-  library(rmoco)
+  library(mcMST)
 }
 
 test_dir("tests/testthat")

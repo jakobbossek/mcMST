@@ -112,7 +112,7 @@ mutEdgeExchange = makeMutator(
 #' @export
 mutSubgraphMST = makeMutator(
   mutator = function(ind, sigma = floor(ncol(ind) / 2), instance = NULL) {
-    requirePackages("vegan", why = "rmoco::mutSubgraphMST")
+    requirePackages("vegan", why = "mcMST::mutSubgraphMST")
     m = ncol(ind)
     nsel = sample(3:sigma, 1L)
     #catf("Selecting connected subgraph with >= %i nodes.", nsel)

@@ -1,12 +1,12 @@
 ---
-title: "Brief introduction to rmoco"
+title: "Brief introduction to mcMST"
 author: "Jakob Bossek"
 date: "`r Sys.Date()`"
 output:
   rmarkdown::html_vignette:
     fig_caption: yes
 vignette: >
-  %\VignetteIndexEntry{Brief introduction to rmoco}
+  %\VignetteIndexEntry{Brief introduction to mcMST}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

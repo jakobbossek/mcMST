@@ -46,7 +46,7 @@ print.mcGP = function(x, ...) {
 
 coordLHS = function(n, lower = 0, upper = 1, method = NULL) {
   if (is.null(method)) {
-    requirePackages("lhs", why = "rmoco::coordLHS", default.method = "load")
+    requirePackages("lhs", why = "mcMST::coordLHS", default.method = "load")
     method = lhs::maximinLHS
   }
 

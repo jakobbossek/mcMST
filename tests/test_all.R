@@ -1,3 +1,3 @@
 library(testthat)
-test_check("rmoco")
+test_check("mcMST")
 

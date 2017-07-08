@@ -14,7 +14,7 @@
 #' @export
 enumerateTSP = function(n) {
   n = asInt(n, lower = 3L)
-  requirePackages("gtools", why = "rmoco::enumerateTSP")
+  requirePackages("gtools", why = "mcMST::enumerateTSP")
   perms = gtools::permutations(n - 1L, n - 1L, v = 2:n)
   # drop duplicated permutations (symmetric TSP)
   perms = perms[1:(nrow(perms) / 2), , drop = FALSE]
@@ -26,6 +26,6 @@ enumerateTSP = function(n) {
 #' @export
 enumerateMST = function(n) {
   n = asInt(n, lower = 3L)
-  requirePackages("gtools", why = "rmoco::enumerateMCMST")
+  requirePackages("gtools", why = "mcMST::enumerateMCMST")
   gtools::permutations(n, n - 2L, seq_len(n), repeats.allowed = TRUE)
 }
