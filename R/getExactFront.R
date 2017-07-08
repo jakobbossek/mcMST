@@ -24,18 +24,34 @@
 #'   Number of objectives of problem.
 #' @return [\code{list}] List with elements \code{pareto.set} (matrix of Pareto-optimal solutions)
 #' and \code{pareto.front} (matrix of corresponding weight vectors).
+#' @examples
+#' # here we enumerate all Pareto-optimal solutions of a bi-objective mcMST problem
+#' # we use the Pruefer-code enumerator. Thus, we need to define an objective
+#' # function, which is able to handle this type of endcoding
+#' objfunMCMST = function(pcode, instance) {
+#'   getWeight(instance, prueferToEdgelist(pcode))
+#' }
+#'
+#' # next we generate a random bi-objective graph
+#' g = genRandomMCGP(5L)
+#'
+#' # ... and finally compute the exact front
+#' res = getExactFront(g, obj.fun = objfunMCMST, enumerator.fun = enumerateMST, n.objectives = 2L)
+#' \dontrun{
+#' plot(tres$pareto.front)
+#' }
 #' @export
 getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives) {
   assertFunction(obj.fun)
   assertFunction(enumerator.fun, args = "n")
   n.objectives = asInt(n.objectives, lower = 2L)
 
-  n = instance$n
-  if (n > 10L)
+  n.nodes = instance$n.nodes
+  if (n.nodes > 10L)
     warningf("Doh! This may take some time.")
 
   # allocate really large vector of permutations
-  pp = enumerator.fun(n)
+  pp = enumerator.fun(n.nodes)
   n.sols = nrow(pp)
   len.sol = ncol(pp)
 

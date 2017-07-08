@@ -16,10 +16,10 @@
 #'   Mutation operator.
 #'   Defaults to \code{\link{mutUniform2}}, i.e., each digit of the Pruefer encoding
 #'   is replaced with some probability with a random number from \eqn{V = \{1, \ldots, n\}}.
-#' @inheritParams emoaMST_BG
+#' @inheritParams mcMSTEmoaBG
 #' @family mcMST EMOAs
 #' @export
-emoaMST_Zhou = function(instance, n.objectives = 2L,
+mcMSTEmoaZhou = function(instance, n.objectives = 2L,
   mu, lambda = mu,
   mut = mutUniform2,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,

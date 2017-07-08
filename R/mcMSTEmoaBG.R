@@ -33,15 +33,15 @@
 #' @return [\code{\link[ecr]{ecr_result}}]
 #' @examples
 #' inst = genRandomMCGP(10)
-#' res = emoaMST_BG(inst, mu = 20L, ref.point = c(1e5, 1e5), max.iter = 100L)
+#' res = mcMSTEmoaBG(inst, mu = 20L, ref.point = c(1e5, 1e5), max.iter = 100L)
 #' print(res$pareto.front)
 #' print(tail(getStatistics(res$log)))
 #' @family mcMST EMOAs
 #' @export
-emoaMST_BG = function(instance, n.objectives = 2L,
+mcMSTEmoaBG = function(instance, n.objectives = 2L,
   mu, lambda = mu,
   mut = NULL,
-  selMating = ecr::selSimple, selSurvival = ecr::selNondom,
+  selMating = NULL, selSurvival = ecr::selNondom,
   ref.point,
   max.iter = 100L) {
 

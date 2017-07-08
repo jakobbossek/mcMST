@@ -23,7 +23,7 @@
 #' print(res$pareto.front)
 #' @export
 #FIXME: generalize to > 2 objectives
-mcMSTScalar = function(instance, n.lambdas = NULL, lambdas = NULL) {
+mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
   assertClass(instance, "mcGP")
   if (is.null(n.lambdas) & is.null(lambdas))
     stopf("mcMSTScalar: At least n.lambdas or lambdas must be set.")
@@ -36,7 +36,7 @@ mcMSTScalar = function(instance, n.lambdas = NULL, lambdas = NULL) {
   #FIXME: also return pareto.set as Pruefer number (needs
   # transformation edgelistToPrueferCode)
   #pareto.set = matrix(0, nrow = )
-  pareto.front = matrix(0, nrow = length(lambdas), ncol = instance$n.weights)
+  pareto.front = matrix(0, ncol = length(lambdas), nrow = instance$n.weights)
 
   # Helper function to build the weighted sum
   # of edge weights
@@ -62,7 +62,7 @@ mcMSTScalar = function(instance, n.lambdas = NULL, lambdas = NULL) {
       mst.costs = mst.costs + c(instance$weights[[1L]][nodes1[i], nodes2[i]],
         instance$weights[[2L]][nodes1[i], nodes2[i]])
     }
-    pareto.front[k, ] = mst.costs
+    pareto.front[, k] = mst.costs
   }
   return(list(pareto.front = pareto.front))
 }

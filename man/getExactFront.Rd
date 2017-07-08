@@ -39,3 +39,20 @@ This method exhaustively enumerates all possible solutions
 of a given multi-objective combinatorial optimization problem. Thus,
 it is limited to small input size due to combinatorial explosion.
 }
+\examples{
+# here we enumerate all Pareto-optimal solutions of a bi-objective mcMST problem
+# we use the Pruefer-code enumerator. Thus, we need to define an objective
+# function, which is able to handle this type of endcoding
+objfunMCMST = function(pcode, instance) {
+  getWeight(instance, prueferToEdgelist(pcode))
+}
+
+# next we generate a random bi-objective graph
+g = genRandomMCGP(5L)
+
+# ... and finally compute the exact front
+res = getExactFront(g, obj.fun = objfunMCMST, enumerator.fun = enumerateMST, n.objectives = 2L)
+\dontrun{
+plot(tres$pareto.front)
+}
+}
