@@ -22,3 +22,9 @@ Each edge is replaced with another feasible edge with probability 1/m where
 m is the number of edges, i.e., in expectation one edge is replaced by each
 mutation operation.
 }
+\seealso{
+Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
+
+Other mcMST EMOA mutators: \code{\link{mutSubgraphMST}},
+  \code{\link{mutUniform2}}
+}

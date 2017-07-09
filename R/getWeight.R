@@ -1,4 +1,4 @@
-#' Get the overall costs/weight of a suggraph given its edgelist.
+#' Get the overall costs/weight of a subgraph given its edgelist.
 #'
 #' @template arg_mcGP
 #' @template arg_edgelist

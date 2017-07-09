@@ -41,6 +41,8 @@
 #' print(res$pareto.front)
 #' print(tail(getStatistics(res$log)))
 #' @family mcMST EMOAs
+#' @family mcMST algorithms
+#' @seealso Mutators \code{\link{mutSubgraphMST}} and \code{\link{mutEdgeExchange}}
 #' @export
 mcMSTEmoaBG = function(instance, n.objectives = 2L,
   mu, lambda = mu,

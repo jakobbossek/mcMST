@@ -25,3 +25,9 @@ the tree starting form u and v respectively until a connected subtree of at most
 k edges is selected. Then the subtree is replaced with the optimal spanning tree
 regarding objective 1 or 2 with equal probability.
 }
+\seealso{
+Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
+
+Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
+  \code{\link{mutUniform2}}
+}

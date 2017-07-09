@@ -62,4 +62,7 @@ Minimum Spanning Tree Problem. In: European Journal of Operational Research (199
 }
 \seealso{
 Other mcMST EMOAs: \code{\link{mcMSTEmoaBG}}
+
+Other mcMST algorithms: \code{\link{mcMSTEmoaBG}},
+  \code{\link{mcMSTPrim}}
 }

@@ -18,6 +18,7 @@
 #'   is replaced with some probability with a random number from \eqn{V = \{1, \ldots, n\}}.
 #' @inheritParams mcMSTEmoaBG
 #' @family mcMST EMOAs
+#' @family mcMST algorithms
 #' @export
 mcMSTEmoaZhou = function(instance, n.objectives = 2L,
   mu, lambda = mu,

@@ -9,6 +9,8 @@
 #'   Probability of mutation of each component of \code{ind}.
 #'   Default is \code{1 / length(ind)}.
 #' @return [\code{integer}] Mutated Pruefer code.
+#' @family mcMST EMOA mutators
+#' @seealso \code{\link{mcMSTEmoaZhou}}
 #' @export
 mutUniform2 = makeMutator(
   mutator = function(ind, p = 1 / length(ind)) {
@@ -79,6 +81,8 @@ oneEdgeExchange = function(edgelist, edge.id) {
 #'   Probability of edge exchange.
 #'   Default is \code{1 / ncol(ind)}.
 #' @return [\code{matrix(2, m)}] Mutated edge list.
+#' @family mcMST EMOA mutators
+#' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutEdgeExchange = makeMutator(
   mutator = function(ind, p = 1 / ncol(ind)) {
@@ -109,6 +113,8 @@ mutEdgeExchange = makeMutator(
 #' @param instance [any]\cr
 #'   Multi-objective graph problem instance.
 #' @return [\code{matrix(2, m)}] Mutated edge list.
+#' @family mcMST EMOA mutators
+#' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubgraphMST = makeMutator(
   mutator = function(ind, sigma = floor(ncol(ind) / 2), instance = NULL) {

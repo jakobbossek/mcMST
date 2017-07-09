@@ -21,3 +21,9 @@ Default is \code{1 / length(ind)}.}
 \code{mutUniform2} replaces each component of a Pruefer code of length n - 2
 with probability \code{p} with a random node number between 1 and n.
 }
+\seealso{
+\code{\link{mcMSTEmoaZhou}}
+
+Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
+  \code{\link{mutSubgraphMST}}
+}

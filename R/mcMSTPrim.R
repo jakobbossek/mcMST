@@ -21,6 +21,7 @@
 #' g = genRandomMCGP(30)
 #' res = mcMSTScalar(30, n.lambdas = 50)
 #' print(res$pareto.front)
+#' @family mcMST algorithms
 #' @export
 #FIXME: generalize to > 2 objectives
 mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {

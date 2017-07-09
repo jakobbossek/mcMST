@@ -64,5 +64,10 @@ print(res$pareto.front)
 print(tail(getStatistics(res$log)))
 }
 \seealso{
+Mutators \code{\link{mutSubgraphMST}} and \code{\link{mutEdgeExchange}}
+
 Other mcMST EMOAs: \code{\link{mcMSTEmoaZhou}}
+
+Other mcMST algorithms: \code{\link{mcMSTEmoaZhou}},
+  \code{\link{mcMSTPrim}}
 }

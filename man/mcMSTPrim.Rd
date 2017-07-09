@@ -35,3 +35,7 @@ for different weights.
 Note that this procedure can only find socalled supported efficient
 solutions, i.e., solutions on the convex hull of the Pareto-optimal front.
 }
+\seealso{
+Other mcMST algorithms: \code{\link{mcMSTEmoaBG}},
+  \code{\link{mcMSTEmoaZhou}}
+}

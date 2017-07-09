@@ -1,10 +1,10 @@
-# Store a mcMST instance as a bimatrix to a file.
-#
-# @param instance [mcMST]
-#   Problem instance.
-# @param file [character(1)]
-#   Path to file.
-# @return [invisible(logical(1))]
+#' Store an mcGP instance to file.
+#'
+#' @param instance [\code{mcGP}]\cr
+#'   Problem instance.
+#' @param file [\code{character(1)}]\cr
+#'   Path to file.
+#' @return [invisible(logical(1))]
 saveMCGP = function(instance, file) {
   assertCharacter(file)
 

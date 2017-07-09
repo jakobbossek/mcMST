@@ -28,8 +28,8 @@ Number of objectives of problem.}
 and \code{pareto.front} (matrix of corresponding weight vectors).
 }
 \description{
-Function which expects an problem instance of a combinatorial optimization
-problem (e.g., TSP), an multi-objective function and a solution enumerator, i.e., a function
+Function which expects a problem instance of a combinatorial optimization
+problem (e.g., TSP), a multi-objective function and a solution enumerator, i.e., a function
 which enumerates all possible solutions (e.g., all permutations in case of a
 TSP problem) and  determines both the Pareto front and Pareto set by
 exhaustive enumeration.

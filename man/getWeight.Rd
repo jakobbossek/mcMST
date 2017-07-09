@@ -2,7 +2,7 @@
 % Please edit documentation in R/getWeight.R
 \name{getWeight}
 \alias{getWeight}
-\title{Get the overall costs/weight of a suggraph given its edgelist.}
+\title{Get the overall costs/weight of a subgraph given its edgelist.}
 \usage{
 getWeight(graph, edgelist)
 }
@@ -17,5 +17,5 @@ Matrix of edges (each column is one edge).}
 [\code{numeric(2)}] Weight vector.
 }
 \description{
-Get the overall costs/weight of a suggraph given its edgelist.
+Get the overall costs/weight of a subgraph given its edgelist.
 }

@@ -1,8 +1,8 @@
 #' @title Generate a bare multi-objective graph.
 #'
 #' @description This function generates a bare multi-objective weights. The generated
-#' object does not contains nodes, edges / edge weights. It serves as a starting
-#' point for the step-by-step construction of multi-objective graph instances.
+#' object does not contain nodes, edges or edge weights. It serves as a starting
+#' point for the step-by-step construction of multi-objective graph problem.
 #'
 #' @param lower [\code{integer(1)}]\cr
 #'   Lower bounds for coordinates.
@@ -202,19 +202,19 @@ addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NUL
   return(graph)
 }
 
-#' @title Define edges in multi-objective graph.
-#'
-#' @description By default \code{\link{addWeights}} generates n(n-1)/2 weights, i.e.,
-#' the graph is assumed to be complete. This method allows to defne an adjacency
-#' matrix to make the graph more sparse.
-#'
-#' @note Minimal implementation. No support so far.
-#'
-#' @template arg_mcGP
-#' @param method [\code{function(...)}]\cr
-#'   Method applied to \code{graph} in order to determine which edges to keep.
-#' @family graph generators
-#' @template ret_mcGP
+# @title Define edges in multi-objective graph.
+#
+# @description By default \code{\link{addWeights}} generates n(n-1)/2 weights, i.e.,
+# the graph is assumed to be complete. This method allows to defne an adjacency
+# matrix to make the graph more sparse.
+#
+# @note Minimal implementation. No support so far.
+#
+# @template arg_mcGP
+# @param method [\code{function(...)}]\cr
+#   Method applied to \code{graph} in order to determine which edges to keep.
+# @family graph generators
+# @template ret_mcGP
 addEdges = function(graph, method = NULL) {
   assertClass(graph, "mcGP")
   assertFunction(method, null.ok = TRUE)

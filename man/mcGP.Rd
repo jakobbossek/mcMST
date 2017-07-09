@@ -18,11 +18,10 @@ Upper bounds for coordinates.}
 }
 \description{
 This function generates a bare multi-objective weights. The generated
-object does not contains nodes, edges / edge weights. It serves as a starting
-point for the step-by-step construction of multi-objective graph instances.
+object does not contain nodes, edges or edge weights. It serves as a starting
+point for the step-by-step construction of multi-objective graph problem.
 }
 \seealso{
 Other graph generators: \code{\link{addCenters}},
-  \code{\link{addCoordinates}}, \code{\link{addEdges}},
-  \code{\link{addWeights}}
+  \code{\link{addCoordinates}}, \code{\link{addWeights}}
 }

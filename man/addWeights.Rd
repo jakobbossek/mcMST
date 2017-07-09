@@ -46,6 +46,5 @@ Alternatively, all kinds of random weights can be generated.
 }
 \seealso{
 Other graph generators: \code{\link{addCenters}},
-  \code{\link{addCoordinates}}, \code{\link{addEdges}},
-  \code{\link{mcGP}}
+  \code{\link{addCoordinates}}, \code{\link{mcGP}}
 }
