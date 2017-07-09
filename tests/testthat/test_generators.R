@@ -18,7 +18,7 @@ test_that("graph generation: simple 2o graph", {
   expect_true(isSymmetricMatrix(g$weights[[2L]]))
   expect_output(print(g), regexp = "MULTI")
 
-  pls = plotGraph(g)
+  pls = plotGraph(g, shwo.cluster.centers = TRUE)
   expect_list(pls, types = "ggplot", len = 2L, any.missing = FALSE, all.missing = FALSE)
 })
 
