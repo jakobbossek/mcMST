@@ -18,7 +18,7 @@ test_that("graph generation: simple 2o graph", {
   expect_true(isSymmetricMatrix(g$weights[[2L]]))
   expect_output(print(g), regexp = "MULTI")
 
-  pls = plotGraph(g, shwo.cluster.centers = TRUE)
+  pls = plotGraph(g)
   expect_list(pls, types = "ggplot", len = 2L, any.missing = FALSE, all.missing = FALSE)
 })
 
@@ -29,10 +29,15 @@ test_that("graph generation: complex clustered graph", {
   g = addCoordinates(g, n = 22, by.centers = TRUE, generator = coordUniform, lower = c(0, 0), upper = c(1, 1))
   g = addCoordinates(g, n = 100L, generator = coordGrid)
   g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.3)
+  g = addWeights(g, method = "minkowski", p = 2.5, symmetric = FALSE)
+
+  # check plotting of cluster centers
+  pls = plotGraph(g, show.cluster.centers = TRUE)
+  expect_list(pls, types = "ggplot", len = 2L, any.missing = FALSE, all.missing = FALSE)
+
   g = addWeights(g, method = "random", weight.fun = function(n) {
     sample(c(1, -10), n, replace = TRUE) * rexp(n, rate = 0.1) * 1:n
   })
-  g = addWeights(g, method = "minkowski", p = 2.5, symmetric = FALSE)
 
   expect_class(g, "mcGP")
   expect_true(g$n.nodes == 152L)
