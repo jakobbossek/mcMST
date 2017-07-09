@@ -7,8 +7,9 @@
 # @return [\code{numeric(2)}]
 getReferencePoint = function(instance) {
   assertClass(instance, "mcGP")
-  w1.sorted = sort(as.numeric(instance$weights[[1L]]), decreasing = TRUE)
-  w2.sorted = sort(as.numeric(instance$weights[[2L]]), decreasing = TRUE)
   n = instance$n.nodes
-  c(sum(w1.sorted[1:n]), sum(w2.sorted[1:n]))
+
+  sapply(instance$weights, function(wmat) {
+    sum(sort(as.numeric(wmat), decreasing = TRUE)[1:n])
+  })
 }

@@ -50,9 +50,6 @@ multi-objective minimum spanning tree problem. The algorithm relies
 to mutation only to generate offspring employing the subgraph mutator
 (see \code{\link{mutSubgraphMST}}).
 }
-\note{
-This algorithm performs minimization in all objectives.
-}
 \examples{
 inst = genRandomMCGP(10)
 res = mcMSTEmoaBG(inst, mu = 20L, ref.point = c(1e5, 1e5), max.iter = 100L)

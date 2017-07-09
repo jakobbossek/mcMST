@@ -5,8 +5,6 @@
 #' to mutation only to generate offspring employing the subgraph mutator
 #' (see \code{\link{mutSubgraphMST}}).
 #'
-#' @note This algorithm performs minimization in all objectives.
-#'
 #' @param instance [\code{any}]\cr
 #'   Multi-objective graph problem.
 #' @param mu [\code{integer(1)}]\cr

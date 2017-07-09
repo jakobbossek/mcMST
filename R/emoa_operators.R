@@ -120,6 +120,8 @@ mutSubgraphMST = makeMutator(
   mutator = function(ind, sigma = floor(ncol(ind) / 2), instance = NULL) {
     requirePackages("vegan", why = "mcMST::mutSubgraphMST")
     m = ncol(ind)
+    n.objectives = instance$n.weights
+
     nsel = sample(3:sigma, 1L)
     #catf("Selecting connected subgraph with >= %i nodes.", nsel)
     # select random edge in tree as the starting point
@@ -146,15 +148,8 @@ mutSubgraphMST = makeMutator(
     # now extract subgraph and apply Prim
     sel.nodes = sort(sel.nodes)
     #catf("Finally extracted %i nodes %s", length(sel.nodes), collapse(sel.nodes))
-    obj = if (runif(1L) < 0.5) 1L else 2L
-    dd = if (obj == 1L) {
-      #catf("first obj.")
-      instance$weights[[1L]][sel.nodes, sel.nodes]
-    } else {
-      instance$weights[[2L]][sel.nodes, sel.nodes]
-    }
-    #catf("submatrix:")
-    #print(dd)
+    obj = sample(1:n.objectives, 1L)
+    dd = instance$weights[[obj]][sel.nodes, sel.nodes]
     # get result of PRIM
     mstres = vegan::spantree(d = dd)
 

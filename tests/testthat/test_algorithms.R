@@ -1,7 +1,18 @@
 context("Algorithms for the mcMST problem")
 
 test_that("BG EMOA works well", {
+  # bi-objective instance
   instance = genRandomMCGP(10L)
+
+  res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L)
+  expect_class(res, "ecr_result")
+
+  res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L,
+    mut = mutEdgeExchange)
+  expect_class(res, "ecr_result")
+
+  # now increase number of weights
+  instance = addWeights(instance, method = "random", weight.fun = rnorm, mean = 100, sd = 3)
 
   res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L)
   expect_class(res, "ecr_result")

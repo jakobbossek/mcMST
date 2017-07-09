@@ -9,14 +9,16 @@ getWeight = function(graph, edgelist) {
   assertMatrix(edgelist)
   m = ncol(edgelist)
 
+  n.weights = graph$n.weights
+
   # finally compute weights
-  weights1 = graph$weights[[1L]]
-  weights2 = graph$weights[[2L]]
-  w1 = w2 = 0
+  ws = numeric(n.weights)
+  #FIXME: inefficient
   for (i in seq_len(m)) {
-    w1 = w1 + weights1[edgelist[1L, i], edgelist[2L, i]]
-    w2 = w2 + weights2[edgelist[1L, i], edgelist[2L, i]]
+    for (j in seq_len(n.weights)) {
+      ws[j] = ws[j] + graph$weights[[j]][edgelist[1L, i], edgelist[2L, i]]
+    }
   }
 
-  return(c(w1, w2))
+  return(ws)
 }
