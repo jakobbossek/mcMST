@@ -24,7 +24,7 @@ print(g)
 Next, we apply the Genetic Algorithm proposed by Zhou & Gen with population size `mu = 10` and number of offspring `lambda = 10` for `max.iter = 100` generations.
 ```r
 library(ggplot2)
-res = mcMSTEmoaZhou(g, mu = 10L, lambda = 10L, max.iter = 1000L)
+res = mcMSTEmoaZhou(g, mu = 10L, lambda = 10L, max.iter = 100L)
 ecr::plotFront(res$pareto.front)
 ```
 
