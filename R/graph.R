@@ -38,8 +38,8 @@ mcGP = function(lower, upper) {
 print.mcGP = function(x, ...) {
   catf("MULTI-OBJECTIVE GRAPH PROBLEM")
   catf("Number of nodes: %i", x$n.nodes)
-  if (x$n.cluster > 0L)
-    catf("Number of clusters: %i", x$n.cluster)
+  if (x$n.clusters > 0L)
+    catf("Number of clusters: %i", x$n.clusters)
   n.weights = length(x$weights)
   catf("Weights per edge: %i (%s)", n.weights, BBmisc::collapse(x$weight.types))
 }
@@ -106,7 +106,7 @@ addCenters = function(graph, n.centers, generator, ...) {
   # generate cluster centers
   center.coordinates = generator(n.centers, lower = graph$lower, upper = graph$upper, ...)
   graph$center.coordinates = center.coordinates
-  graph$n.cluster = n.centers
+  graph$n.clusters = n.centers
   if (!("mcGP_clustered" %in% class(graph)))
     graph = addClasses(graph, "mcGP_clustered")
   return(graph)
@@ -163,7 +163,7 @@ addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NUL
   if (!by.centers) {
     coords = generator(n, lower = graph$lower, upper = graph$upper, ...)
   } else {
-    nc = graph$n.cluster
+    nc = graph$n.clusters
     if (length(n) == nc) {
       n.per.cluster2 = n
     } else {
