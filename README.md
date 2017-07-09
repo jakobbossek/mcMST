@@ -21,10 +21,10 @@ g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.5)
 print(g)
 ```
 
-Next, we apply the Genetic Algorithm proposed by Zhou & Gen with population size `mu = 10`, number of offspring `lambda = 10` for `max.iter = 100` generations. Additionally, a reference point `ref.point` is used for tracking the dominated hypervolume.
+Next, we apply the Genetic Algorithm proposed by Zhou & Gen with population size `mu = 10`, number of offspring `lambda = 10` for `max.iter = 100` generations.
 ```r
 library(ggplot2)
-res = emoaMST_Zhou(g, mu = 10L, lambda = 10L, max.iter = 100L, ref.point = c(1000, 1000))
+res = mcMSTEmoaZhou(g, mu = 10L, lambda = 10L, max.iter = 1000L)
 ecr::plotFront(res$pareto.front)
 ```
 

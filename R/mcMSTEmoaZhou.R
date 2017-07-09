@@ -23,7 +23,7 @@ mcMSTEmoaZhou = function(instance, n.objectives = 2L,
   mu, lambda = mu,
   mut = mutUniform2,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
-  ref.point, max.iter = 100L) {
+  ref.point = NULL, max.iter = 100L) {
 
   force(instance)
 
@@ -31,6 +31,9 @@ mcMSTEmoaZhou = function(instance, n.objectives = 2L,
     edgelist = prueferToEdgeList(pcode)
     getWeight(instance, edgelist)
   }
+
+  if (is.null(ref.point))
+    ref.point = getReferencePoint(instance)
 
   # get number of nodes
   n = instance$n.nodes

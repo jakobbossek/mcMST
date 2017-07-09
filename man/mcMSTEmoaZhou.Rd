@@ -6,7 +6,7 @@
 \usage{
 mcMSTEmoaZhou(instance, n.objectives = 2L, mu, lambda = mu,
   mut = mutUniform2, selMating = ecr::selSimple,
-  selSurvival = ecr::selNondom, ref.point, max.iter = 100L)
+  selSurvival = ecr::selNondom, ref.point = NULL, max.iter = 100L)
 }
 \arguments{
 \item{instance}{[\code{any}]\cr
@@ -35,8 +35,12 @@ Default is \code{\link[ecr]{selSimple}}.}
 Survival selector.
 Default is \code{link[ecr]{selNondom}}.}
 
-\item{ref.point}{[\code{numeric(n.objectives)}]\cr
-Reference point for Hypervolume computation.}
+\item{ref.point}{[\code{numeric(n.objectives) | NULL}]\cr
+Reference point for Hypervolume computation.
+If \code{NULL} the sum of the \eqn{n} largest edges in each objective
+is taken where \eqn{n} is the number of nodes of \code{instance}.
+This is an upper bound for the size of each spanning tree
+with \eqn{(n-1)} edges.}
 
 \item{max.iter}{[\code{integer(1)}]\cr
 Maximal number of iterations.

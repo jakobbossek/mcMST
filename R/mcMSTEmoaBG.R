@@ -25,8 +25,12 @@
 #' @param selSurvival [\code{ecr_selector}]\cr
 #'   Survival selector.
 #'   Default is \code{link[ecr]{selNondom}}.
-#' @param ref.point [\code{numeric(n.objectives)}]\cr
+#' @param ref.point [\code{numeric(n.objectives) | NULL}]\cr
 #'   Reference point for Hypervolume computation.
+#'   If \code{NULL} the sum of the \eqn{n} largest edges in each objective
+#'   is taken where \eqn{n} is the number of nodes of \code{instance}.
+#'   This is an upper bound for the size of each spanning tree
+#'   with \eqn{(n-1)} edges.
 #' @param max.iter [\code{integer(1)}]\cr
 #'   Maximal number of iterations.
 #'   Default is \code{100}.
@@ -42,7 +46,7 @@ mcMSTEmoaBG = function(instance, n.objectives = 2L,
   mu, lambda = mu,
   mut = NULL,
   selMating = NULL, selSurvival = ecr::selNondom,
-  ref.point,
+  ref.point = NULL,
   max.iter = 100L) {
 
   # get number of nodes
@@ -53,6 +57,9 @@ mcMSTEmoaBG = function(instance, n.objectives = 2L,
   # default is our subgraph mutator
   if (is.null(mut))
     mut = setup(mutSubgraphMST, instance = instance)
+
+  if (is.null(ref.point))
+    ref.point = getReferencePoint(instance)
 
   fitness.fun = function(edgelist, instance) {
     getWeight(instance, edgelist)
