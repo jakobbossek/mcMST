@@ -215,14 +215,14 @@ addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NUL
 #   Method applied to \code{graph} in order to determine which edges to keep.
 # @family graph generators
 # @template ret_mcGP
-addEdges = function(graph, method = NULL) {
+addEdges = function(graph, method = NULL) { # nocov start
   assertClass(graph, "mcGP")
   assertFunction(method, null.ok = TRUE)
   adj.mat = matrix(1L, ncol = graph$n.nodes, nrow = graph$n.nodes)
   diag(adj.mat) = 0
   graph$adj.mat = adj.mat
   return(graph)
-}
+} # nocov end
 
 # edgesGrid = function(coordinates) {
 

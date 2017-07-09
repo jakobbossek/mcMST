@@ -26,6 +26,7 @@ test_that("graph generation: complex clustered graph", {
   g = mcGP(lower = 0, upper = 100)
   g = addCenters(g, n.centers = 3L, generator = coordLHS)
   g = addCoordinates(g, n = c(5L, 10L, 15), by.centers = TRUE, generator = coordUniform, lower = c(0, 0), upper = c(1, 1))
+  g = addCoordinates(g, n = 22, by.centers = TRUE, generator = coordUniform, lower = c(0, 0), upper = c(1, 1))
   g = addCoordinates(g, n = 100L, generator = coordGrid)
   g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.3)
   g = addWeights(g, method = "random", weight.fun = function(n) {
@@ -34,7 +35,7 @@ test_that("graph generation: complex clustered graph", {
   g = addWeights(g, method = "minkowski", p = 2.5, symmetric = FALSE)
 
   expect_class(g, "mcGP")
-  expect_true(g$n.nodes == 130L)
+  expect_true(g$n.nodes == 152L)
   expect_true(g$n.cluster == 3L)
   expect_true(g$n.weights == 3L)
   expect_list(g$weights, types = "matrix", any.missing = FALSE, all.missing = FALSE, len = g$n.weights)
@@ -44,6 +45,8 @@ test_that("graph generation: complex clustered graph", {
 
   expect_error(plotGraph(g), regexpr = "not supported")
 })
+
+
 
 test_that("graph generation: check correct error messages", {
   expect_error(mcGP(lower = 10, upper = 5))
