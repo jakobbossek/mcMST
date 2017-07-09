@@ -20,7 +20,7 @@ plotGraph = function(graph, show.cluster.centers = TRUE, ...) {
 
   pl.coords = NULL
   n.nodes = graph$n.nodes
-  n.clusters = graph$n.cluster
+  n.clusters = graph$n.clusters
   n.weights = graph$n.weights
   if (n.weights > 2L)
     stopf("autoplot.mcGP: More than 2 weights are currently not supported.")
@@ -34,7 +34,6 @@ plotGraph = function(graph, show.cluster.centers = TRUE, ...) {
     if (n.clusters > 0L & show.cluster.centers) {
       ddc = as.data.frame(graph$center.coordinates)
       names(ddc) = c("x1", "x2")
-      print(ddc)
       pl.coords = pl.coords + geom_point(data = ddc, colour = "black", size = 3)
       pl.coords = pl.coords + geom_point(data = ddc, colour = "white", size = 2.2)
     }
