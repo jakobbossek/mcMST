@@ -279,10 +279,10 @@ addWeights = function(graph, method = "euclidean", weight.fun = NULL, n = NULL, 
     ww = as.matrix(dist(graph$coordinates, method = method, ...))
     # if not all edges exist, set the remaining to infinifty
     # but keep zero distances on the diagonal
-    if (!is.null(graph$adj.mat)) {
+    if (!is.null(graph$adj.mat)) { # nocov start
       ww[graph$adj.mat == 0] = Inf
       diag(ww) = 0
-    }
+    } # nocov end
   } else {
     if (is.null(weight.fun))
       stopf("You need to pass a weight fun.")
