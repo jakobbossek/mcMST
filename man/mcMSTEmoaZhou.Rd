@@ -4,16 +4,13 @@
 \alias{mcMSTEmoaZhou}
 \title{Pruefer-EMOA for the multi-objective MST problem.}
 \usage{
-mcMSTEmoaZhou(instance, n.objectives = 2L, mu, lambda = mu,
-  mut = mutUniform2, selMating = ecr::selSimple,
-  selSurvival = ecr::selNondom, ref.point = NULL, max.iter = 100L)
+mcMSTEmoaZhou(instance, mu, lambda = mu, mut = mutUniform2,
+  selMating = ecr::selSimple, selSurvival = ecr::selNondom,
+  ref.point = NULL, max.iter = 100L)
 }
 \arguments{
 \item{instance}{[\code{any}]\cr
 Multi-objective graph problem.}
-
-\item{n.objectives}{[\code{integer(1)}]\cr
-Number of objectives.}
 
 \item{mu}{[\code{integer(1)}]\cr
 Population size.}

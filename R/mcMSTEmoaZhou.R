@@ -20,7 +20,7 @@
 #' @family mcMST EMOAs
 #' @family mcMST algorithms
 #' @export
-mcMSTEmoaZhou = function(instance, n.objectives = 2L,
+mcMSTEmoaZhou = function(instance,
   mu, lambda = mu,
   mut = mutUniform2,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
@@ -38,6 +38,7 @@ mcMSTEmoaZhou = function(instance, n.objectives = 2L,
 
   # get number of nodes
   n = instance$n.nodes
+  n.objectives = instance$n.weights
 
   # now generate an initial population of Pruefer-numbers/codes
   population = lapply(1:mu, function(i) {

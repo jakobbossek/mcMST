@@ -4,16 +4,12 @@
 \alias{mcMSTEmoaBG}
 \title{Subgraph EMOA for the multi-criteria MST problem.}
 \usage{
-mcMSTEmoaBG(instance, n.objectives = 2L, mu, lambda = mu, mut = NULL,
-  selMating = NULL, selSurvival = ecr::selNondom, ref.point = NULL,
-  max.iter = 100L)
+mcMSTEmoaBG(instance, mu, lambda = mu, mut = NULL, selMating = NULL,
+  selSurvival = ecr::selNondom, ref.point = NULL, max.iter = 100L)
 }
 \arguments{
 \item{instance}{[\code{any}]\cr
 Multi-objective graph problem.}
-
-\item{n.objectives}{[\code{integer(1)}]\cr
-Number of objectives.}
 
 \item{mu}{[\code{integer(1)}]\cr
 Population size.}

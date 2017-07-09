@@ -9,8 +9,6 @@
 #'
 #' @param instance [\code{any}]\cr
 #'   Multi-objective graph problem.
-#' @param n.objectives [\code{integer(1)}]\cr
-#'   Number of objectives.
 #' @param mu [\code{integer(1)}]\cr
 #'   Population size.
 #' @param lambda [\code{integer(1)}]\cr
@@ -44,7 +42,7 @@
 #' @family mcMST algorithms
 #' @seealso Mutators \code{\link{mutSubgraphMST}} and \code{\link{mutEdgeExchange}}
 #' @export
-mcMSTEmoaBG = function(instance, n.objectives = 2L,
+mcMSTEmoaBG = function(instance,
   mu, lambda = mu,
   mut = NULL,
   selMating = NULL, selSurvival = ecr::selNondom,
@@ -53,6 +51,7 @@ mcMSTEmoaBG = function(instance, n.objectives = 2L,
 
   # get number of nodes
   n = instance$n.nodes
+  n.objectives = instance$n.weights
 
   force(instance)
 
