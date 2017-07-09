@@ -28,7 +28,7 @@ mcMSTEmoaZhou = function(instance, n.objectives = 2L,
   force(instance)
 
   fitness.fun = function(pcode, instance) {
-    edgelist = prueferToEdgelist(pcode)
+    edgelist = prueferToEdgeList(pcode)
     getWeight(instance, edgelist)
   }
 

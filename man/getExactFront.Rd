@@ -44,7 +44,7 @@ it is limited to small input size due to combinatorial explosion.
 # we use the Pruefer-code enumerator. Thus, we need to define an objective
 # function, which is able to handle this type of endcoding
 objfunMCMST = function(pcode, instance) {
-  getWeight(instance, prueferToEdgelist(pcode))
+  getWeight(instance, prueferToEdgeList(pcode))
 }
 
 # next we generate a random bi-objective graph

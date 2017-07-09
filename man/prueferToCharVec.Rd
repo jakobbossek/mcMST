@@ -20,5 +20,5 @@ Convert Pruefer code to characteristic vector.
 Other transformation functions: \code{\link{edgeListToCharVec}},
   \code{\link{permutationToCharVec}},
   \code{\link{permutationToEdgelist}},
-  \code{\link{prueferToEdgelist}}
+  \code{\link{prueferToEdgeList}}
 }

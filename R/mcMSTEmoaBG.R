@@ -62,7 +62,7 @@ mcMSTEmoaBG = function(instance, n.objectives = 2L,
   # a list of edge lists
   population = lapply(1:mu, function(i) {
     pcode = sample(1:n, n - 2L, replace = TRUE)
-    prueferToEdgelist(pcode)
+    prueferToEdgeList(pcode)
   })
 
   res = ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,

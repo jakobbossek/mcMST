@@ -23,5 +23,5 @@ Convert edge list to characteristic vector.
 Other transformation functions: \code{\link{permutationToCharVec}},
   \code{\link{permutationToEdgelist}},
   \code{\link{prueferToCharVec}},
-  \code{\link{prueferToEdgelist}}
+  \code{\link{prueferToEdgeList}}
 }

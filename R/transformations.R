@@ -4,7 +4,7 @@
 #' @return [\code{matrix(2, length(pcode) + 1)}] Edge list.
 #' @family transformation functions
 #' @export
-prueferToEdgelist = function(pcode) {
+prueferToEdgeList = function(pcode) {
   n = length(pcode) + 2L
   # n = instance$n
   # if (length(pcode) != (n - 2))
@@ -88,7 +88,7 @@ edgeListToCharVec = function(edgelist, n = NULL) {
 #' @family transformation functions
 #' @export
 prueferToCharVec = function(pcode) {
-  edgeListToCharVec(prueferToEdgelist(pcode))
+  edgeListToCharVec(prueferToEdgeList(pcode))
 }
 
 #' Convert permutation to edge list.

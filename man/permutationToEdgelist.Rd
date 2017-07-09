@@ -20,5 +20,5 @@ Convert permutation to edge list.
 Other transformation functions: \code{\link{edgeListToCharVec}},
   \code{\link{permutationToCharVec}},
   \code{\link{prueferToCharVec}},
-  \code{\link{prueferToEdgelist}}
+  \code{\link{prueferToEdgeList}}
 }
