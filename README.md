@@ -6,7 +6,6 @@
 [![Build Status](https://travis-ci.org/jakobbossek/mcMST.svg?branch=master)](https://travis-ci.org/jakobbossek/mcMST)
 [![Build status](https://ci.appveyor.com/api/projects/status/eu0nns2dsgocwntw/branch/master?svg=true)](https://ci.appveyor.com/project/jakobbossek/mcMST/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/jakobbossek/mcMST/badge.svg?branch=master)](https://coveralls.io/github/jakobbossek/mcMST?branch=master)
-[![Research software impact](http://depsy.org/api/package/cran/mcMST/badge.svg)](http://depsy.org/package/r/mcMST)
 
 The **mcMST** package for the statistical programming language [R](https://www.r-project.org) contains methods for benchmark instance generation of multi-objective graph problems and methods for solving the multi-criteria Spanning Tree problem (mcMST).
 
