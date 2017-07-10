@@ -278,6 +278,11 @@ addEdges = function(graph, method = NULL) { # nocov start
 #'   The latter generates (random) weights utilizing \code{weight.fun}. The remaining
 #'   options are passed down to \code{\link[stats]{dist}}, i.e., weights are generated
 #'   as distances between the node coordinates.
+#' @param weights [\code{matrix}]\cr
+#'   Square matrix of weights.
+#'   If some weights are already assigned, pay attention to the correct dimensions.
+#'   If this is passed all other arguments are ignored.
+#'   Default is \code{NULL}.
 #' @param weight.fun [\code{function(m, ...) | NULL}]\cr
 #'   Function used to generate weights. The first arument needs to be number of weights
 #'   to generate.
@@ -294,22 +299,30 @@ addEdges = function(graph, method = NULL) { # nocov start
 #' @template ret_mcGP
 #' @family graph generators
 #' @export
-addWeights = function(graph, method = "euclidean", weight.fun = NULL, n = NULL, symmetric = TRUE, ...) {
+addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = NULL, n = NULL, symmetric = TRUE, ...) {
   assertClass(graph, "mcGP")
   assertChoice(method, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski", "random"))
 
   n.nodes = graph$n.nodes
   # check if graph has coordinates or weights already
   if (n.nodes == 0L) {
-    n.nodes = n
+    if (!is.null(weights))
+      n.nodes = ncol(weights)
+    else
+      n.nodes = n
     if (is.null(n.nodes))
       stopf("addWeights: number of nodes unknown. Please pass parameter 'n'.")
   }
 
+  if (!is.null(weights))
+    assertMatrix(weights, nrows = n.nodes, ncols = n.nodes, mode = "numeric")
+
   ws = graph$weights
   n.weights = if (is.null(ws)) 0L else length(ws)
 
-  if (method != "random") {
+  if (!is.null(weights)) {
+    ww = weights
+  } else if (method != "random") {
     if (is.null(graph$coordinates))
       stopf("Method '%s' needs coordinates.", method)
     ww = as.matrix(dist(graph$coordinates, method = method, ...))
@@ -326,10 +339,10 @@ addWeights = function(graph, method = "euclidean", weight.fun = NULL, n = NULL, 
     # always generate n^2 weights
     m = n.nodes * n.nodes
 
-    weights = weight.fun(m, ...)
+    ww = weight.fun(m, ...)
 
     #if (!is.null(adj.mat)) {
-    ww = matrix(weights, ncol = n.nodes, nrow = n.nodes)
+    ww = matrix(ww, ncol = n.nodes, nrow = n.nodes)
     diag(ww) = .0
     if (symmetric) {
       ww[lower.tri(ww)] = t(ww)[lower.tri(t(ww))]
@@ -339,10 +352,11 @@ addWeights = function(graph, method = "euclidean", weight.fun = NULL, n = NULL, 
       ww[graph$adj.mat == 0] = Inf #FIXME: numeric infinity value
   }
   graph$weights[[n.weights + 1L]] = ww
-  graph$weight.types = c(graph$weight.types, ifelse(method != "random", "distance", "random"))
+  wtype = if (!is.null(weights)) "manual" else ifelse(method != "random", "distance", "random")
+  graph$weight.types = c(graph$weight.types, wtype)
   graph$n.weights = graph$n.weights + 1L
 
   if (graph$n.nodes == 0L)
-    graph$n.nodes = graph$n.nodes + n
+    graph$n.nodes = graph$n.nodes + n.nodes
   return(graph)
 }

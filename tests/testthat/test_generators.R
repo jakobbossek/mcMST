@@ -57,7 +57,20 @@ test_that("graph generation: manual passing of coordinates weights works", {
   g = addCenters(g, center.coordinates = center.coordinates)
   expect_equal(center.coordinates, g$center.coordinates)
   expect_true(g$n.clusters == nrow(center.coordinates))
+  weights = diag(10)
+  g = addWeights(g, weights = weights)
+  g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.3)
+  weights[1, 4] = 4
+  g = addWeights(g, weights = weights)
 
+  expect_class(g, "mcGP")
+  expect_true(g$n.nodes == 10L)
+  expect_true(g$n.clusters == 3L)
+  expect_true(g$n.weights == 3L)
+  expect_list(g$weights, types = "matrix", any.missing = FALSE, all.missing = FALSE, len = g$n.weights)
+  expect_true(isSymmetricMatrix(g$weights[[1L]]))
+  expect_true(isSymmetricMatrix(g$weights[[2L]]))
+  expect_false(isSymmetricMatrix(g$weights[[3L]]))
 })
 
 

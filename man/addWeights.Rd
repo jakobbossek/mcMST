@@ -4,8 +4,8 @@
 \alias{addWeights}
 \title{Add weights to a multi-objective graph.}
 \usage{
-addWeights(graph, method = "euclidean", weight.fun = NULL, n = NULL,
-  symmetric = TRUE, ...)
+addWeights(graph, method = "euclidean", weights = NULL, weight.fun = NULL,
+  n = NULL, symmetric = TRUE, ...)
 }
 \arguments{
 \item{graph}{[\code{mcGP}]\cr
@@ -17,6 +17,12 @@ Method used to generate weights. Possible values are \dQuote{euclidean}, \dQuote
 The latter generates (random) weights utilizing \code{weight.fun}. The remaining
 options are passed down to \code{\link[stats]{dist}}, i.e., weights are generated
 as distances between the node coordinates.}
+
+\item{weights}{[\code{matrix}]\cr
+Square matrix of weights.
+If some weights are already assigned, pay attention to the correct dimensions.
+If this is passed all other arguments are ignored.
+Default is \code{NULL}.}
 
 \item{weight.fun}{[\code{function(m, ...) | NULL}]\cr
 Function used to generate weights. The first arument needs to be number of weights
