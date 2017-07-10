@@ -16,4 +16,36 @@ knitr::opts_chunk$set(collapse = T, comment = "#>")
 options(tibble.print_min = 4L, tibble.print_max = 4L)
 ```
 
-# To be continued ...
+# Quickstart
+
+The **mcMST** package for the statistical programming language [R](https://www.r-project.org) contains methods for benchmark instance generation of multi-objective graph problems and methods for solving the multi-criteria spanning tree problem (mcMST).
+
+## Generating a benchmark instance
+
+Here we first generate a bi-criteria graph problem with n = 25 nodes. The first objective is the euclidean distance of node coordinates in [0, 10] x [0, 10] in the euclidean plane. The second objective follows a normal distribution with mean 5 and standard deviation 1.5. The instance generation process is modular and thus highly flexible (see the vignette on graph generation for details).
+```{r, fig.width=6, out.width='100%', fig.cap='Plot of our bi-objective sample graph.'}
+library(mcMST)
+library(gridExtra)
+set.seed(1) # reproducability
+g = mcGP(lower = 0, upper = 10)
+g = addCoordinates(g, n = 25, generator = coordUniform)
+g = addWeights(g, method = "euclidean")
+g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.5)
+print(g)
+plots = plotGraph(g)
+plots$nrow = 1
+do.call(grid.arrange, plots)
+```
+
+## Running an algorithm
+
+Next, we apply a (10 + 10) genetic algorithm based on the Pruefer-number encoding as proposed by Zhou & Gen to approximate the Pareto-front for `max.iter = 100` generations.
+```{r}
+g = mcGP(lower = 0, upper = 10)
+g = addCoordinates(g, n = 25, generator = coordUniform)
+g = addWeights(g, method = "euclidean")
+g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.5)
+res = mcMSTEmoaZhou(g, mu = 10L, lambda = 10L, max.iter = 100L)
+print(res$pareto.front)
+ecr::plotFront(res$pareto.front)
+```
