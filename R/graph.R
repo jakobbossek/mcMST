@@ -109,6 +109,10 @@ coordGrid = function(n, lower, upper) {
 #' @template arg_mcGP
 #' @param n.centers [\code{integer(1)}]\cr
 #'   Number of cluster centers.
+#' @param center.coordinates [\code{matrix(n, 2)}]\cr
+#'   Matrix of center coordinates (each row is one point).
+#'   Default is \code{NULL}. If this is set, \code{n.centers} and \code{generator}
+#'   are ignored.
 #' @param generator [\code{function(n, ...)}]\cr
 #'   Function used to generate cluster centers. The generator needs to expect the number
 #'   of points to generate as the first argument \code{n}. Additional control argument are
@@ -118,22 +122,27 @@ coordGrid = function(n, lower, upper) {
 #' @template ret_mcGP
 #' @family graph generators
 #' @export
-addCenters = function(graph, n.centers, generator, ...) {
+addCenters = function(graph, n.centers = NULL, center.coordinates = NULL, generator = NULL, ...) {
   # sanity checks
   assertClass(graph, "mcGP")
-  n.centers = asInt(n.centers, lower = 2L)
-  assertFunction(generator)
+  if (!is.null(n.centers))
+    n.centers = asInt(n.centers, lower = 2L)
+  assertFunction(generator, null.ok = TRUE)
 
   # more sanity checks
   if (!is.null(graph$coordinates))
     stopf("Graph already has coordinates! Place centers before coordinates.")
   if (!is.null(graph$center.coordinates))
     stopf("Cluster centers already placed.")
+  if (is.null(n.centers) & is.null(center.coordinates))
+    stopf("At least one of n.centers and center.coordinates must not be NULL.")
+
+  if (is.null(center.coordinates))
+    center.coordinates = generator(n.centers, lower = graph$lower, upper = graph$upper, ...)
 
   # generate cluster centers
-  center.coordinates = generator(n.centers, lower = graph$lower, upper = graph$upper, ...)
   graph$center.coordinates = center.coordinates
-  graph$n.clusters = n.centers
+  graph$n.clusters = nrow(center.coordinates)
   if (!("mcGP_clustered" %in% class(graph)))
     graph = addClasses(graph, "mcGP_clustered")
   return(graph)

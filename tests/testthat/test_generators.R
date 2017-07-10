@@ -11,7 +11,7 @@ test_that("graph generation: simple 2o graph", {
 
   expect_class(g, "mcGP")
   expect_true(g$n.nodes == 50L)
-  expect_true(g$n.cluster == 0L)
+  expect_true(g$n.clusters == 0L)
   expect_true(g$n.weights == 2L)
   expect_set_equal(g$weight.types, c("distance", "random"))
   expect_true(isSymmetricMatrix(g$weights[[1L]]))
@@ -41,7 +41,7 @@ test_that("graph generation: complex clustered graph", {
 
   expect_class(g, "mcGP")
   expect_true(g$n.nodes == 152L)
-  expect_true(g$n.cluster == 3L)
+  expect_true(g$n.clusters == 3L)
   expect_true(g$n.weights == 3L)
   expect_list(g$weights, types = "matrix", any.missing = FALSE, all.missing = FALSE, len = g$n.weights)
   expect_true(isSymmetricMatrix(g$weights[[1L]]))
@@ -51,6 +51,14 @@ test_that("graph generation: complex clustered graph", {
   expect_error(plotGraph(g), regexpr = "not supported")
 })
 
+test_that("graph generation: manual passing of coordinates weights works", {
+  g = mcGP(lower = 0, upper = 10)
+  center.coordinates = matrix(c(1, 2, 2, 5, 8, 3), byrow = TRUE, ncol = 2L)
+  g = addCenters(g, center.coordinates = center.coordinates)
+  expect_equal(center.coordinates, g$center.coordinates)
+  expect_true(g$n.clusters == nrow(center.coordinates))
+
+})
 
 
 test_that("graph generation: check correct error messages", {

@@ -4,7 +4,8 @@
 \alias{addCenters}
 \title{Add cluster centers to graph.}
 \usage{
-addCenters(graph, n.centers, generator, ...)
+addCenters(graph, n.centers = NULL, center.coordinates = NULL,
+  generator = NULL, ...)
 }
 \arguments{
 \item{graph}{[\code{mcGP}]\cr
@@ -12,6 +13,11 @@ Multi-objective graph problem.}
 
 \item{n.centers}{[\code{integer(1)}]\cr
 Number of cluster centers.}
+
+\item{center.coordinates}{[\code{matrix(n, 2)}]\cr
+Matrix of center coordinates (each row is one point).
+Default is \code{NULL}. If this is set, \code{n.centers} and \code{generator}
+are ignored.}
 
 \item{generator}{[\code{function(n, ...)}]\cr
 Function used to generate cluster centers. The generator needs to expect the number

@@ -16,14 +16,17 @@
 #' nodes). The latter is \code{NULL}, if \code{graph} has no associated coordinates.
 #' @export
 plotGraph = function(graph, show.cluster.centers = TRUE, ...) {
+  assertClass(graph, "mcGP")
   assertFlag(show.cluster.centers)
+
+  requirePackages("ggplot2", why = "mcMST::plotGraph")
 
   pl.coords = NULL
   n.nodes = graph$n.nodes
   n.clusters = graph$n.clusters
   n.weights = graph$n.weights
   if (n.weights > 2L)
-    stopf("autoplot.mcGP: More than 2 weights are currently not supported.")
+    stopf("plotGraph: More than 2 weights are currently not supported.")
   if (!is.null(graph$coordinates)) {
     dd = as.data.frame(graph$coordinates)
     names(dd) = c("x1", "x2")
@@ -39,8 +42,6 @@ plotGraph = function(graph, show.cluster.centers = TRUE, ...) {
     }
     pl.coords = pl.coords + ggtitle("Node coordinates", subtitle = sprintf("#nodes: %i, #clusters: %i", n.nodes, n.clusters))
     pl.coords = pl.coords + xlab(expression(x[1])) + ylab(expression(x[2]))
-
-    print(pl.coords)
   }
   weights1 = graph$weights[[1L]]
   weights2 = graph$weights[[2L]]
