@@ -44,6 +44,29 @@ print.mcGP = function(x, ...) {
   catf("Weights per edge: %i (%s)", n.weights, BBmisc::collapse(x$weight.types))
 }
 
+#' @title Coordinate generators.
+#'
+#' @description Functions for the placement of node coordinates in the
+#' euclidean plane. Function \code{coordLHS} generates a space-filling
+#' latin hypercube sample, \code{coordUniform} samples points from a
+#' bivariate uniform distribution and \code{coordGrid} generates a regular
+#' grid of points.
+#'
+#' @param n [\code{integer(1)}]\cr
+#'   Number of points to generate.
+#' @param lower [\code{numeric(2)}]\cr
+#'   Minimal values for the first and second coordinates respectively.
+#'   Default is 0.
+#' @param upper [\code{numeric(2)}]\cr
+#'   Maximal values for the first and second coordinates respectively.
+#'   Default is 1.
+#' @param method [\code{function}]\cr
+#'   Function from package \pkg{lhs}.
+#'   Default is \code{\link[lhs]{maximinLHS}}.
+#' @return [\code{matrix(n, 2)}] Matrix of node coordinates.
+#' @rdname coordGenerators
+#' @name coordGenerators
+#' @export
 coordLHS = function(n, lower = 0, upper = 1, method = NULL) {
   if (is.null(method)) {
     requirePackages("lhs", why = "mcMST::coordLHS", default.method = "load")
@@ -56,6 +79,8 @@ coordLHS = function(n, lower = 0, upper = 1, method = NULL) {
   return(coords)
 }
 
+#' @export
+#' @rdname coordGenerators
 coordUniform = function(n, lower, upper) {
   coords = lapply(seq_len(2L), function(i) {
     runif(n, min = lower[i], max = upper[i])
@@ -64,6 +89,8 @@ coordUniform = function(n, lower, upper) {
   return(coords)
 }
 
+#' @export
+#' @rdname coordGenerators
 coordGrid = function(n, lower, upper) {
   m = sqrt(n)
   x1 = seq(lower[1], upper[2], length.out = m)
