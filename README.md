@@ -7,7 +7,15 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/eu0nns2dsgocwntw/branch/master?svg=true)](https://ci.appveyor.com/project/jakobbossek/mcMST/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/jakobbossek/mcMST/badge.svg?branch=master)](https://coveralls.io/github/jakobbossek/mcMST?branch=master)
 
-The **mcMST** package for the statistical programming language [R](https://www.r-project.org) contains methods for benchmark instance generation of multi-objective graph problems and methods for solving the multi-criteria spanning tree problem (mcMST).
+## Brief introduction
+
+It is well known, that the single-objective spanning tree problem (MST) is solvable in polynomial time, e.g., by the algorithm of Prim. However, in real-world applications, e.g., in network design, often multiple conflicting objectives have to be considered simultaneously. The multi-criteria version of the MST is NP-hard. The **mcMST** package for the statistical programming language [R](https://www.r-project.org) contains methods for benchmark instance generation of multi-objective graph problems and methods for solving the multi-criteria spanning tree problem (mcMST).
+
+Key features of the **mcMST** package are:
+
+* A multi-objective version of Prim's algorithm.
+* Two evolutionary multi-objective algorothms (one based on the Prüfer-encoding and another based on a direct edge list representation).
+* A modular approach for benchmark problem generation. 
 
 ## Example
 
