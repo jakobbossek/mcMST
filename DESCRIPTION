@@ -1,9 +1,9 @@
 Package: mcMST
-Title: Multi-Objective Combinatorial Optimization
-Description: Evolutionary methods to solve the multi-objective spanning-tree-problem and the multi-objective Travelling-salesperson problem.
+Title: A Toolbox for the Multi-Criteria Minimum Spanning Tree Problem
+Description: The package provides algorithms to approximate the Pareto-front of multi-criteria minimum spanning tree problems. Additionally, a modular toolbox for the generation of multi-objective benchmark graph problems is included.
 Version: 1.0.0
 Encoding: UTF-8
-Date: 2017-07-04
+Date: 2017-07-11
 Authors@R: c(person("Jakob", "Bossek", email = "j.bossek@gmail.com", role =
     c("aut", "cre")))
 Maintainer: Jakob Bossek <j.bossek@gmail.com>
