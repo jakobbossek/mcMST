@@ -19,7 +19,7 @@ Key features of the **mcMST** package are:
 
 ## Example
 
-Here we first generate a bi-criteria graph problem with n = 25 nodes. The first objective is the euclidean distance of node coordinates in [0, 10] x [0, 10] in the euclidean plane. The second objective follows a normal distribution (N(5, 1.5)). The instance generation process is modular and thus highly flexible.
+Here we first generate a bi-criteria graph problem with n = 25 nodes. The first objective is the euclidean distance of node coordinates in the euclidean plane [0, 10] x [0, 10]. The second objective follows a normal distribution (N(5, 1.5)). 
 ```r
 set.seed(1)
 g = mcGP(lower = 0, upper = 10)
@@ -35,6 +35,7 @@ library(ggplot2)
 res = mcMSTEmoaZhou(g, mu = 10L, lambda = 10L, max.iter = 100L)
 ecr::plotFront(res$pareto.front)
 ```
+See the package vignettes for more details.
 
 ## Installation Instructions
 
