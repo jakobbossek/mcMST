@@ -19,15 +19,17 @@
 #'   Vector of weights. This is an alternative to \code{n.lambdas}.
 #' @return [\code{list}] List with component \code{pareto.front}.
 #' g = genRandomMCGP(30)
-#' res = mcMSTScalar(30, n.lambdas = 50)
+#' res = mcMSTPrim(30, n.lambdas = 50)
 #' print(res$pareto.front)
 #' @family mcMST algorithms
 #' @export
 #FIXME: generalize to > 2 objectives
 mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
   assertClass(instance, "mcGP")
+  if (instance$n.weights != 2L)
+    stopf("mcMSTPrim: At the moment only bi-objective problems supported.")
   if (is.null(n.lambdas) & is.null(lambdas))
-    stopf("mcMSTScalar: At least n.lambdas or lambdas must be set.")
+    stopf("mcMSTPrim: At least n.lambdas or lambdas must be set.")
   if (is.null(lambdas) & !is.null(n.lambdas)) {
     n.lambdas = asInt(n.lambdas)
     lambdas = seq(0, 1, length.out = n.lambdas)
