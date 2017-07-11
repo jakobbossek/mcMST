@@ -12,7 +12,7 @@ vignette: >
 ---
 
 ```{r, echo = FALSE}
-knitr::opts_chunk$set(collapse = T, comment = "#>", message = FALSE)
+knitr::opts_chunk$set(collapse = T, comment = "#>", warning = FALSE, message = FALSE)
 options(tibble.print_min = 4L, tibble.print_max = 4L)
 ```
 
@@ -32,7 +32,7 @@ library(mcMST)
 g = mcGP(lower = 0, upper = 1)
 g = addWeights(g, method = "random", weight.fun = runif, min = 10, max = 20, n = 50)
 g = addWeights(g, method = "random", weight.fun = runif, min = 20, max = 100)
-plotGraph(g)
+plotGraph(g)$pl.weights
 ```
 
 The next example is a little bit more complex. Here, a bi-objective graph with n = 30 nodes is generated with node coordinates in the euclidean plane [0, 100] x [0, 100]. The first weight function is the euclidean distance between the points in the plane. The second weight is normally distributed with mean 40 and standard deviation 5.

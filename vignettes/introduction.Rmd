@@ -12,7 +12,7 @@ vignette: >
 ---
 
 ```{r, echo = FALSE}
-knitr::opts_chunk$set(collapse = T, comment = "#>", message = FALSE)
+knitr::opts_chunk$set(collapse = T, comment = "#>", warning = FALSE, message = FALSE)
 options(tibble.print_min = 4L, tibble.print_max = 4L)
 ```
 
@@ -24,7 +24,7 @@ The **mcMST** package for the statistical programming language [R](https://www.r
 
 Here we first generate a bi-criteria graph problem with n = 25 nodes. The first objective is the euclidean distance of node coordinates in [0, 10] x [0, 10] in the euclidean plane. The second objective follows a normal distribution with mean 5 and standard deviation 1.5. The instance generation process is modular and thus highly flexible (see the [vignette on graph generation](Generation.html) for details).
 
-```{r, fig.width=8, out.width='100%', fig.cap='Plot of our bi-objective sample graph.'}
+```{r, fig.width=8, out.width='100%', fig.cap='Plot of the bi-objective sample graph `g.'}
 library(mcMST)
 library(gridExtra)
 set.seed(1) # reproducability
@@ -40,10 +40,10 @@ do.call(grid.arrange, plots)
 
 ## Running an algorithm
 
-Next, we apply a (10 + 10) genetic algorithm based on the Pruefer-number encoding as proposed by Zhou & Gen to approximate the Pareto-front for `max.iter = 100` generations.
+Next, we apply a (30 + 10) genetic algorithm based on the Pruefer-number encoding as proposed by Zhou & Gen to approximate the Pareto-front for `max.iter = 500` generations.
 
 ```{r, fig.width=8, out.width='100%', fig.cap="Approximation of the Pareto-front of the benchmark graph instance."}
-res = mcMSTEmoaZhou(g, mu = 10L, lambda = 10L, max.iter = 100L)
-print(res$pareto.front)
+res = mcMSTEmoaZhou(g, mu = 30L, lambda = 10L, max.iter = 500L)
+head(res$pareto.front, n = 5)
 ecr::plotFront(res$pareto.front)
 ```
