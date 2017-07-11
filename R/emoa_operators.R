@@ -117,7 +117,7 @@ mutEdgeExchange = makeMutator(
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubgraphMST = makeMutator(
-  mutator = function(ind, sigma = floor(ncol(ind) / 2), instance = NULL) {
+  mutator = function(ind, sigma = floor(ncol(ind) / 5), instance = NULL) {
     requirePackages("vegan", why = "mcMST::mutSubgraphMST")
     m = ncol(ind)
     n.objectives = instance$n.weights
@@ -145,6 +145,8 @@ mutSubgraphMST = makeMutator(
       sel.edges = sort(c(sel.edges, rr))
       sel.nodes = unique(as.integer(ind[, sel.edges]))
     }
+#    catf("%i, %i, %f", length(sel.nodes), nsel, length(sel.nodes) / nsel)
+    #ttt <<- rbind(ttt, data.frame(tosel = nsel, sel = length(sel.nodes)))
     # now extract subgraph and apply Prim
     sel.nodes = sort(sel.nodes)
     #catf("Finally extracted %i nodes %s", length(sel.nodes), collapse(sel.nodes))

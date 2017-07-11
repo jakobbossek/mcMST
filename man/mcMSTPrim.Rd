@@ -20,7 +20,7 @@ Vector of weights. This is an alternative to \code{n.lambdas}.}
 \value{
 [\code{list}] List with component \code{pareto.front}.
 g = genRandomMCGP(30)
-res = mcMSTScalar(30, n.lambdas = 50)
+res = mcMSTPrim(30, n.lambdas = 50)
 print(res$pareto.front)
 }
 \description{
@@ -34,6 +34,12 @@ for different weights.
 \note{
 Note that this procedure can only find socalled supported efficient
 solutions, i.e., solutions on the convex hull of the Pareto-optimal front.
+}
+\references{
+J. D. Knowles and D. W. Corne, "A comparison of encodings and
+algorithms for multiobjective minimum spanning tree problems," in Proceedings
+of the 2001 Congress on Evolutionary Computation (IEEE Cat. No.01TH8546),
+vol. 1, 2001, pp. 544–551 vol. 1.
 }
 \seealso{
 Other mcMST algorithms: \code{\link{mcMSTEmoaBG}},

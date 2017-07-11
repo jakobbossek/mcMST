@@ -52,7 +52,7 @@ to mutation only to generate offspring employing the subgraph mutator
 }
 \examples{
 inst = genRandomMCGP(10)
-res = mcMSTEmoaBG(inst, mu = 20L, ref.point = c(1e5, 1e5), max.iter = 100L)
+res = mcMSTEmoaBG(inst, mu = 20L, max.iter = 100L)
 print(res$pareto.front)
 print(tail(getStatistics(res$log)))
 }

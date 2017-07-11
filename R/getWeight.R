@@ -3,6 +3,14 @@
 #' @template arg_mcGP
 #' @template arg_edgelist
 #' @return [\code{numeric(2)}] Weight vector.
+#' @examples
+#' # generate a random bi-objective graph
+#' g = genRandomMCGP(5)
+#'
+#' # generate a random Pruefer code, i.e., a random spanning tree of g
+#' pcode = sample(1:5, 3, replace = TRUE)
+#'
+#' getWeight(g, prueferToEdgeList(pcode))
 #' @export
 getWeight = function(graph, edgelist) {
   assertClass(graph, "mcGP")

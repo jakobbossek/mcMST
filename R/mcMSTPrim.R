@@ -10,6 +10,11 @@
 #' @note Note that this procedure can only find socalled supported efficient
 #' solutions, i.e., solutions on the convex hull of the Pareto-optimal front.
 #'
+#' @references J. D. Knowles and D. W. Corne, "A comparison of encodings and
+#' algorithms for multiobjective minimum spanning tree problems," in Proceedings
+#' of the 2001 Congress on Evolutionary Computation (IEEE Cat. No.01TH8546),
+#' vol. 1, 2001, pp. 544–551 vol. 1.
+#'
 #' @param instance [\code{mcGP}]\cr
 #'   Multi-objective graph problem.
 #' @param n.lambdas [\code{integer(1) | NULL}]\cr

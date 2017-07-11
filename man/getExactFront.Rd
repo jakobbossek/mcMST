@@ -29,9 +29,9 @@ and \code{pareto.front} (matrix of corresponding weight vectors).
 }
 \description{
 Function which expects a problem instance of a combinatorial optimization
-problem (e.g., TSP), a multi-objective function and a solution enumerator, i.e., a function
-which enumerates all possible solutions (e.g., all permutations in case of a
-TSP problem) and  determines both the Pareto front and Pareto set by
+problem (e.g., MST), a multi-objective function and a solution enumerator, i.e., a function
+which enumerates all possible solutions (e.g., all Pruefer codes in case of a
+MST problem) and  determines both the Pareto front and Pareto set by
 exhaustive enumeration.
 }
 \note{
@@ -50,9 +50,9 @@ objfunMCMST = function(pcode, instance) {
 # next we generate a random bi-objective graph
 g = genRandomMCGP(5L)
 
-# ... and finally compute the exact front
+# ... and finally compute the exact front of g
 res = getExactFront(g, obj.fun = objfunMCMST, enumerator.fun = enumerateMST, n.objectives = 2L)
 \dontrun{
-plot(tres$pareto.front)
+plot(res$pareto.front)
 }
 }

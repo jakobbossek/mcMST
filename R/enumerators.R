@@ -1,8 +1,9 @@
-#' @title Enumerate all solution candidates
+#' @title Enumerate all solution candidates.
 #'
 #' @description These functions enumerate all candidate solutions for
 #' a certain combinatorial optimization problem, e.g., all permutations
-#' for a TSP or all Pruefer-codes for a MST problem.
+#' for a TSP or all Pruefer-codes for a MST problem. Note that the output
+#' grows exponentially with the instance size \code{n}.
 #'
 #' @param n [\code{integer(1)}]\cr
 #'   Instance size.
