@@ -19,6 +19,7 @@
 #' @inheritParams mcMSTEmoaBG
 #' @family mcMST EMOAs
 #' @family mcMST algorithms
+#' @seealso Mutator \code{\link{mutUniformPruefer}}
 #' @export
 mcMSTEmoaZhou = function(instance,
   mu, lambda = mu,

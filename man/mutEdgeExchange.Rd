@@ -18,9 +18,10 @@ Default is \code{1 / ncol(ind)}.}
 [\code{matrix(2, m)}] Mutated edge list.
 }
 \description{
-Each edge is replaced with another feasible edge with probability 1/m where
-m is the number of edges, i.e., in expectation one edge is replaced by each
-mutation operation.
+Each edge is replaced with another feasible edge with probability p.
+By default p = 1/m where m is the number of edges, i.e., in expectation one edge
+is replaced. The operators maintains the spanning tree property, i.e., the resulting
+edge list is indeed the edge list of a spanning tree.
 }
 \seealso{
 Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}

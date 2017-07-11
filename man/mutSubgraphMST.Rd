@@ -13,8 +13,8 @@ Matrix of edges (each column is one edge).}
 \item{sigma}{[\code{integer()}]\cr
 Upper bound for the size of the selected subtree.}
 
-\item{instance}{[any]\cr
-Multi-objective graph problem instance.}
+\item{instance}{[\code{mcGP}]\cr
+Multi-objective graph problem.}
 }
 \value{
 [\code{matrix(2, m)}] Mutated edge list.
@@ -22,8 +22,8 @@ Multi-objective graph problem instance.}
 \description{
 \code{mutSubgraphMST} selects a random edge e = (u, v) and traverses
 the tree starting form u and v respectively until a connected subtree of at most
-k edges is selected. Then the subtree is replaced with the optimal spanning tree
-regarding objective 1 or 2 with equal probability.
+\code{sigma} edges is selected. Then the subtree is replaced with the optimal spanning subtree
+regarding one of the objectives with equal probability.
 }
 \seealso{
 Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}

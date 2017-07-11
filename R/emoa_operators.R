@@ -10,7 +10,7 @@
 #'   Default is \code{1 / length(ind)}.
 #' @return [\code{integer}] Mutated Pruefer code.
 #' @family mcMST EMOA mutators
-#' @seealso \code{\link{mcMSTEmoaZhou}}
+#' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaZhou}}
 #' @export
 mutUniformPruefer = makeMutator(
   mutator = function(ind, p = 1 / length(ind)) {
@@ -85,9 +85,10 @@ edgeExchange = function(edgelist, p = 1 / ncol(edgelist)) {
 
 #' @title One-edge-exchange mutator for edge list representation of spanning trees.
 #'
-#' @description Each edge is replaced with another feasible edge with probability 1/m where
-#' m is the number of edges, i.e., in expectation one edge is replaced by each
-#' mutation operation.
+#' @description Each edge is replaced with another feasible edge with probability p.
+#' By default p = 1/m where m is the number of edges, i.e., in expectation one edge
+#' is replaced. The operators maintains the spanning tree property, i.e., the resulting
+#' edge list is indeed the edge list of a spanning tree.
 #'
 #' @param ind [\code{matrix(2, m)}]\cr
 #'   Matrix of edges (each column is one edge).
@@ -161,15 +162,14 @@ subgraphMST = function(edgelist, sigma, instance) {
 #'
 #' @description \code{mutSubgraphMST} selects a random edge e = (u, v) and traverses
 #' the tree starting form u and v respectively until a connected subtree of at most
-#' k edges is selected. Then the subtree is replaced with the optimal spanning tree
-#' regarding objective 1 or 2 with equal probability.
+#' \code{sigma} edges is selected. Then the subtree is replaced with the optimal spanning subtree
+#' regarding one of the objectives with equal probability.
 #'
 #' @param ind [\code{matrix(2, m)}]\cr
 #'   Matrix of edges (each column is one edge).
 #' @param sigma [\code{integer()}]\cr
 #'   Upper bound for the size of the selected subtree.
-#' @param instance [any]\cr
-#'   Multi-objective graph problem instance.
+#' @template arg_instance
 #' @return [\code{matrix(2, m)}] Mutated edge list.
 #' @family mcMST EMOA mutators
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}

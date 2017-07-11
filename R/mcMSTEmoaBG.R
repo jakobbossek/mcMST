@@ -5,8 +5,7 @@
 #' to mutation only to generate offspring employing the subgraph mutator
 #' (see \code{\link{mutSubgraphMST}}).
 #'
-#' @param instance [\code{any}]\cr
-#'   Multi-objective graph problem.
+#' @template arg_instance
 #' @param mu [\code{integer(1)}]\cr
 #'   Population size.
 #' @param lambda [\code{integer(1)}]\cr
@@ -22,9 +21,9 @@
 #'   Survival selector.
 #'   Default is \code{link[ecr]{selNondom}}.
 #' @param ref.point [\code{numeric(n.objectives) | NULL}]\cr
-#'   Reference point for Hypervolume computation.
+#'   Reference point for hypervolume computation used for logging.
 #'   If \code{NULL} the sum of the \eqn{n} largest edges in each objective
-#'   is taken where \eqn{n} is the number of nodes of \code{instance}.
+#'   is used where \eqn{n} is the number of nodes of \code{instance}.
 #'   This is an upper bound for the size of each spanning tree
 #'   with \eqn{(n-1)} edges.
 #' @param max.iter [\code{integer(1)}]\cr

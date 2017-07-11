@@ -8,7 +8,7 @@ mcMSTEmoaBG(instance, mu, lambda = mu, mut = NULL, selMating = NULL,
   selSurvival = ecr::selNondom, ref.point = NULL, max.iter = 100L)
 }
 \arguments{
-\item{instance}{[\code{any}]\cr
+\item{instance}{[\code{mcGP}]\cr
 Multi-objective graph problem.}
 
 \item{mu}{[\code{integer(1)}]\cr
@@ -31,9 +31,9 @@ Survival selector.
 Default is \code{link[ecr]{selNondom}}.}
 
 \item{ref.point}{[\code{numeric(n.objectives) | NULL}]\cr
-Reference point for Hypervolume computation.
+Reference point for hypervolume computation used for logging.
 If \code{NULL} the sum of the \eqn{n} largest edges in each objective
-is taken where \eqn{n} is the number of nodes of \code{instance}.
+is used where \eqn{n} is the number of nodes of \code{instance}.
 This is an upper bound for the size of each spanning tree
 with \eqn{(n-1)} edges.}
 

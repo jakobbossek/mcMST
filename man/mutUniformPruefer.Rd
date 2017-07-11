@@ -22,7 +22,7 @@ Default is \code{1 / length(ind)}.}
 with probability \code{p} with a random node number between 1 and n.
 }
 \seealso{
-\code{\link{mcMSTEmoaZhou}}
+Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaZhou}}
 
 Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
   \code{\link{mutSubgraphMST}}
