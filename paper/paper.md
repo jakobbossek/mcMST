@@ -1,5 +1,5 @@
 ---
-title: 'mcMST: Multi-criteria minimum spanning tree'
+title: 'mcMST: A Toolbox for the Multi-Criteria Minimum Spanning Tree Problem in R'
 authors:
 - affiliation: 1
   name: Jakob Bossek
@@ -23,6 +23,6 @@ The single-objective minimum spanning tree (MST) problem is a combinatorial opti
 
 The `R` [@R] package [`mcMST`](https://github.com/jakobbossek/mcMST) provides algorithms to approximate the Pareto-front of mcMST problems. Beside a multi-objective version of Prims algorithm (see, e.g., @KC01) the package offers two evolutionary multi-objective algorithms (EMOAs). The first one is based on the Prüfer-encoding [@P18] and is very similar to the genetic algorithm proposed by @ZG99. The second EMOA operates on the edge list directly. Further, a simple and generic enumeration algorithm is included, which is useful to compute the exact front of graph problems of small instance size by exhaustive enumeration. This is particularly useful to investigate properties of Pareto-optimal solutions.
 
-Additionally, a modular toolbox to generate multi-objective benchmark graph problems is included in the `mcMST` package. This allows for easy generation of a diverse benchmark set.
+Additionally, a modular toolbox to generate multi-objective benchmark graph problems is included in the `mcMST` package. This allows for easy generation of diverse benchmark sets.
 
 # References
