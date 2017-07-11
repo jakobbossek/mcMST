@@ -1,6 +1,6 @@
 #' @title Uniform mutation for Pruefer code representation.
 #'
-#' @description \code{mutUniform2} replaces each component of a Pruefer code of length n - 2
+#' @description \code{mutUniformPruefer} replaces each component of a Pruefer code of length n - 2
 #' with probability \code{p} with a random node number between 1 and n.
 #'
 #' @param ind [\code{integer}]\cr
@@ -12,7 +12,7 @@
 #' @family mcMST EMOA mutators
 #' @seealso \code{\link{mcMSTEmoaZhou}}
 #' @export
-mutUniform2 = makeMutator(
+mutUniformPruefer = makeMutator(
   mutator = function(ind, p = 1 / length(ind)) {
     n = length(ind)
     nrs = 1:(n + 2L)
@@ -69,6 +69,20 @@ oneEdgeExchange = function(edgelist, edge.id) {
   return(edgelist)
 }
 
+edgeExchange = function(edgelist, p = 1 / ncol(edgelist)) {
+  # get number of tree edges
+  m = ncol(edgelist)
+
+  # replace each edge with prob p
+  for (i in 1:m) {
+    if (runif(1L) < p) {
+      # sample random edge in tree
+      edgelist = oneEdgeExchange(edgelist, i)
+    }
+  }
+  return(edgelist)
+}
+
 #' @title One-edge-exchange mutator for edge list representation of spanning trees.
 #'
 #' @description Each edge is replaced with another feasible edge with probability 1/m where
@@ -86,18 +100,62 @@ oneEdgeExchange = function(edgelist, edge.id) {
 #' @export
 mutEdgeExchange = makeMutator(
   mutator = function(ind, p = 1 / ncol(ind)) {
-    # get number of tree edges
-    m = ncol(ind)
-
-    # replace each edge with prob p
-    for (i in seq_len(m)) {
-      if (runif(1L) < p) {
-        ind = oneEdgeExchange(ind, i)
-      }
-    }
-    return(ind)
+    edgeExchange(ind, p)
   },
   supported = "custom")
+
+
+subgraphMST = function(edgelist, sigma, instance) {
+  m = ncol(edgelist)
+  n.objectives = instance$n.weights
+  nsel = sample(3:sigma, 1L)
+  #catf("Selecting connected subgraph with >= %i nodes.", nsel)
+  # select random edge in tree as the starting point
+  start = sample(1:m, 1L)
+  #catf("First edge: %i, (%i, %i)", start, edgelist[1, start], edgelist[2, start])
+  sel.edges = start
+  # the incident nodes of the edge determine the first
+  sel.nodes = edgelist[, start]
+  # walk through tree randomly
+  #cur.node = sel.nodes[1L]
+  inds = 1:m
+  # loop until we got a sufficiently big subtree
+  while (length(sel.nodes) < nsel) {
+    # check which edges are incident to selected nodes
+    rr = apply(edgelist, 2L, function(x) any(x %in% sel.nodes))
+    #catf("Edges incident to nodes %s: %s", collapse(sel.nodes), collapse(which(rr)))
+    # filter already selected
+    rr = setdiff(which(rr), sel.edges)
+    #catf("Edges incident to nodes %s: %s", collapse(sel.nodes), collapse(rr))
+    #FIXME: this can be made better
+    sel.edges = sort(c(sel.edges, rr))
+    sel.nodes = unique(as.integer(edgelist[, sel.edges]))
+  }
+  # now extract subgraph and apply Prim
+  sel.nodes = sort(sel.nodes)
+  #catf("Finally extracted %i nodes %s", length(sel.nodes), collapse(sel.nodes))
+  obj.idx = sample(1:n.objectives, 1L)
+  dd = instance$weights[[obj.idx]][sel.nodes, sel.nodes]
+  #catf("submatrix:")
+  #print(dd)
+  # get result of PRIM
+  mstres = vegan::spantree(d = dd)
+
+  #print(mstres)
+  #catf("N(sel.edges): %i", length(sel.edges))
+  #catf("N(mstnodes):  %i", length(mstres$kid))
+  repl.edges = matrix(
+    #FIXME: is this correct?!?
+    c(sel.nodes[2:(length(sel.edges) + 1L)],
+      sel.nodes[mstres$kid]), byrow = TRUE, nrow = 2L)
+
+    #catf("Replacing edges %s:", collapse(sel.edges))
+    #print(edgelist[, sel.edges])
+    #catf("... with ")
+    #print(repl.edges)
+  edgelist[, sel.edges] = repl.edges
+  return(edgelist)
+}
 
 #' @title Subgraph-mutator for edge list representation.
 #'
@@ -117,58 +175,8 @@ mutEdgeExchange = makeMutator(
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubgraphMST = makeMutator(
-  mutator = function(ind, sigma = floor(ncol(ind) / 5), instance = NULL) {
-    requirePackages("vegan", why = "mcMST::mutSubgraphMST")
-    m = ncol(ind)
-    n.objectives = instance$n.weights
-
-    nsel = sample(3:sigma, 1L)
-    #catf("Selecting connected subgraph with >= %i nodes.", nsel)
-    # select random edge in tree as the starting point
-    start = sample(1:m, 1L)
-    #catf("First edge: %i, (%i, %i)", start, ind[1, start], ind[2, start])
-    sel.edges = start
-    # the incident nodes of the edge determine the first
-    sel.nodes = ind[, start]
-    # walk through tree randomly
-    #cur.node = sel.nodes[1L]
-    inds = 1:m
-    # loop until we got a sufficiently big subtree
-    while (length(sel.nodes) < nsel) {
-      # check which edges are incident to selected nodes
-      rr = apply(ind, 2L, function(x) any(x %in% sel.nodes))
-      #catf("Edges incident to nodes %s: %s", collapse(sel.nodes), collapse(which(rr)))
-      # filter already selected
-      rr = setdiff(which(rr), sel.edges)
-      #catf("Edges incident to nodes %s: %s", collapse(sel.nodes), collapse(rr))
-      #FIXME: this can be made better
-      sel.edges = sort(c(sel.edges, rr))
-      sel.nodes = unique(as.integer(ind[, sel.edges]))
-    }
-#    catf("%i, %i, %f", length(sel.nodes), nsel, length(sel.nodes) / nsel)
-    #ttt <<- rbind(ttt, data.frame(tosel = nsel, sel = length(sel.nodes)))
-    # now extract subgraph and apply Prim
-    sel.nodes = sort(sel.nodes)
-    #catf("Finally extracted %i nodes %s", length(sel.nodes), collapse(sel.nodes))
-    obj = sample(1:n.objectives, 1L)
-    dd = instance$weights[[obj]][sel.nodes, sel.nodes]
-    # get result of PRIM
-    mstres = vegan::spantree(d = dd)
-
-    #print(mstres)
-    #catf("N(sel.edges): %i", length(sel.edges))
-    #catf("N(mstnodes):  %i", length(mstres$kid))
-    repl.edges = matrix(
-      #FIXME: is this correct?!?
-      c(sel.nodes[2:(length(sel.edges) + 1L)],
-        sel.nodes[mstres$kid]), byrow = TRUE, nrow = 2L)
-
-    #catf("Replacing edges %s:", collapse(sel.edges))
-    #print(ind[, sel.edges])
-    #catf("... with ")
-    #print(repl.edges)
-    ind[, sel.edges] = repl.edges
-    return(ind)
+  mutator = function(ind, sigma = floor(ncol(ind) / 2), instance = NULL) {
+    subgraphMST(ind, sigma, instance)
   },
   supported = "custom"
 )

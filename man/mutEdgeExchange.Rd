@@ -26,5 +26,5 @@ mutation operation.
 Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 
 Other mcMST EMOA mutators: \code{\link{mutSubgraphMST}},
-  \code{\link{mutUniform2}}
+  \code{\link{mutUniformPruefer}}
 }

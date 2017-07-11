@@ -14,7 +14,7 @@
 #'
 #' @param mut [\code{ecr_mutator}]\cr
 #'   Mutation operator.
-#'   Defaults to \code{\link{mutUniform2}}, i.e., each digit of the Pruefer encoding
+#'   Defaults to \code{\link{mutUniformPruefer}}, i.e., each digit of the Pruefer encoding
 #'   is replaced with some probability with a random number from \eqn{V = \{1, \ldots, n\}}.
 #' @inheritParams mcMSTEmoaBG
 #' @family mcMST EMOAs
@@ -22,7 +22,7 @@
 #' @export
 mcMSTEmoaZhou = function(instance,
   mu, lambda = mu,
-  mut = mutUniform2,
+  mut = mutUniformPruefer,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
   ref.point = NULL, max.iter = 100L) {
 

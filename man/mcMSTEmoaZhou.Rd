@@ -4,7 +4,7 @@
 \alias{mcMSTEmoaZhou}
 \title{Pruefer-EMOA for the multi-objective MST problem.}
 \usage{
-mcMSTEmoaZhou(instance, mu, lambda = mu, mut = mutUniform2,
+mcMSTEmoaZhou(instance, mu, lambda = mu, mut = mutUniformPruefer,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
   ref.point = NULL, max.iter = 100L)
 }
@@ -21,7 +21,7 @@ Default is \code{mu}.}
 
 \item{mut}{[\code{ecr_mutator}]\cr
 Mutation operator.
-Defaults to \code{\link{mutUniform2}}, i.e., each digit of the Pruefer encoding
+Defaults to \code{\link{mutUniformPruefer}}, i.e., each digit of the Pruefer encoding
 is replaced with some probability with a random number from \eqn{V = \{1, \ldots, n\}}.}
 
 \item{selMating}{[\code{ecr_selector}]\cr
