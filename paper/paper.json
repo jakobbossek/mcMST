@@ -1,0 +1,23 @@
+{
+  "@context": "https://raw.githubusercontent.com/codemeta/codemeta/master/codemeta.jsonld",
+  "@type": "Code",
+  "author": [
+    {
+      "@id": "http://orcid.org/0000-0002-4121-4668",
+      "@type": "Person",
+      "email": "j.bossek@gmail.com",
+      "name": "Jakob Bossek",
+      "affiliation": "University of Münster"
+    }
+  ],
+  "identifier": "",
+  "codeRepository": "https://github.com/jakobbossek/mcMST",
+  "datePublished": "2017-07-11",
+  "dateModified": "2017-07-11",
+  "dateCreated": "2017-07-11",
+  "description": "Algorithms to solve the multi-criteria minimum spanning tree problem",
+  "keywords": "software, r, combinatorial optimization, evolutionary algorithms, multi-objective optimization",
+  "license": "BSD2",
+  "title": "mcMST",
+  "version": "v1.0.0"
+}

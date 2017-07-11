@@ -13,3 +13,4 @@ man-roxygen
 todo
 cran-comments.md
 ^docs$
+^paper$
