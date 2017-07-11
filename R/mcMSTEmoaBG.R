@@ -2,8 +2,11 @@
 #'
 #' @description Evolutionary multi-objective algorithm to solve the
 #' multi-objective minimum spanning tree problem. The algorithm relies
-#' to mutation only to generate offspring employing the subgraph mutator
-#' (see \code{\link{mutSubgraphMST}}).
+#' to mutation only to generate offspring. The package contains the subgraph mutator
+#' (see \code{\link{mutSubgraphMST}}) or a simple one-edge exchange mutator
+#' (see \code{\link{mutEdgeExchange}}). Of course, the user may use any
+#' custom mutator which operators on edge lists as well
+#' (see \code{\link[ecr]{makeMutator}}).
 #'
 #' @template arg_instance
 #' @param mu [\code{integer(1)}]\cr

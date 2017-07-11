@@ -46,12 +46,12 @@ Default is \code{100}.}
 \description{
 Evolutionary multi-objective algorithm to solve the
 multi-objective minimum spanning tree problem. The algorithm adopts the
-socalled Pruefer-number as the encoding for spanning trees. A Pruefer-number
+so-called Pruefer-number as the encoding for spanning trees. A Pruefer-number
 for a graph with nodes \eqn{V = \{1, \ldots, n\}} is a sequence of \eqn{n - 2}
-number from \eqn{V}. Cayleys theorem states, that a complete graph has
-\eqn{n^{n-2}} spanning trees.
+numbers from \eqn{V}. Cayleys theorem states, that a complete graph width n nodes
+has exactly \eqn{n^{n-2}} spanning trees.
 The algorithm uses mutation only: each component of an individual is replaced
-uniformly at random with another node number from \eqn{V}.
+uniformly at random with another node number from the node set.
 }
 \references{
 Zhou, G. and Gen, M. Genetic Algorithm Approach on Multi-Criteria
