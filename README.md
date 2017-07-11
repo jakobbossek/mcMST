@@ -1,4 +1,4 @@
-# mcMST: Multi-Criteria Spanning Tree Problem
+# mcMST: A Toolbox for the Multi-Criteria Minimum Spanning Tree Problem
 
 [![CRAN Status Badge](http://www.r-pkg.org/badges/version/mcMST)](http://cran.r-project.org/web/packages/mcMST)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/mcMST)](http://cran.rstudio.com/web/packages/mcMST/index.html)
