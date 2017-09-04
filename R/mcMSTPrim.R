@@ -23,8 +23,9 @@
 #' @param lambdas [\code{numerci}]\cr
 #'   Vector of weights. This is an alternative to \code{n.lambdas}.
 #' @return [\code{list}] List with component \code{pareto.front}.
+#' @examples
 #' g = genRandomMCGP(30)
-#' res = mcMSTPrim(30, n.lambdas = 50)
+#' res = mcMSTPrim(g, n.lambdas = 50)
 #' print(res$pareto.front)
 #' @family mcMST algorithms
 #' @export

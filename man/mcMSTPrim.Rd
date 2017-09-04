@@ -19,9 +19,6 @@ Vector of weights. This is an alternative to \code{n.lambdas}.}
 }
 \value{
 [\code{list}] List with component \code{pareto.front}.
-g = genRandomMCGP(30)
-res = mcMSTPrim(30, n.lambdas = 50)
-print(res$pareto.front)
 }
 \description{
 Approximates the Pareto-optimal mcMST front of a multi-objective
@@ -34,6 +31,11 @@ for different weights.
 \note{
 Note that this procedure can only find socalled supported efficient
 solutions, i.e., solutions on the convex hull of the Pareto-optimal front.
+}
+\examples{
+g = genRandomMCGP(30)
+res = mcMSTPrim(g, n.lambdas = 50)
+print(res$pareto.front)
 }
 \references{
 J. D. Knowles and D. W. Corne, "A comparison of encodings and
