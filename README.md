@@ -4,7 +4,7 @@
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/mcMST)](http://cran.rstudio.com/web/packages/mcMST/index.html)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/mcMST?color=orange)](http://cran.rstudio.com/web/packages/mcMST/index.html)
 [![Build Status](https://travis-ci.org/jakobbossek/mcMST.svg?branch=master)](https://travis-ci.org/jakobbossek/mcMST)
-[![Build status](https://ci.appveyor.com/api/projects/status/eu0nns2dsgocwntw/branch/master?svg=true)](https://ci.appveyor.com/project/jakobbossek/mcMST/branch/master)
+[![Build status](https://ci.appveyor.com/api/projects/status/f83u7suaxqxmtc80/branch/master?svg=true)](https://ci.appveyor.com/project/jakobbossek/mcmst/branch/master)
 [![Coverage Status](https://coveralls.io/repos/github/jakobbossek/mcMST/badge.svg?branch=master)](https://coveralls.io/github/jakobbossek/mcMST?branch=master)
 
 ## Introduction
