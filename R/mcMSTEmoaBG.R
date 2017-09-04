@@ -32,7 +32,7 @@
 #' @param max.iter [\code{integer(1)}]\cr
 #'   Maximal number of iterations.
 #'   Default is \code{100}.
-#' @return [\code{\link[ecr]{ecr_result}}]
+#' @template ret_ecrresult
 #' @examples
 #' inst = genRandomMCGP(10)
 #' res = mcMSTEmoaBG(inst, mu = 20L, max.iter = 100L)

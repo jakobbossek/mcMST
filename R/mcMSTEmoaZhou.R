@@ -17,6 +17,7 @@
 #'   Defaults to \code{\link{mutUniformPruefer}}, i.e., each digit of the Pruefer encoding
 #'   is replaced with some probability with a random number from \eqn{V = \{1, \ldots, n\}}.
 #' @inheritParams mcMSTEmoaBG
+#' @template ret_ecrresult
 #' @family mcMST EMOAs
 #' @family mcMST algorithms
 #' @seealso Mutator \code{\link{mutUniformPruefer}}

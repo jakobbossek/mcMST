@@ -14,10 +14,20 @@ Matrix of edges (each column is one edge).}
 Number of nodes of the problem.}
 }
 \value{
-[integer] Characteristic vector cv with cv[i] = 1 if the i-th edge is in the tree.
+[\code{integer}] Characteristic vector cv with cv[i] = 1 if the i-th edge is in the tree.
 }
 \description{
 Convert edge list to characteristic vector.
+}
+\examples{
+# first we generate a small edge list by hand
+# (assume the given graph has n = 4 nodes)
+edgelist = matrix(c(1, 2, 2, 4, 3, 4), ncol = 3)
+print(edgelist)
+# next we transform the edge into
+# a characteristic vector
+cvec = edgeListToCharVec(edgelist, n = 4)
+print(cvec)
 }
 \seealso{
 Other transformation functions: \code{\link{permutationToCharVec}},

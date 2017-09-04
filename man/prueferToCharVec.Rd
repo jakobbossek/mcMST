@@ -11,10 +11,17 @@ prueferToCharVec(pcode)
 Pruefer code encoding a minimum spanning tree.}
 }
 \value{
-[integer] Characteristic vector cv with cv[i] = 1 if the i-th edge is in the tree.
+[\code{integer}] Characteristic vector cv with cv[i] = 1 if the i-th edge is in the tree.
 }
 \description{
 Convert Pruefer code to characteristic vector.
+}
+\examples{
+# here we generate a random Pruefer-code representing
+# a random spanning tree of a graph with n = 10 nodes
+pcode = sample(1:10, 8, replace = TRUE)
+print(pcode)
+print(prueferToCharVec(pcode))
 }
 \seealso{
 Other transformation functions: \code{\link{edgeListToCharVec}},

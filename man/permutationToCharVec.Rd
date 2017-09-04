@@ -14,10 +14,18 @@ Permutation of nodes, e.g., solution of a TSP.}
 Number of nodes of the problem.}
 }
 \value{
-[integer] Characteristic vector cv with cv[i] = 1 if the i-th edge is in the tree.
+[\code{integer}] Characteristic vector cv with cv[i] = 1 if the i-th edge is in the tree.
 }
 \description{
 Convert permutation to characteristic vector.
+}
+\examples{
+# first generate a random permutation, e.g., representing
+# a roundtrip tour in a graph
+perm = sample(1:10)
+print(perm)
+# now convert into an edge list
+permutationToCharVec(perm, n = 10)
 }
 \seealso{
 Other transformation functions: \code{\link{edgeListToCharVec}},

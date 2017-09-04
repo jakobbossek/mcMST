@@ -2,6 +2,13 @@
 #'
 #' @template arg_pcode
 #' @return [\code{matrix(2, length(pcode) + 1)}] Edge list.
+#' @examples
+#' # here we generate a random Pruefer-code representing
+#' # a random spanning tree of a graph with n = 10 nodes
+#' pcode = sample(1:10, 8, replace = TRUE)
+#' print(pcode)
+#' edgelist = prueferToEdgeList(pcode)
+#' print(edgelist)
 #' @family transformation functions
 #' @export
 prueferToEdgeList = function(pcode) {
@@ -63,6 +70,15 @@ prueferToEdgeList = function(pcode) {
 #' @template arg_edgelist
 #' @template arg_n
 #' @template ret_charvec
+#' @examples
+#' # first we generate a small edge list by hand
+#' # (assume the given graph has n = 4 nodes)
+#' edgelist = matrix(c(1, 2, 2, 4, 3, 4), ncol = 3)
+#' print(edgelist)
+#' # next we transform the edge into
+#' # a characteristic vector
+#' cvec = edgeListToCharVec(edgelist, n = 4)
+#' print(cvec)
 #' @family transformation functions
 #' @export
 edgeListToCharVec = function(edgelist, n = NULL) {
@@ -85,6 +101,12 @@ edgeListToCharVec = function(edgelist, n = NULL) {
 #'
 #' @template arg_pcode
 #' @template ret_charvec
+#' @examples
+#' # here we generate a random Pruefer-code representing
+#' # a random spanning tree of a graph with n = 10 nodes
+#' pcode = sample(1:10, 8, replace = TRUE)
+#' print(pcode)
+#' print(prueferToCharVec(pcode))
 #' @family transformation functions
 #' @export
 prueferToCharVec = function(pcode) {
@@ -95,6 +117,13 @@ prueferToCharVec = function(pcode) {
 #'
 #' @template arg_perm
 #' @return [\code{matrix(2, length(perm))}] Edge list.
+#' @examples
+#' # first generate a random permutation, e.g., representing
+#' # a roundtrip tour in a graph
+#' perm = sample(1:10)
+#' print(perm)
+#' # now convert into an edge list
+#' permutationToEdgelist(perm)
 #' @family transformation functions
 #' @export
 permutationToEdgelist = function(perm) {
@@ -113,6 +142,13 @@ permutationToEdgelist = function(perm) {
 #' @template arg_perm
 #' @template arg_n
 #' @template ret_charvec
+#' @examples
+#' # first generate a random permutation, e.g., representing
+#' # a roundtrip tour in a graph
+#' perm = sample(1:10)
+#' print(perm)
+#' # now convert into an edge list
+#' permutationToCharVec(perm, n = 10)
 #' @family transformation functions
 #' @export
 permutationToCharVec = function(perm, n) {

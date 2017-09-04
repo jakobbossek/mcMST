@@ -16,6 +16,14 @@ Permutation of nodes, e.g., solution of a TSP.}
 \description{
 Convert permutation to edge list.
 }
+\examples{
+# first generate a random permutation, e.g., representing
+# a roundtrip tour in a graph
+perm = sample(1:10)
+print(perm)
+# now convert into an edge list
+permutationToEdgelist(perm)
+}
 \seealso{
 Other transformation functions: \code{\link{edgeListToCharVec}},
   \code{\link{permutationToCharVec}},
