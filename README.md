@@ -57,5 +57,19 @@ In order to reproduce potential problems, please provide a minimal and reproduci
 
 Contributions to this software package are welcome via [pull requests](https://help.github.com/articles/about-pull-requests/) and will be merged at the sole discretion of the author. 
 
+## Related work
+
+The following packages provide methods to solve the __single-objective__ MST problem:
+
+* [vegan: Community Ecology Package](https://cran.r-project.org/package=vegan)
+* [igraph: Network Analysis and Visualization](https://cran.r-project.org/package=igraph)
+
+Several packages implement methods to solve multi-criteria optimization problems in general:
+
+* [ecr: Evolutionary Computation in R](https://cran.r-project.org/package=ecr)
+* [mopsocd: Multi-Objective Particle Swarm Optimization with Crowding Distance](https://cran.r-project.org/package=mopsocd)
+* [moko: Multi-Objective Kriging Optimization](https://cran.r-project.org/package=moko)
+* [mco: Multiple Criteria Optimization Algorithms and Related Functions](https://cran.r-project.org/package=mco)
+
 
 
