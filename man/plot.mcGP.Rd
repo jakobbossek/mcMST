@@ -4,20 +4,17 @@
 \alias{plot.mcGP}
 \title{Visualize bi-objective graph.}
 \usage{
-\method{plot}{mcGP}(graph, show.cluster.centers = TRUE, x = NULL,
-  y = NULL, ...)
+\method{plot}{mcGP}(x, y = NULL, show.cluster.centers = TRUE, ...)
 }
 \arguments{
-\item{graph}{[\code{mcGP}]\cr
+\item{x}{[\code{mcGP}]\cr
 Multi-objective graph problem.}
+
+\item{y}{Not used at the moment.}
 
 \item{show.cluster.centers}{[\code{logical(1)}]\cr
 Display cluster centers?
 Default is \code{TRUE}. This option is ignored silently if the instance is not clustered.}
-
-\item{x}{Not used at the moment.}
-
-\item{y}{Not used at the moment.}
 
 \item{...}{[any]\cr
 Not used at the moment.}
