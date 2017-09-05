@@ -26,7 +26,7 @@ system (see, e.g., \code{\link{mcGP}}).
 \examples{
 g = genRandomMCGP(10L)
 \dontrun{
-pl = plotGraph(g)
+pl = plot(g)
 }
 }
 \references{
