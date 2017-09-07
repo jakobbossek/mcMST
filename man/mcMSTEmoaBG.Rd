@@ -71,6 +71,11 @@ res = mcMSTEmoaBG(inst, mu = 20L, max.iter = 100L)
 print(res$pareto.front)
 print(tail(getStatistics(res$log)))
 }
+\references{
+Bossek, J., and Grimme, C. A Pareto-Beneficial Sub-Tree Mutation
+for the Multi-Criteria Minimum Spanning Tree Problem. In Proceedings of the
+2017 IEEE Symposium Series on Computational Intelligence (2017). (accepted)
+}
 \seealso{
 Mutators \code{\link{mutSubgraphMST}} and \code{\link{mutEdgeExchange}}
 

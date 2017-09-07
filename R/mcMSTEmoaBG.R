@@ -8,6 +8,10 @@
 #' custom mutator which operators on edge lists as well
 #' (see \code{\link[ecr]{makeMutator}}).
 #'
+#' @references Bossek, J., and Grimme, C. A Pareto-Beneficial Sub-Tree Mutation
+#' for the Multi-Criteria Minimum Spanning Tree Problem. In Proceedings of the
+#' 2017 IEEE Symposium Series on Computational Intelligence (2017). (accepted)
+#'
 #' @template arg_instance
 #' @param mu [\code{integer(1)}]\cr
 #'   Population size.
