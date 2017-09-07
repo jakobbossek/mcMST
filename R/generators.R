@@ -24,7 +24,7 @@
 #' @examples
 #' g = genRandomMCGP(10L)
 #' \dontrun{
-#' pl = plotGraph(g)
+#' pl = plot(g)
 #' }
 #' @export
 genRandomMCGP = function(n) {
