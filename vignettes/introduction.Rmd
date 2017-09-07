@@ -33,7 +33,7 @@ g = addCoordinates(g, n = 25, generator = coordUniform)
 g = addWeights(g, method = "euclidean")
 g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.5)
 print(g)
-plots = plotGraph(g)
+plots = plot(g)
 plots$nrow = 1
 do.call(grid.arrange, plots)
 ```

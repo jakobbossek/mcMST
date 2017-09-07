@@ -18,7 +18,7 @@ test_that("graph generation: simple 2o graph", {
   expect_true(isSymmetricMatrix(g$weights[[2L]]))
   expect_output(print(g), regexp = "MULTI")
 
-  pls = plotGraph(g)
+  pls = plot(g)
   expect_list(pls, types = "ggplot", len = 2L, any.missing = FALSE, all.missing = FALSE)
 })
 
@@ -32,7 +32,7 @@ test_that("graph generation: complex clustered graph", {
   g = addWeights(g, method = "minkowski", p = 2.5, symmetric = FALSE)
 
   # check plotting of cluster centers
-  pls = plotGraph(g, show.cluster.centers = TRUE)
+  pls = plot(g, show.cluster.centers = TRUE)
   expect_list(pls, types = "ggplot", len = 2L, any.missing = FALSE, all.missing = FALSE)
 
   g = addWeights(g, method = "random", weight.fun = function(n) {
@@ -48,7 +48,7 @@ test_that("graph generation: complex clustered graph", {
   expect_true(isSymmetricMatrix(g$weights[[2L]]))
   expect_true(isSymmetricMatrix(g$weights[[3L]])) # distance based are always symmetric
 
-  expect_error(plotGraph(g), regexpr = "not supported")
+  expect_error(plot(g), regexpr = "not supported")
 })
 
 test_that("graph generation: manual passing of coordinates weights works", {

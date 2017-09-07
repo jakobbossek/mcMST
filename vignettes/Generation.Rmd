@@ -32,7 +32,7 @@ library(mcMST)
 g = mcGP(lower = 0, upper = 1)
 g = addWeights(g, method = "random", weight.fun = runif, min = 10, max = 20, n = 50)
 g = addWeights(g, method = "random", weight.fun = runif, min = 20, max = 100)
-plotGraph(g)$pl.weights
+plot(g)$pl.weights
 ```
 
 The next example is a little bit more complex. Here, a bi-objective graph with n = 30 nodes is generated with node coordinates in the euclidean plane [0, 100] x [0, 100]. The first weight function is the euclidean distance between the points in the plane. The second weight is normally distributed with mean 40 and standard deviation 5.
@@ -44,7 +44,7 @@ g = addWeights(g, method = "euclidean")
 g = addWeights(g, method = "random", weight.fun = rnorm, mean = 40, sd = 5)
 print(g)
 library(gridExtra)
-do.call(grid.arrange, c(plotGraph(g), nrow = 1))
+do.call(grid.arrange, c(plot(g), nrow = 1))
 ```
 
 Finally we generate a bi-objective clustered instance. Here, we
@@ -58,7 +58,7 @@ g = addCoordinates(g, n = c(10, 20, 70), by.centers = TRUE, generator = coordUni
 g = addCoordinates(g, n = 20, generator = coordUniform)
 g = addWeights(g, method = "manhattan")
 g = addWeights(g, method = "random", weight.fun = rchisq, df = 10)
-do.call(grid.arrange, c(plotGraph(g), nrow = 1))
+do.call(grid.arrange, c(plot(g), nrow = 1))
 ```
 
-Graph problems with more than two objectives are possible as well. However, the `plotGraph` function does not support these at the moment.
+Graph problems with more than two objectives are possible as well. However, the `plot` function does not support these at the moment.
