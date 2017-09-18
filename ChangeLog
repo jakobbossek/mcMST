@@ -1,9 +1,0 @@
-2017-09-05  George G. Vega Yon <g.vegayon@gmail.com>
-	* R/plotGraph.R: Turning plotGraph into plot.mcMG (a suggestion).
-	* tests/*: idem.
-	* R/generators.R: idem.
-	* vignettes/*.Rmd: Idem.
-	
-	* ChangeLog: This is also a suggestion. This is an extended way to
-	  describe whatever changes you have made. I find this useful.
-	  Also, CRAN does allow to keep this as part of the package.

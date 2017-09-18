@@ -1,9 +1,9 @@
 Package: mcMST
 Title: A Toolbox for the Multi-Criteria Minimum Spanning Tree Problem
 Description: Algorithms to approximate the Pareto-front of multi-criteria minimum spanning tree problems. Additionally, a modular toolbox for the generation of multi-objective benchmark graph problems is included.
-Version: 1.0.0
+Version: 1.0.1
 Encoding: UTF-8
-Date: 2017-07-11
+Date: 2017-09-13
 Authors@R: c(person("Jakob", "Bossek", email = "j.bossek@gmail.com", role =
     c("aut", "cre")))
 Maintainer: Jakob Bossek <j.bossek@gmail.com>
