@@ -6,4 +6,5 @@
 #' @importFrom vegan spantree
 #' @importFrom stats dist runif
 #' @importFrom utils read.csv write.table
+#' @importFrom deldir deldir
 NULL

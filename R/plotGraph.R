@@ -17,8 +17,8 @@
 #' \code{pl.weights} (scatterplot of edge weights) and eventually \code{pl.coords} (scatterplot of
 #' nodes). The latter is \code{NULL}, if \code{graph} has no associated coordinates.
 #' @export
-plot.mcGP = function(x, y=NULL, show.cluster.centers = TRUE, ...) {  
-  
+plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, ...) {
+
   assertFlag(show.cluster.centers)
 
   pl.coords = NULL
@@ -33,35 +33,62 @@ plot.mcGP = function(x, y=NULL, show.cluster.centers = TRUE, ...) {
     if (!is.null(x$membership))
       dd$Cluster = as.factor(x$membership)
     pl.coords = ggplot2::ggplot(dd, aes_string(x = "x1", y = "x2"))
-    pl.coords = if (n.clusters > 0L) pl.coords + 
+    pl.coords = pl.coords + ggplot2::geom_point()
+    pl.coords = if (n.clusters > 0L) pl.coords +
       ggplot2::geom_point(aes_string(colour = "Cluster")) else pl.coords + ggplot2::geom_point()
     if (n.clusters > 0L & show.cluster.centers) {
       ddc = as.data.frame(x$center.coordinates)
       names(ddc) = c("x1", "x2")
-      pl.coords = pl.coords + 
+      pl.coords = pl.coords +
         ggplot2::geom_point(data = ddc, colour = "black", size = 3)
       pl.coords = pl.coords +
         ggplot2::geom_point(data = ddc, colour = "white", size = 2.2)
     }
-    pl.coords = pl.coords + 
-      ggplot2::ggtitle("Node coordinates", subtitle = sprintf("#nodes: %i, #clusters: %i", n.nodes, n.clusters))
-    pl.coords = pl.coords + 
-      ggplot2::xlab(expression(x[1])) + 
+
+    if (!is.null(x$adj.mat)) {
+      edges = data.frame()
+      adj.mat = x$adj.mat
+      n = nrow(adj.mat)
+      for (i in 1:n) {
+        for (j in 1:n) {
+          if (adj.mat[i, j] == 0)
+            next
+          coords = x$coordinates[c(i, j), ]
+          edges = rbind(edges, data.frame(
+            x1 = coords[1L, 1L], y1 = coords[1L, 2L],
+            x2 = coords[2L, 1L], y2 = coords[2L, 2L]))
+        }
+      }
+      pl.coords = pl.coords + geom_segment(data = edges, aes(x = x1, y = y1, xend = x2, yend = y2))
+    }
+
+    pl.coords = pl.coords +
+      ggplot2::ggtitle("Node coordinates", subtitle = sprintf("#nodes: %i, #clusters: %i, node type(s): %s", n.nodes, n.clusters, collapse(x$node.types, ", ")))
+    pl.coords = pl.coords +
+      ggplot2::xlab(expression(x[1])) +
       ggplot2::ylab(expression(x[2]))
   }
-  weights1 = x$weights[[1L]]
-  weights2 = x$weights[[2L]]
 
-  weights1 = as.numeric(weights1[upper.tri(weights1)])
-  weights2 = as.numeric(weights2[upper.tri(weights2)])
+  pl.weights = NULL
+  if (length(x$weights) > 0L) {
+    weights1 = x$weights[[1L]]
+    weights2 = x$weights[[2L]]
 
-  dd = data.frame(w1 = weights1, w2 = weights2)
-  pl.weights = ggplot2::ggplot(dd, aes_string(x = "w1", y = "w2")) + ggplot2::geom_point()
-  pl.weights = pl.weights + 
-    ggplot2::ggtitle("Edge weights", subtitle = collapse(paste(names(dd), x$weight.types, sep = " : "), sep = ","))
-  pl.weights = pl.weights + xlab(expression(w[1])) + ylab(expression(w[2]))
+    # do not show high values
+    if (!is.null(x$adj.mat)) {
+      weights1[x$adj.mat == 0] = NA
+      weights2[x$adj.mat == 0] = NA
+    }
 
-  
-  
+    weights1 = as.numeric(weights1[upper.tri(weights1)])
+    weights2 = as.numeric(weights2[upper.tri(weights2)])
+
+    dd = data.frame(w1 = weights1, w2 = weights2)
+    pl.weights = ggplot2::ggplot(dd, aes_string(x = "w1", y = "w2")) + ggplot2::geom_point()
+    pl.weights = pl.weights +
+      ggplot2::ggtitle("Edge weights", subtitle = collapse(paste(names(dd), x$weight.types, sep = " : "), sep = ", "))
+    pl.weights = pl.weights + xlab(expression(w[1])) + ylab(expression(w[2]))
+  }
+
   return(list(pl.coords = pl.coords, pl.weights = pl.weights))
 }

@@ -30,7 +30,8 @@
 genRandomMCGP = function(n) {
   n = asInt(n, lower = 2L)
   g = mcGP(lower = 10, upper = 100)
-  g = addWeights(g, n = n, method = "random", weight.fun = runif, symmetric = TRUE, min = 10, max = 100)
+  g = addCoordinates(g, n = n, generator = coordGrid)
+  g = addWeights(g, method = "random", weight.fun = runif, symmetric = TRUE, min = 10, max = 100)
   g = addWeights(g, method = "random", weight.fun = runif, symmetric = TRUE, min = 10, max = 50)
   return(g)
 }

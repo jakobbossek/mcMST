@@ -5,7 +5,7 @@
 \title{Add weights to a multi-objective graph.}
 \usage{
 addWeights(graph, method = "euclidean", weights = NULL, weight.fun = NULL,
-  n = NULL, symmetric = TRUE, ...)
+  symmetric = TRUE, rho = 0.5, ...)
 }
 \arguments{
 \item{graph}{[\code{mcGP}]\cr
@@ -28,11 +28,6 @@ Default is \code{NULL}.}
 Function used to generate weights. The first arument needs to be number of weights
 to generate.}
 
-\item{n}{[\code{integer(1)}]\cr
-Number of nodes. This is required only if there are no coordinates or no weights
-until now.
-Default is \code{NULL}, i.e., the number of nodes is extracted from \code{graph}.}
-
 \item{symmetric}{[\code{logical(1)}]\cr
 Should the weights be symmetric, i.e., w(i, j) = w(j, i) for each pair i, j of nodes?
 Default is \code{TRUE}.}
@@ -40,6 +35,11 @@ Default is \code{TRUE}.}
 \item{...}{[any]\cr
 Additional arguments passed down to \code{weight.fun} or \code{\link[stats]{dist}}. See
 documentation of argument \code{method} for details.}
+
+\item{n}{[\code{integer(1)}]\cr
+Number of nodes. This is required only if there are no coordinates or no weights
+until now.
+Default is \code{NULL}, i.e., the number of nodes is extracted from \code{graph}.}
 }
 \value{
 [\code{mcGP}] Multi-objective graph problem.
@@ -51,6 +51,6 @@ case \code{\link[stats]{dist}} is applied with the cooresponding \code{method}).
 Alternatively, all kinds of random weights can be generated.
 }
 \seealso{
-Other graph generators: \code{\link{addCenters}},
-  \code{\link{addCoordinates}}, \code{\link{mcGP}}
+Other graph generators: \code{\link{addCoordinates}},
+  \code{\link{addEdges}}, \code{\link{mcGP}}
 }

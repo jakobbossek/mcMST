@@ -4,7 +4,8 @@
 \alias{addCoordinates}
 \title{Add node coordinates to graph.}
 \usage{
-addCoordinates(graph, n, generator, by.centers = FALSE, par.fun = NULL, ...)
+addCoordinates(graph, n, generator, coordinates = NULL, by.centers = FALSE,
+  par.fun = NULL, ...)
 }
 \arguments{
 \item{graph}{[\code{mcGP}]\cr
@@ -21,6 +22,13 @@ coordinates.}
 Function used to generate coordinates. The generator needs to expect the number
 of points to generate as the first argument \code{n}. Additional control argument are
 possible.}
+
+\item{coordinates}{[\code{matrix(n, 2)}]\cr
+Matrix of coordinates (each row is one point).
+Default is \code{NULL}. If this is set, setting of \code{generator}, \code{by.centers},
+and \code{par.fun} are ignored. This parameter is handy, if one wants to add
+coordinates by hand.
+Default is \code{NULL}.}
 
 \item{by.centers}{[\code{logical(1)}]\cr
 Should coordinates be placed for each cluster center seperately? This enables
@@ -42,6 +50,6 @@ Furhter arguments passed down to \code{generator}.}
 Places node coordinates in the two-dimensional euclidean plane.
 }
 \seealso{
-Other graph generators: \code{\link{addCenters}},
+Other graph generators: \code{\link{addEdges}},
   \code{\link{addWeights}}, \code{\link{mcGP}}
 }

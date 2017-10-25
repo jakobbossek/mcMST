@@ -1,8 +1,11 @@
 #' @title Generate a bare multi-objective graph.
 #'
-#' @description This function generates a bare multi-objective weights. The generated
+#' @description This function generates a bare multi-objective graph. The generated
 #' object does not contain nodes, edges or edge weights. It serves as a starting
-#' point for the step-by-step construction of multi-objective graph problem.
+#' point for a three step-approach of multi-objective graph problem construction:
+#' 1) Add nodes respectively coordinates via \code{\link{addCoordinates}}, add edges
+#' via \code{\link{addEdges}} and finally add edge weights with the function
+#' \code{\link{addWeights}}.
 #'
 #' @param lower [\code{integer(1)}]\cr
 #'   Lower bounds for coordinates.
@@ -29,8 +32,10 @@ mcGP = function(lower, upper) {
     n.nodes = 0L,
     n.weights = 0L,
     weight.types = character(0L),
+    node.types = character(0L),
     weights = list(),
     membership = NULL,
+    coordinates = NULL,
     classes = "mcGP")
 }
 
@@ -49,8 +54,10 @@ print.mcGP = function(x, ...) {
 #' @description Functions for the placement of node coordinates in the
 #' euclidean plane. Function \code{coordLHS} generates a space-filling
 #' latin hypercube sample, \code{coordUniform} samples points from a
-#' bivariate uniform distribution and \code{coordGrid} generates a regular
-#' grid of points.
+#' bivariate uniform distribution, \code{coordGrid} generates a regular
+#' grid of points, \code{coordTriangular} generates a regular triangular
+#' grid and \code{coordNormal} generates nodes on basis of a normal
+#' distribution.
 #'
 #' @param n [\code{integer(1)}]\cr
 #'   Number of points to generate.
@@ -63,6 +70,18 @@ print.mcGP = function(x, ...) {
 #' @param method [\code{function}]\cr
 #'   Function from package \pkg{lhs}.
 #'   Default is \code{\link[lhs]{maximinLHS}}.
+#' @param x.mean [\code{numeric}]\cr
+#'   Mean value of normal distribution for x-value generation.
+#'   Only relevant for \code{\link{coordNormal}}.
+#' @param x.sd [\code{numeric}]\cr
+#'   Standard deviation of normal distribution for x-value generation.
+#'   Only relevant for \code{\link{coordNormal}}.
+#' @param y.mean [\code{numeric}]\cr
+#'   Mean value of normal distribution for y-value generation.
+#'   Only relevant for \code{\link{coordNormal}}.
+#' @param y.sd [\code{numeric}]\cr
+#'   Standard deviation of normal distribution for y-value generation.
+#'   Only relevant for \code{\link{coordNormal}}.
 #' @return [\code{matrix(n, 2)}] Matrix of node coordinates.
 #' @rdname coordGenerators
 #' @name coordGenerators
@@ -91,9 +110,25 @@ coordUniform = function(n, lower, upper) {
 
 #' @export
 #' @rdname coordGenerators
+coordTriangular = function(n, lower, upper) {
+  m = sqrt(n)
+  # determine offset of each second line
+  d = (upper[1] - lower[1]) / (m - 1)
+  d = d / 2
+  print(d)
+  print(m)
+  offset = rep(c(rep(0, m), rep(d, m)), m)[1:n]
+  print(offset)
+  coords = coordGrid(n, lower, upper)
+  coords[, 1L] = coords[, 1L] + offset
+  return(coords)
+}
+
+#' @export
+#' @rdname coordGenerators
 coordGrid = function(n, lower, upper) {
   m = sqrt(n)
-  x1 = seq(lower[1], upper[2], length.out = m)
+  x1 = seq(lower[1], upper[1], length.out = m)
   x2 = seq(lower[2], upper[2], length.out = m)
   coords = expand.grid(x1, x2)
   names(coords) = NULL
@@ -101,51 +136,17 @@ coordGrid = function(n, lower, upper) {
   return(coords)
 }
 
-#' @title Add cluster centers to graph.
-#'
-#' @description Places \code{n.centers} cluster centers in the two-dimensional
-#' euclidean plane by means of a \code{generator}, e.g., by Latin-Hypercube-Sampling (LHS).
-#'
-#' @template arg_mcGP
-#' @param n.centers [\code{integer(1)}]\cr
-#'   Number of cluster centers.
-#' @param center.coordinates [\code{matrix(n, 2)}]\cr
-#'   Matrix of center coordinates (each row is one point).
-#'   Default is \code{NULL}. If this is set, \code{n.centers} and \code{generator}
-#'   are ignored.
-#' @param generator [\code{function(n, ...)}]\cr
-#'   Function used to generate cluster centers. The generator needs to expect the number
-#'   of points to generate as the first argument \code{n}. Additional control argument are
-#'   possible.
-#' @param ... [any]\cr
-#'   Additional arguments passed down to \code{generator}.
-#' @template ret_mcGP
-#' @family graph generators
 #' @export
-addCenters = function(graph, n.centers = NULL, center.coordinates = NULL, generator = NULL, ...) {
-  # sanity checks
-  assertClass(graph, "mcGP")
-  if (!is.null(n.centers))
-    n.centers = asInt(n.centers, lower = 2L)
-  assertFunction(generator, null.ok = TRUE)
+#' @rdname coordGenerators
+coordNormal = function(n, lower, upper, x.mean, x.sd, y.mean, y.sd) {
+  x1 = rnorm(n, x.mean, x.sd)
+  x2 = rnorm(n, y.mean, y.sd)
 
-  # more sanity checks
-  if (!is.null(graph$coordinates))
-    stopf("Graph already has coordinates! Place centers before coordinates.")
-  if (!is.null(graph$center.coordinates))
-    stopf("Cluster centers already placed.")
-  if (is.null(n.centers) & is.null(center.coordinates))
-    stopf("At least one of n.centers and center.coordinates must not be NULL.")
+  x1 = pmin(pmax(x1, lower[1L]), upper[1L])
+  x2 = pmin(pmax(x2, lower[2L]), upper[2L])
 
-  if (is.null(center.coordinates))
-    center.coordinates = generator(n.centers, lower = graph$lower, upper = graph$upper, ...)
-
-  # generate cluster centers
-  graph$center.coordinates = center.coordinates
-  graph$n.clusters = nrow(center.coordinates)
-  if (!("mcGP_clustered" %in% class(graph)))
-    graph = addClasses(graph, "mcGP_clustered")
-  return(graph)
+  coords = cbind(x1, x2)
+  return(coords)
 }
 
 #' @title Add node coordinates to graph.
@@ -159,6 +160,12 @@ addCenters = function(graph, n.centers = NULL, center.coordinates = NULL, genera
 #'   v[i] coordinates are generated for each cluster. However, if a single value is
 #'   passed and \code{by.center == TRUE}, each cluster is assigned the same number of
 #'   coordinates.
+#' @param coordinates [\code{matrix(n, 2)}]\cr
+#'   Matrix of coordinates (each row is one point).
+#'   Default is \code{NULL}. If this is set, setting of \code{generator}, \code{by.centers},
+#'   and \code{par.fun} are ignored. This parameter is handy, if one wants to add
+#'   coordinates by hand.
+#'   Default is \code{NULL}.
 #' @param generator [\code{function(n, ...)}]\cr
 #'   Function used to generate coordinates. The generator needs to expect the number
 #'   of points to generate as the first argument \code{n}. Additional control argument are
@@ -176,15 +183,18 @@ addCenters = function(graph, n.centers = NULL, center.coordinates = NULL, genera
 #' @template ret_mcGP
 #' @family graph generators
 #' @export
-addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NULL, ...) {
+addCoordinates = function(graph, n, generator, coordinates = NULL, by.centers = FALSE, par.fun = NULL, ...) {
   assertClass(graph, "mcGP")
-  n = asInteger(n, lower = 1L, any.missing = FALSE, all.missing = FALSE)
-  if (length(n) > 1L & !by.centers)
-    stopf("addCoordinates: vector of length > 1 for n only allowed if by.centers = TRUE.")
+  if (!is.null(coordinates)) {
+    assertMatrix(coordinates, mode = "numeric", min.rows = 1L, ncols = 2L, any.missing = FALSE, all.missing = FALSE)
+    n = nrow(coordinates)
+  }
+  n = asInt(n, lower = 1L)
   assertFlag(by.centers)
   assertFunction(par.fun, null.ok = TRUE)
 
   membership = NULL
+  node.type = NULL
 
   # Helper function which aligns points with lower left point in [0,0].
   #
@@ -196,31 +206,41 @@ addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NUL
     t(t(cluster.centers) + offset)
   }
 
-  if (!by.centers) {
+  # if coordinates are passed, ignore the rest and add them
+  if (!is.null(coordinates)) {
+    coords = coordinates
+    membership = if (graph$n.clusters == 0) rep(0, n) else rep(max(graph$membership) + 1L, n)
+    node.type = "manual"
+  }
+  # if no two-phase approach simply delegate to coordinate generator
+  else if (!by.centers) {
     coords = generator(n, lower = graph$lower, upper = graph$upper, ...)
+    membership = if (graph$n.clusters == 0) rep(0, n) else rep(max(graph$membership) + 1L, n)
+    node.type = "random"
+  # otherwise use existing coordinates as cluster centers and place around them
   } else {
-    nc = graph$n.clusters
-    if (length(n) == nc) {
-      n.per.cluster2 = n
-    } else {
-      n.per.cluster = floor(n / nc)
-      n.per.cluster2 = rep(n.per.cluster, nc)
-      if (nc * n.per.cluster != n) {
-        idx = sample(seq_len(nc), 1L)
-        n.per.cluster2[idx] = n.per.cluster2[idx] + 1L
-      }
-    }
+    # use current nodes as center coordinates
+    center.coordinates = graph$coordinates
+    if (graph$n.clusters > 0L)
+      stopf("Currently one can add clusters only once!")
+    nc = graph$n.nodes
+    graph$n.clusters = nc
+    graph$center.coordinates = center.coordinates
+    # currently we allow only one "level" of clustering
+    # thus we can set the membership here already
+    graph$membership = 1:nc
+    n = rep(n, nc)
     coords = lapply(seq_len(nc), function(i) {
-      gen.args = list(n = n.per.cluster2[i])
+      gen.args = list(n = n[i])
       # generate coordinates in origin
       if (!is.null(par.fun))
-        gen.args = c(gen.args, par.fun(graph$center.coordinates[i, ]))
+        gen.args = c(gen.args, par.fun(center.coordinates[i, ]))
       gen.args = c(gen.args, list(...))
       coords.cluster = do.call(generator, gen.args)
 
-      coords.cluster = moveToOrigin(coords.cluster)
+      #coords.cluster = moveToOrigin(coords.cluster)
       rects = apply(apply(coords.cluster, 2L, range), 2L, diff)
-      cl.center = graph$center.coordinates[i, ]
+      cl.center = center.coordinates[i, ]
       # now move the way that centers are in fact centers
       #FIXME: ugly as hell
       coords.cluster = t(t(coords.cluster) + cl.center - rects / 2)
@@ -229,40 +249,78 @@ addCoordinates = function(graph, n, generator, by.centers = FALSE, par.fun = NUL
     # concatenate coordinates
     coords = do.call(rbind, coords)
     # assign membership (we know which cluster belongs to which center)
-    membership = rep(1:nc, n.per.cluster2)
+    membership = rep(1:nc, each = n[1L])
+    node.type = "cluster"
   }
   # update meta data of graph
   graph$n.nodes = if (!is.null(graph$n.nodes)) graph$n.nodes + sum(n) else sum(n)
   graph$coordinates = if (!is.null(graph$coordinates)) rbind(graph$coordinates, coords) else coords
-  graph$membership = if (!is.null(graph$membership)) c(graph$membership, if (by.centers) membership else rep(0, nrow(coords))) else membership
+  graph$membership = if (!is.null(graph$membership)) c(graph$membership, membership)
+  graph$node.types = c(graph$node.types, node.type)
   return(graph)
 }
 
-# @title Define edges in multi-objective graph.
-#
-# @description By default \code{\link{addWeights}} generates n(n-1)/2 weights, i.e.,
-# the graph is assumed to be complete. This method allows to defne an adjacency
-# matrix to make the graph more sparse.
-#
-# @note Minimal implementation. No support so far.
-#
-# @template arg_mcGP
-# @param method [\code{function(...)}]\cr
-#   Method applied to \code{graph} in order to determine which edges to keep.
-# @family graph generators
-# @template ret_mcGP
-addEdges = function(graph, method = NULL) { # nocov start
+#' @title Define edges in multi-objective graph.
+#'
+#' @description By default \code{\link{addWeights}} generates n(n-1)/2 weights, i.e.,
+#' the graph is assumed to be complete. This method allows to defne an adjacency
+#' matrix to make the graph more sparse.
+#'
+#' @note Minimal implementation. No support so far.
+#'
+#' @template arg_mcGP
+#' @param method [\code{function(...)}]\cr
+#'   Method applied to \code{graph} in order to determine which edges to keep.
+#'   Possible values are \dQuote{onion} or \dQuote{delauney}.
+#' @family graph generators
+#' @template ret_mcGP
+addEdges = function(graph, method = "onion") { # nocov start
   assertClass(graph, "mcGP")
-  assertFunction(method, null.ok = TRUE)
-  adj.mat = matrix(1L, ncol = graph$n.nodes, nrow = graph$n.nodes)
-  diag(adj.mat) = 0
+  assertChoice(method, choices = c("onion", "delauney"))
+
+  adj.mat = matrix(0L, ncol = graph$n.nodes, nrow = graph$n.nodes)
+  #diag(adj.mat) = 0
+
+  # k-konvex hull approach
+  #FIXME: links between node sets of onion layers
+  if (method == "onion") {
+    coordinates2 = graph$coordinates
+    # which coordinates are already done?
+    coords.done = rep(FALSE, graph$n.nodes)
+    # indizes of coordinates not yet "onioned"
+    # Needed as mapping for indices of coordinate matrix
+    idx = which(!coords.done)
+    n.edges = 0L
+    while (TRUE) {
+      # compute hull of remaining points
+      ch = chull(coordinates2[!coords.done, , drop = FALSE])
+      n.edges = n.edges + length(ch) - 1L
+      # close hull
+      ch = c(ch, ch[1L])
+      # set edges
+      for (i in (seq_along(ch) - 1L)) {
+        adj.mat[idx[ch[i]], idx[ch[i + 1L]]] = 1L
+        adj.mat[idx[ch[i + 1L]], idx[ch[i]]] = 1L
+      }
+      # update managing stuff
+      coords.done[idx[ch]] = TRUE
+      idx = which(!coords.done)
+      if (sum(coords.done) == graph$n.nodes)
+        break
+    }
+    print(n.edges)
+  } else if (method == "delauney") {
+    requirePackages("deldir", why = "mcMST:addEdges")
+    # compute triangulation
+    # The 5, 6 colums contains the indizes of the points
+    dt = deldir(as.data.frame(graph$coordinates))$delsgs[, 5:6]
+    for (i in seq_row(dt)) {
+      adj.mat[dt[i, 1L], dt[i, 2L]] = 1
+    }
+  }
   graph$adj.mat = adj.mat
   return(graph)
 } # nocov end
-
-# edgesGrid = function(coordinates) {
-
-# }
 
 #' @title Add weights to a multi-objective graph.
 #'
@@ -299,20 +357,13 @@ addEdges = function(graph, method = NULL) { # nocov start
 #' @template ret_mcGP
 #' @family graph generators
 #' @export
-addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = NULL, n = NULL, symmetric = TRUE, ...) {
+addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = NULL, symmetric = TRUE, rho = 0.5, ...) {
   assertClass(graph, "mcGP")
-  assertChoice(method, choices = c("euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski", "random"))
+  assertChoice(method, choices = c("correlated", "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski", "random"))
 
   n.nodes = graph$n.nodes
-  # check if graph has coordinates or weights already
-  if (n.nodes == 0L) {
-    if (!is.null(weights))
-      n.nodes = ncol(weights)
-    else
-      n.nodes = n
-    if (is.null(n.nodes))
-      stopf("addWeights: number of nodes unknown. Please pass parameter 'n'.")
-  }
+  if (n.nodes == 0)
+    stopf("addWeights: first place nodes/coordinates.")
 
   if (!is.null(weights))
     assertMatrix(weights, nrows = n.nodes, ncols = n.nodes, mode = "numeric")
@@ -321,17 +372,55 @@ addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = 
   n.weights = if (is.null(ws)) 0L else length(ws)
 
   if (!is.null(weights)) {
-    ww = weights
+    graph$weights[[n.weights + 1L]] = weights
+    graph$n.weights = graph$n.weights + 1L
+    graph$weight.types = c(graph$weight.types, "unknown")
+  } else if (method == "correlated") {
+    # get euclidean coordinates
+    ww.euc = as.matrix(dist(graph$coordinates, method = "euclidean", ...))
+    ww.euc.num = as.numeric(ww.euc)
+    m = length(ww.euc.num)
+    W = matrix(
+      c(
+        rep(1, m),
+        ww.euc.num,
+        runif(m, -1, 1)
+      ),
+    byrow = FALSE,
+    ncol = 3L)
+
+    # QR-decomposition
+    Q = qr.Q(qr(W))
+
+    T = matrix(c(1, rho, sqrt(1 - rho^2)), ncol = 3L)
+    Y = T %*% t(Q)
+
+    # normalize Y
+    Y = (Y * graph$upper[1L])
+    Y = Y + abs(min(Y)) + 10
+    Y = matrix(Y, ncol = nrow(ww.euc))
+    diag(Y) = 0
+
+    if (!is.null(graph$adj.mat)) {
+      ww.euc[graph$adj.mat == 0] = 10000 #FIXME: numeric infinity value
+      Y[graph$adj.mat == 0] = 10000 #FIXME: numeric infinity value
+    }
+
+    graph$weights[[n.weights + 1L]] = ww.euc
+    graph$weights[[n.weights + 2L]] = Y
+    graph$n.weights = graph$n.weights + 2L
+    graph$weight.types = c(graph$weight.types, c("euclidean", sprintf("%.2f-correlated", rho)))
   } else if (method != "random") {
     if (is.null(graph$coordinates))
       stopf("Method '%s' needs coordinates.", method)
     ww = as.matrix(dist(graph$coordinates, method = method, ...))
-    # if not all edges exist, set the remaining to infinifty
-    # but keep zero distances on the diagonal
-    if (!is.null(graph$adj.mat)) { # nocov start
-      ww[graph$adj.mat == 0] = Inf
-      diag(ww) = 0
-    } # nocov end
+
+    if (!is.null(graph$adj.mat))
+      ww[graph$adj.mat == 0] = 10000 #FIXME: numeric infinity value
+
+    graph$weights[[n.weights + 1L]] = ww
+    graph$n.weights = graph$n.weights + 1L
+    graph$weight.types = c(graph$weight.types, "distance")
   } else {
     if (is.null(weight.fun))
       stopf("You need to pass a weight fun.")
@@ -349,14 +438,11 @@ addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = 
     }
 
     if (!is.null(graph$adj.mat))
-      ww[graph$adj.mat == 0] = Inf #FIXME: numeric infinity value
+      ww[graph$adj.mat == 0] = 10000 #FIXME: numeric infinity value
+    graph$weights[[n.weights + 1L]] = ww
+    graph$n.weights = graph$n.weights + 1L
+    graph$weight.types = c(graph$weight.types, "random")
   }
-  graph$weights[[n.weights + 1L]] = ww
-  wtype = if (!is.null(weights)) "manual" else ifelse(method != "random", "distance", "random")
-  graph$weight.types = c(graph$weight.types, wtype)
-  graph$n.weights = graph$n.weights + 1L
 
-  if (graph$n.nodes == 0L)
-    graph$n.nodes = graph$n.nodes + n.nodes
   return(graph)
 }

@@ -24,9 +24,8 @@ test_that("graph generation: simple 2o graph", {
 
 test_that("graph generation: complex clustered graph", {
   g = mcGP(lower = 0, upper = 100)
-  g = addCenters(g, n.centers = 3L, generator = coordLHS)
-  g = addCoordinates(g, n = c(5L, 10L, 15), by.centers = TRUE, generator = coordUniform, lower = c(0, 0), upper = c(1, 1))
-  g = addCoordinates(g, n = 22, by.centers = TRUE, generator = coordUniform, lower = c(0, 0), upper = c(1, 1))
+  g = addCoordinates(g, n = 3L, generator = coordLHS)
+  g = addCoordinates(g, n = 9L, by.centers = TRUE, generator = coordUniform, lower = c(0, 0), upper = c(1, 1))
   g = addCoordinates(g, n = 100L, generator = coordGrid)
   g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.3)
   g = addWeights(g, method = "minkowski", p = 2.5, symmetric = FALSE)
@@ -40,7 +39,7 @@ test_that("graph generation: complex clustered graph", {
   })
 
   expect_class(g, "mcGP")
-  expect_true(g$n.nodes == 152L)
+  expect_true(g$n.nodes == 130L)
   expect_true(g$n.clusters == 3L)
   expect_true(g$n.weights == 3L)
   expect_list(g$weights, types = "matrix", any.missing = FALSE, all.missing = FALSE, len = g$n.weights)
@@ -54,17 +53,17 @@ test_that("graph generation: complex clustered graph", {
 test_that("graph generation: manual passing of coordinates weights works", {
   g = mcGP(lower = 0, upper = 10)
   center.coordinates = matrix(c(1, 2, 2, 5, 8, 3), byrow = TRUE, ncol = 2L)
-  g = addCenters(g, center.coordinates = center.coordinates)
+  g = addCoordinates(g, coordinates = center.coordinates)
+  g = addCoordinates(g, n = 9L, by.centers = TRUE, generator = coordGrid, lower = c(0, 0), upper = c(2, 2))
   expect_equal(center.coordinates, g$center.coordinates)
-  expect_true(g$n.clusters == nrow(center.coordinates))
-  weights = diag(10)
+  weights = diag(30)
   g = addWeights(g, weights = weights)
   g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.3)
   weights[1, 4] = 4
   g = addWeights(g, weights = weights)
 
   expect_class(g, "mcGP")
-  expect_true(g$n.nodes == 10L)
+  expect_true(g$n.nodes == 30L)
   expect_true(g$n.clusters == 3L)
   expect_true(g$n.weights == 3L)
   expect_list(g$weights, types = "matrix", any.missing = FALSE, all.missing = FALSE, len = g$n.weights)
@@ -78,5 +77,5 @@ test_that("graph generation: check correct error messages", {
   expect_error(mcGP(lower = 10, upper = 5))
 
   g = mcGP(lower = 0, upper = 100)
-  expect_error(addWeights(g, method = "euclidean"), regexp = "number of nodes")
+  expect_error(addWeights(g, method = "euclidean"), regexp = "first place")
 })

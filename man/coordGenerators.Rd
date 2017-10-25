@@ -4,14 +4,20 @@
 \alias{coordGenerators}
 \alias{coordLHS}
 \alias{coordUniform}
+\alias{coordTriangular}
 \alias{coordGrid}
+\alias{coordNormal}
 \title{Coordinate generators.}
 \usage{
 coordLHS(n, lower = 0, upper = 1, method = NULL)
 
 coordUniform(n, lower, upper)
 
+coordTriangular(n, lower, upper)
+
 coordGrid(n, lower, upper)
+
+coordNormal(n, lower, upper, x.mean, x.sd, y.mean, y.sd)
 }
 \arguments{
 \item{n}{[\code{integer(1)}]\cr
@@ -28,6 +34,22 @@ Default is 1.}
 \item{method}{[\code{function}]\cr
 Function from package \pkg{lhs}.
 Default is \code{\link[lhs]{maximinLHS}}.}
+
+\item{x.mean}{[\code{numeric}]\cr
+Mean value of normal distribution for x-value generation.
+Only relevant for \code{\link{coordNormal}}.}
+
+\item{x.sd}{[\code{numeric}]\cr
+Standard deviation of normal distribution for x-value generation.
+Only relevant for \code{\link{coordNormal}}.}
+
+\item{y.mean}{[\code{numeric}]\cr
+Mean value of normal distribution for y-value generation.
+Only relevant for \code{\link{coordNormal}}.}
+
+\item{y.sd}{[\code{numeric}]\cr
+Standard deviation of normal distribution for y-value generation.
+Only relevant for \code{\link{coordNormal}}.}
 }
 \value{
 [\code{matrix(n, 2)}] Matrix of node coordinates.
@@ -36,6 +58,8 @@ Default is \code{\link[lhs]{maximinLHS}}.}
 Functions for the placement of node coordinates in the
 euclidean plane. Function \code{coordLHS} generates a space-filling
 latin hypercube sample, \code{coordUniform} samples points from a
-bivariate uniform distribution and \code{coordGrid} generates a regular
-grid of points.
+bivariate uniform distribution, \code{coordGrid} generates a regular
+grid of points, \code{coordTriangular} generates a regular triangular
+grid and \code{coordNormal} generates nodes on basis of a normal
+distribution.
 }

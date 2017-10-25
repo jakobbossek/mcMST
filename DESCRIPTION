@@ -20,7 +20,8 @@ Imports:
     gtools,
     vegan,
     ggplot2 (>= 1.0.0),
-    lhs
+    lhs,
+    deldir
 Suggests:
     testthat (>= 0.9.1),
     knitr,
