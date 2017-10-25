@@ -1,3 +1,7 @@
+# mcMST 1.1.0
+
+* added genRandomSpanningTree(s)
+
 # mcMST 1.0.1
 
 * improved documentation
