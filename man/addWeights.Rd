@@ -5,7 +5,7 @@
 \title{Add weights to a multi-objective graph.}
 \usage{
 addWeights(graph, method = "euclidean", weights = NULL, weight.fun = NULL,
-  symmetric = TRUE, rho = 0.5, ...)
+  symmetric = TRUE, to.int = FALSE, rho = 0.5, ...)
 }
 \arguments{
 \item{graph}{[\code{mcGP}]\cr
@@ -32,14 +32,17 @@ to generate.}
 Should the weights be symmetric, i.e., w(i, j) = w(j, i) for each pair i, j of nodes?
 Default is \code{TRUE}.}
 
+\item{to.int}{[\code{logical(1)}]\cr
+Should weights be rounded to integer?
+Default is \code{FALSE}.}
+
+\item{rho}{[\code{numeric(1)}]\cr
+Correlation of edges weights for \code{method} \dQuote{correlated}.
+Default is \code{0.5}.}
+
 \item{...}{[any]\cr
 Additional arguments passed down to \code{weight.fun} or \code{\link[stats]{dist}}. See
 documentation of argument \code{method} for details.}
-
-\item{n}{[\code{integer(1)}]\cr
-Number of nodes. This is required only if there are no coordinates or no weights
-until now.
-Default is \code{NULL}, i.e., the number of nodes is extracted from \code{graph}.}
 }
 \value{
 [\code{mcGP}] Multi-objective graph problem.

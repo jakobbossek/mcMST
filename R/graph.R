@@ -315,7 +315,8 @@ addEdges = function(graph, method = "onion") { # nocov start
     # The 5, 6 colums contains the indizes of the points
     dt = deldir(as.data.frame(graph$coordinates))$delsgs[, 5:6]
     for (i in seq_row(dt)) {
-      adj.mat[dt[i, 1L], dt[i, 2L]] = 1
+      adj.mat[dt[i, 1L], dt[i, 2L]] = 1L
+      adj.mat[dt[i, 2L], dt[i, 1L]] = 1L
     }
   }
   graph$adj.mat = adj.mat
@@ -344,22 +345,26 @@ addEdges = function(graph, method = "onion") { # nocov start
 #' @param weight.fun [\code{function(m, ...) | NULL}]\cr
 #'   Function used to generate weights. The first arument needs to be number of weights
 #'   to generate.
-#' @param n [\code{integer(1)}]\cr
-#'   Number of nodes. This is required only if there are no coordinates or no weights
-#'   until now.
-#'   Default is \code{NULL}, i.e., the number of nodes is extracted from \code{graph}.
 #' @param symmetric [\code{logical(1)}]\cr
 #'   Should the weights be symmetric, i.e., w(i, j) = w(j, i) for each pair i, j of nodes?
 #'   Default is \code{TRUE}.
+#' @param to.int [\code{logical(1)}]\cr
+#'   Should weights be rounded to integer?
+#'   Default is \code{FALSE}.
+#' @param rho [\code{numeric(1)}]\cr
+#'   Correlation of edges weights for \code{method} \dQuote{correlated}.
+#'   Default is \code{0.5}.
 #' @param ... [any]\cr
 #'   Additional arguments passed down to \code{weight.fun} or \code{\link[stats]{dist}}. See
 #'   documentation of argument \code{method} for details.
 #' @template ret_mcGP
 #' @family graph generators
 #' @export
-addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = NULL, symmetric = TRUE, rho = 0.5, ...) {
+addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = NULL, symmetric = TRUE, to.int = FALSE, rho = 0.5, ...) {
   assertClass(graph, "mcGP")
   assertChoice(method, choices = c("correlated", "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski", "random"))
+  assertFlag(to.int)
+  assertNumber(rho, lower = -1, upper = 1)
 
   n.nodes = graph$n.nodes
   if (n.nodes == 0)

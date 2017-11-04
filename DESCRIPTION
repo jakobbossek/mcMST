@@ -21,7 +21,8 @@ Imports:
     vegan,
     ggplot2 (>= 1.0.0),
     lhs,
-    deldir
+    deldir,
+    grDevices
 Suggests:
     testthat (>= 0.9.1),
     knitr,

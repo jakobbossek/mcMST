@@ -59,7 +59,7 @@ plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, ...) {
             x2 = coords[2L, 1L], y2 = coords[2L, 2L]))
         }
       }
-      pl.coords = pl.coords + geom_segment(data = edges, aes(x = x1, y = y1, xend = x2, yend = y2))
+      pl.coords = pl.coords + geom_segment(data = edges, aes_string(x = "x1", y = "y1", xend = "x2", yend = "y2"))
     }
 
     pl.coords = pl.coords +
