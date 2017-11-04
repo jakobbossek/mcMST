@@ -4,7 +4,8 @@
 \alias{getExactFront}
 \title{Enumerate all Pareto-optimal solutions.}
 \usage{
-getExactFront(instance, obj.fun, enumerator.fun, n.objectives)
+getExactFront(instance, obj.fun, enumerator.fun, n.objectives,
+  simplify = TRUE)
 }
 \arguments{
 \item{instance}{[any]\cr
@@ -22,6 +23,12 @@ number of nodes for a graph problem.}
 
 \item{n.objectives}{[\code{integer(1)}]\cr
 Number of objectives of problem.}
+
+\item{simplify}{[\code{logical(1)}]\cr
+Should pareto set be simplified to matrix?
+This will only be done if all elements are of the same length. Otherwise
+the parameter will be ignored.
+Default is \code{TRUE}.}
 }
 \value{
 [\code{list}] List with elements \code{pareto.set} (matrix of Pareto-optimal solutions)

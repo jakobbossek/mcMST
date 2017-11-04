@@ -22,6 +22,11 @@
 #'   number of nodes for a graph problem.
 #' @param n.objectives [\code{integer(1)}]\cr
 #'   Number of objectives of problem.
+#' @param simplify [\code{logical(1)}]\cr
+#'   Should pareto set be simplified to matrix?
+#'   This will only be done if all elements are of the same length. Otherwise
+#'   the parameter will be ignored.
+#'   Default is \code{TRUE}.
 #' @return [\code{list}] List with elements \code{pareto.set} (matrix of Pareto-optimal solutions)
 #' and \code{pareto.front} (matrix of corresponding weight vectors).
 #' @examples
@@ -41,10 +46,11 @@
 #' plot(res$pareto.front)
 #' }
 #' @export
-getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives) {
+getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives, simplify = TRUE) {
   assertFunction(obj.fun)
   assertFunction(enumerator.fun, args = "n")
   n.objectives = asInt(n.objectives, lower = 2L)
+  assertFlag(simplify)
 
   n.nodes = instance$n.nodes
   if (n.nodes > 10L)
@@ -52,10 +58,14 @@ getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives) {
 
   # allocate really large vector of permutations
   pp = enumerator.fun(n.nodes)
-  n.sols = nrow(pp)
-  len.sol = ncol(pp)
+  n.sols = if (is.matrix(pp)) nrow(pp) else length(pp)
 
-  pareto.set = matrix(ncol = len.sol, nrow = 0L)
+  # convert to list in any case
+  matrix.pp = is.matrix(pp)
+  if (matrix.pp)
+    pp = lapply(1:nrow(pp), function(i) pp[i, ])
+
+  pareto.set = list()
   pareto.front = matrix(nrow = n.objectives, ncol = 0L)
 
   n.step = 1000L
@@ -64,19 +74,31 @@ getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives) {
   # non-domination check for n^(n-2) elements.
   i = 1L
   while (i < n.sols) {
+    # which elements to check next
     j = min(i + n.step, n.sols)
-    weights = apply(pp[i:j, , drop = FALSE], 1L, obj.fun, instance)
 
-    pareto.set = rbind(pareto.set, pp[i:j, , drop = FALSE])
+    # compute objectives
+    weights = lapply(pp[i:j], obj.fun, instance)
+    weights = do.call(cbind, weights)
+
+    # update sets
+    pareto.set = c(pareto.set, pp[i:j])
     pareto.front = cbind(pareto.front, weights)
 
+    # filter dominated
     idx.nondom = ecr::which.nondominated(pareto.front)
-    pareto.set = pareto.set[idx.nondom, , drop = FALSE]
+    pareto.set = pareto.set[idx.nondom]
     pareto.front = pareto.front[, idx.nondom, drop = FALSE]
     i = j + 1L
   }
 
-  return(list(pareto.set = pareto.set, pareto.front = pareto.front))
+  if (simplify & matrix.pp)
+    pareto.set = do.call(rbind, pareto.set)
+
+  return(list(
+    pareto.set = pareto.set,
+    pareto.front = pareto.front)
+  )
 }
 
 getExactFrontMCMST = function(instance) {
