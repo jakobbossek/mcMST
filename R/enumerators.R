@@ -27,6 +27,6 @@ enumerateTSP = function(n) {
 #' @export
 enumerateMST = function(n) {
   n = asInt(n, lower = 3L)
-  requirePackages("gtools", why = "mcMST::enumerateMCMST")
+  requirePackages("gtools", why = "mcMST::enumerateMST")
   gtools::permutations(n, n - 2L, seq_len(n), repeats.allowed = TRUE)
 }
