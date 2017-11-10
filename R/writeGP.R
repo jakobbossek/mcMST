@@ -33,7 +33,7 @@ writeGP = function(graph, file) {
   on.exit(close(con))
 
   n = graph$n.nodes
-  m = if (!is.null(graph$adj.mat)) sum(graph$adj.mat) else n * n
+  m = if (!is.null(graph$adj.mat)) sum(graph$adj.mat) else (n * n)
   p = graph$n.weights
   cl = graph$n.clusters
 
@@ -60,7 +60,7 @@ writeGP = function(graph, file) {
   for (i in seq_len(n)) {
     for (j in seq_len(n)) {
       if (!is.null(graph$adj.mat)) {
-        if (graph$adj.mat[i, j] == 0L)
+        if (!graph$adj.mat[i, j])
           next
       }
       weights[k, ] = c(i, j, sapply(graph$weights, function(weight.mat) weight.mat[i, j]))
@@ -85,9 +85,9 @@ readGP = function(file) {
   # import meta data
   meta = scan(file = con, what = integer(), n = 4L, sep = ",", quiet = TRUE)
   g$n.nodes    = n  = meta[1L]
+  g$n.edges    = m  = meta[2L]
   g$n.clusters = cl = meta[3L]
   g$n.weights  = p  = meta[4L]
-  g$n.edges    = m  = meta[2L]
 
   # import weight and node types
   g$weight.types = scan(con, what = character(), n = p, sep = ",", quiet = TRUE)
@@ -109,7 +109,7 @@ readGP = function(file) {
   ww = read.table(con, sep = ",", nrows = m, header = FALSE, stringsAsFactors = FALSE)
 
   # recreate weight matrices and adjacency matrix
-  adj.mat = matrix(0, nrow = n, ncol = n)
+  adj.mat = matrix(FALSE, nrow = n, ncol = n)
   weights = vector(mode = "list", length = p)
   for (i in seq_len(p)) {
     weights[[i]] = matrix(10000, nrow = n, ncol = n)
@@ -122,7 +122,7 @@ readGP = function(file) {
     for (l in seq_len(p)) {
       weights[[l]][i, j] = as.numeric(cur.weight[l])
     }
-    adj.mat[i, j] = 1L
+    adj.mat[i, j] = TRUE
   }
   g$adj.mat = adj.mat
   g$weights = weights

@@ -272,56 +272,116 @@ addCoordinates = function(graph, n, generator, coordinates = NULL, by.centers = 
 #' @param method [\code{function(...)}]\cr
 #'   Method applied to \code{graph} in order to determine which edges to keep.
 #'   Possible values are \dQuote{onion} or \dQuote{delauney}.
+#' @param ... [any]\cr
+#'   Passed down to edge constructor.
 #' @family graph generators
 #' @template ret_mcGP
-addEdges = function(graph, method = "onion") { # nocov start
+addEdges = function(graph, method = "onion", ...) { # nocov start
   assertClass(graph, "mcGP")
-  assertChoice(method, choices = c("onion", "delauney"))
+  assertChoice(method, choices = c("onion", "delauney", "waxman"))
 
-  adj.mat = matrix(0L, ncol = graph$n.nodes, nrow = graph$n.nodes)
-  #diag(adj.mat) = 0
+  if (graph$n.weights > 0L)
+    stopf("addEdges: add edges before adding weights.")
+
+  adj.mat = graph$adj.mat
+  if (is.null(adj.mat))
+    adj.mat = matrix(FALSE, ncol = graph$n.nodes, nrow = graph$n.nodes)
+
+  # adjacency matrix for current "edge adding" iteration
+  the.adj.mat = NULL
 
   # k-konvex hull approach
-  #FIXME: links between node sets of onion layers
+  #FIXME: make this flexible
+  #FIXME: we want to be able to apply this only to edges between cluster centers
+  # and within clusters
   if (method == "onion") {
-    coordinates2 = graph$coordinates
-    # which coordinates are already done?
-    coords.done = rep(FALSE, graph$n.nodes)
-    # indizes of coordinates not yet "onioned"
-    # Needed as mapping for indices of coordinate matrix
-    idx = which(!coords.done)
-    n.edges = 0L
-    while (TRUE) {
-      # compute hull of remaining points
-      ch = chull(coordinates2[!coords.done, , drop = FALSE])
-      n.edges = n.edges + length(ch) - 1L
-      # close hull
-      ch = c(ch, ch[1L])
-      # set edges
-      for (i in (seq_along(ch) - 1L)) {
-        adj.mat[idx[ch[i]], idx[ch[i + 1L]]] = 1L
-        adj.mat[idx[ch[i + 1L]], idx[ch[i]]] = 1L
-      }
-      # update managing stuff
-      coords.done[idx[ch]] = TRUE
-      idx = which(!coords.done)
-      if (sum(coords.done) == graph$n.nodes)
-        break
-    }
-    print(n.edges)
+    the.adj.mat = addEdgesOnion(graph, ...)
+  # Delauney triangulation
   } else if (method == "delauney") {
-    requirePackages("deldir", why = "mcMST:addEdges")
-    # compute triangulation
-    # The 5, 6 colums contains the indizes of the points
-    dt = deldir(as.data.frame(graph$coordinates))$delsgs[, 5:6]
-    for (i in seq_row(dt)) {
-      adj.mat[dt[i, 1L], dt[i, 2L]] = 1L
-      adj.mat[dt[i, 2L], dt[i, 1L]] = 1L
-    }
+    the.adj.mat = addEdgesDelauney(graph, ...)
+  # waxman model
+  } else if (method == "waxman") {
+    the.adj.mat = addEdgesWaxman(graph, ...)
   }
-  graph$adj.mat = adj.mat
+
+  # can add edges multiple times
+  graph$adj.mat = adj.mat | the.adj.mat
   return(graph)
 } # nocov end
+
+# Edge generator by repeated convex hull computation.
+addEdgesOnion = function(graph) {
+  n = graph$n.nodes
+  adj.mat = matrix(FALSE, nrow = n, ncol = n)
+
+  coordinates2 = graph$coordinates
+  # which coordinates are already done?
+  coords.done = rep(FALSE, graph$n.nodes)
+  # indizes of coordinates not yet "onioned"
+  # Needed as mapping for indices of coordinate matrix
+  idx = which(!coords.done)
+  n.edges = 0L
+  while (TRUE) {
+    # compute hull of remaining points
+    ch = chull(coordinates2[!coords.done, , drop = FALSE])
+    n.edges = n.edges + length(ch) - 1L
+    # close hull
+    ch = c(ch, ch[1L])
+    # set edges
+    for (i in (seq_along(ch) - 1L)) {
+      adj.mat[idx[ch[i]], idx[ch[i + 1L]]] = TRUE
+      adj.mat[idx[ch[i + 1L]], idx[ch[i]]] = TRUE
+    }
+    # update managing stuff
+    coords.done[idx[ch]] = TRUE
+    idx = which(!coords.done)
+    if (sum(coords.done) == graph$n.nodes)
+      break
+  }
+  print(n.edges)
+  return(adj.mat)
+}
+
+# Edge generator based on Delauney triangulation.
+addEdgesDelauney = function(graph) {
+  n = graph$n.nodes
+  adj.mat = matrix(FALSE, nrow = n, ncol = n)
+  requirePackages("deldir", why = "mcMST:addEdges")
+  # compute triangulation
+  # The 5, 6 colums contains the indizes of the points
+  dt = deldir(as.data.frame(graph$coordinates))$delsgs[, 5:6]
+  for (i in seq_row(dt)) {
+    adj.mat[dt[i, 1L], dt[i, 2L]] = TRUE
+    adj.mat[dt[i, 2L], dt[i, 1L]] = TRUE
+  }
+  return(adj.mat)
+}
+
+# Waxman's probablistic edge generator.
+#
+# @param alpha [\code{numeric(1)}]\cr
+#   Average degree of nodes.
+# @param beta [\code{numeric(1)}]\cr
+#   Scale between short and long edges.
+addEdgesWaxman = function(graph, alpha = 0.5, beta = 0.5) {
+  n = graph$n.nodes
+
+  # get euclidean distances (only necessary for probability computation)
+  euc.dists = as.matrix(dist(graph$coordinates))
+  # maximal euclidean distance
+  max.dist = max(euc.dists)
+  # sanity checks on parameters
+  alpha = assertNumber(alpha, lower = 0.01, upper = 1)
+  beta = assertNumber(beta, lower = 0.01, upper = 1)
+
+  probs = alpha * exp(-euc.dists / (beta * max.dist))
+  adj.mat = matrix(runif(n * n), nrow = n) < probs
+  # asure symmetry and loop-free property
+  diag(adj.mat) = FALSE
+  adj.mat[lower.tri(adj.mat)] = t(adj.mat)[lower.tri(adj.mat)]
+
+  return(adj.mat)
+}
 
 #' @title Add weights to a multi-objective graph.
 #'
@@ -407,8 +467,8 @@ addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = 
     diag(Y) = 0
 
     if (!is.null(graph$adj.mat)) {
-      ww.euc[graph$adj.mat == 0] = 10000 #FIXME: numeric infinity value
-      Y[graph$adj.mat == 0] = 10000 #FIXME: numeric infinity value
+      ww.euc[!graph$adj.mat] = 1e6 #FIXME: numeric infinity value
+      Y[!graph$adj.mat] = 1e6 #FIXME: numeric infinity value
     }
 
     graph$weights[[n.weights + 1L]] = ww.euc
@@ -421,7 +481,7 @@ addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = 
     ww = as.matrix(dist(graph$coordinates, method = method, ...))
 
     if (!is.null(graph$adj.mat))
-      ww[graph$adj.mat == 0] = 10000 #FIXME: numeric infinity value
+      ww[!graph$adj.mat] = 1e6 #FIXME: numeric infinity value
 
     graph$weights[[n.weights + 1L]] = ww
     graph$n.weights = graph$n.weights + 1L
@@ -443,7 +503,7 @@ addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = 
     }
 
     if (!is.null(graph$adj.mat))
-      ww[graph$adj.mat == 0] = 10000 #FIXME: numeric infinity value
+      ww[!graph$adj.mat] = 1e6 #FIXME: numeric infinity value
     graph$weights[[n.weights + 1L]] = ww
     graph$n.weights = graph$n.weights + 1L
     graph$weight.types = c(graph$weight.types, "random")

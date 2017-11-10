@@ -18,5 +18,6 @@ test_that("writeGP and readGP work well", {
   expect_equal(g$membership, g2$membership)
   expect_equal(length(g$weights), length(g2$weights))
   expect_true(all(dim(g$coordinates) == dim(g2$coordinates)))
+  expect_true(all(g$adj.mat == g2$adj.mat))
   unlink(filename)
 })
