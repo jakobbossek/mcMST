@@ -122,7 +122,8 @@ readGP = function(file) {
     for (l in seq_len(p)) {
       weights[[l]][i, j] = as.numeric(cur.weight[l])
     }
-    adj.mat[i, j] = TRUE
+    if (i != j)
+      adj.mat[i, j] = TRUE
   }
   g$adj.mat = adj.mat
   g$weights = weights
