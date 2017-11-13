@@ -271,14 +271,14 @@ addCoordinates = function(graph, n, generator, coordinates = NULL, by.centers = 
 #' @template arg_mcGP
 #' @param method [\code{function(...)}]\cr
 #'   Method applied to \code{graph} in order to determine which edges to keep.
-#'   Possible values are \dQuote{onion} or \dQuote{delauney}.
+#'   Possible values are \dQuote{onion}, \dQuote{delauney}, \dQuote{wayman} or \dQuote{grid}.
 #' @param ... [any]\cr
 #'   Passed down to edge constructor.
 #' @family graph generators
 #' @template ret_mcGP
-addEdges = function(graph, method = "onion", ...) { # nocov start
+addEdges = function(graph, method, ...) { # nocov start
   assertClass(graph, "mcGP")
-  assertChoice(method, choices = c("onion", "delauney", "waxman"))
+  assertChoice(method, choices = c("onion", "delauney", "waxman", "grid"))
 
   if (graph$n.weights > 0L)
     stopf("addEdges: add edges before adding weights.")
@@ -302,12 +302,31 @@ addEdges = function(graph, method = "onion", ...) { # nocov start
   # waxman model
   } else if (method == "waxman") {
     the.adj.mat = addEdgesWaxman(graph, ...)
+  } else if (method == "grid") {
+    the.adj.mat = addEdgesGrid(graph, ...)
   }
 
   # can add edges multiple times
   graph$adj.mat = adj.mat | the.adj.mat
   return(graph)
 } # nocov end
+
+# Edge generator for grid layout
+addEdgesGrid = function(graph) {
+  n = graph$n.nodes
+
+  # get euclidean coordinates
+  euc.dists = as.matrix(dist(graph$coordinates))
+
+  # assure min.dist is not zero
+  diag(euc.dists) = Inf
+  min.dist = min(euc.dists)
+
+  adj.mat = matrix(FALSE, nrow = n, ncol = n)
+  # we need to add a small constant here
+  adj.mat[euc.dists <= min.dist + 1e-10] = TRUE
+  return(adj.mat)
+}
 
 # Edge generator by repeated convex hull computation.
 addEdgesOnion = function(graph) {

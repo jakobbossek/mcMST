@@ -4,7 +4,7 @@
 \alias{addEdges}
 \title{Define edges in multi-objective graph.}
 \usage{
-addEdges(graph, method = "onion", ...)
+addEdges(graph, method, ...)
 }
 \arguments{
 \item{graph}{[\code{mcGP}]\cr
@@ -12,7 +12,7 @@ Multi-objective graph problem.}
 
 \item{method}{[\code{function(...)}]\cr
 Method applied to \code{graph} in order to determine which edges to keep.
-Possible values are \dQuote{onion} or \dQuote{delauney}.}
+Possible values are \dQuote{onion}, \dQuote{delauney}, \dQuote{wayman} or \dQuote{grid}.}
 
 \item{...}{[any]\cr
 Passed down to edge constructor.}
