@@ -4,7 +4,7 @@
 \alias{addEdges}
 \title{Define edges in multi-objective graph.}
 \usage{
-addEdges(graph, method, ...)
+addEdges(graph, method, type = "all", ...)
 }
 \arguments{
 \item{graph}{[\code{mcGP}]\cr
@@ -13,6 +13,11 @@ Multi-objective graph problem.}
 \item{method}{[\code{function(...)}]\cr
 Method applied to \code{graph} in order to determine which edges to keep.
 Possible values are \dQuote{onion}, \dQuote{delauney}, \dQuote{wayman} or \dQuote{grid}.}
+
+\item{type}{[\code{character(1)}]\cr
+Value \dQuote{all} applies \code{method} to all nodes. Value \dQuote{intreacluster}
+instead applies the method for each cluster separately. Lastly, value \dQuote{intercluster}
+applies \code{method} to the cluster centers.}
 
 \item{...}{[any]\cr
 Passed down to edge constructor.}
@@ -23,10 +28,8 @@ Passed down to edge constructor.}
 \description{
 By default \code{\link{addWeights}} generates n(n-1)/2 weights, i.e.,
 the graph is assumed to be complete. This method allows to defne an adjacency
-matrix to make the graph more sparse.
-}
-\note{
-Minimal implementation. No support so far.
+matrix to make the graph more sparse. The method can be applied multiple times
+with different parameterizations.
 }
 \seealso{
 Other graph generators: \code{\link{addCoordinates}},

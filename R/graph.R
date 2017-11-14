@@ -226,6 +226,7 @@ addCoordinates = function(graph, n, generator, coordinates = NULL, by.centers = 
     nc = graph$n.nodes
     graph$n.clusters = nc
     graph$center.coordinates = center.coordinates
+    graph$center.ids = 1:nc
     # currently we allow only one "level" of clustering
     # thus we can set the membership here already
     graph$membership = 1:nc
@@ -264,59 +265,88 @@ addCoordinates = function(graph, n, generator, coordinates = NULL, by.centers = 
 #'
 #' @description By default \code{\link{addWeights}} generates n(n-1)/2 weights, i.e.,
 #' the graph is assumed to be complete. This method allows to defne an adjacency
-#' matrix to make the graph more sparse.
-#'
-#' @note Minimal implementation. No support so far.
+#' matrix to make the graph more sparse. The method can be applied multiple times
+#' with different parameterizations.
 #'
 #' @template arg_mcGP
 #' @param method [\code{function(...)}]\cr
 #'   Method applied to \code{graph} in order to determine which edges to keep.
 #'   Possible values are \dQuote{onion}, \dQuote{delauney}, \dQuote{wayman} or \dQuote{grid}.
+#' @param type [\code{character(1)}]\cr
+#'   Value \dQuote{all} applies \code{method} to all nodes. Value \dQuote{intreacluster}
+#'   instead applies the method for each cluster separately. Lastly, value \dQuote{intercluster}
+#'   applies \code{method} to the cluster centers.
 #' @param ... [any]\cr
 #'   Passed down to edge constructor.
 #' @family graph generators
 #' @template ret_mcGP
-addEdges = function(graph, method, ...) { # nocov start
+addEdges = function(graph, method, type = "all", ...) { # nocov start
   assertClass(graph, "mcGP")
-  assertChoice(method, choices = c("onion", "delauney", "waxman", "grid"))
+  assertFunction(method)
+  assertChoice(type, choices = c("all", "intercluster", "intracluster"))
 
   if (graph$n.weights > 0L)
     stopf("addEdges: add edges before adding weights.")
 
-  adj.mat = graph$adj.mat
-  if (is.null(adj.mat))
+  adj.mat = NULL
+  if (is.null(graph$adj.mat)) {
     adj.mat = matrix(FALSE, ncol = graph$n.nodes, nrow = graph$n.nodes)
-
-  # adjacency matrix for current "edge adding" iteration
-  the.adj.mat = NULL
-
-  # k-konvex hull approach
-  #FIXME: make this flexible
-  #FIXME: we want to be able to apply this only to edges between cluster centers
-  # and within clusters
-  if (method == "onion") {
-    the.adj.mat = addEdgesOnion(graph, ...)
-  # Delauney triangulation
-  } else if (method == "delauney") {
-    the.adj.mat = addEdgesDelauney(graph, ...)
-  # waxman model
-  } else if (method == "waxman") {
-    the.adj.mat = addEdgesWaxman(graph, ...)
-  } else if (method == "grid") {
-    the.adj.mat = addEdgesGrid(graph, ...)
+    graph$adj.mat = adj.mat
+  } else {
+    adj.mat = graph$adj.mat
   }
 
-  # can add edges multiple times
-  graph$adj.mat = adj.mat | the.adj.mat
+  if (graph$n.clusters == 0L & type %in% c("intracluster", "intercluster"))
+    stopf("addEdges: type {intra,inter}cluster only possible if nodes are clustered.")
+
+  if (type == "intracluster") {
+    # apply stuff clusterwise
+    clusters = seq_len(graph$n.clusters)
+    # for each cluster ...
+    for (cluster in clusters) {
+      # get all points in that cluster
+      idx.cluster = which(graph$membership == cluster)
+      # apply addEdge method to subset of cluster points
+      cl.adj.mat = do.call(method, c(list(n = length(idx.cluster), coordinates = graph$coordinates[idx.cluster, , drop = FALSE]), list(...)))
+      # update adjacency matrix
+      adj.mat[idx.cluster, idx.cluster] = adj.mat[idx.cluster, idx.cluster] | cl.adj.mat
+    }
+    graph$adj.mat = adj.mat
+  } else if (type == "intercluster") {
+    idx.centers = graph$center.ids
+    centers.adj.mat = do.call(method, c(list(n = length(idx.centers), coordinates = graph$center.coordinates), list(...)))
+    adj.mat[idx.centers, idx.centers] = adj.mat[idx.centers, idx.centers] | centers.adj.mat
+    graph$adj.mat = adj.mat
+  } else {
+    graph$adj.mat = adj.mat | do.call(method, c(list(n = graph$n.nodes, coordinates = graph$coordinates), list(...)))
+  }
   return(graph)
+  # # k-konvex hull approach
+  # #FIXME: make this flexible
+  # #FIXME: we want to be able to apply this only to edges between cluster centers
+  # # and within clusters
+  # the.adj.mat
+  # if (method == "onion") {
+  #   the.adj.mat = addEdgesOnion(graph, ...)
+  # # Delauney triangulation
+  # } else if (method == "delauney") {
+  #   the.adj.mat = addEdgesDelauney(graph, ...)
+  # # waxman model
+  # } else if (method == "waxman") {
+  #   the.adj.mat = addEdgesWaxman(graph, ...)
+  # } else if (method == "grid") {
+  #   the.adj.mat = addEdgesGrid(graph, ...)
+  # }
+
+  # # can add edges multiple times
+  # graph$adj.mat = adj.mat | the.adj.mat
+  # return(graph)
 } # nocov end
 
 # Edge generator for grid layout
-addEdgesGrid = function(graph) {
-  n = graph$n.nodes
-
+addEdgesGrid = function(n, coordinates, ...) {
   # get euclidean coordinates
-  euc.dists = as.matrix(dist(graph$coordinates))
+  euc.dists = as.matrix(dist(coordinates))
 
   # assure min.dist is not zero
   diag(euc.dists) = Inf
@@ -329,13 +359,12 @@ addEdgesGrid = function(graph) {
 }
 
 # Edge generator by repeated convex hull computation.
-addEdgesOnion = function(graph) {
-  n = graph$n.nodes
+addEdgesOnion = function(n, coordinates, ...) {
   adj.mat = matrix(FALSE, nrow = n, ncol = n)
 
-  coordinates2 = graph$coordinates
+  coordinates2 = coordinates
   # which coordinates are already done?
-  coords.done = rep(FALSE, graph$n.nodes)
+  coords.done = rep(FALSE, n)
   # indizes of coordinates not yet "onioned"
   # Needed as mapping for indices of coordinate matrix
   idx = which(!coords.done)
@@ -354,7 +383,7 @@ addEdgesOnion = function(graph) {
     # update managing stuff
     coords.done[idx[ch]] = TRUE
     idx = which(!coords.done)
-    if (sum(coords.done) == graph$n.nodes)
+    if (sum(coords.done) == n)
       break
   }
   print(n.edges)
@@ -362,13 +391,12 @@ addEdgesOnion = function(graph) {
 }
 
 # Edge generator based on Delauney triangulation.
-addEdgesDelauney = function(graph) {
-  n = graph$n.nodes
+addEdgesDelauney = function(n, coordinates, ...) {
   adj.mat = matrix(FALSE, nrow = n, ncol = n)
   requirePackages("deldir", why = "mcMST:addEdges")
   # compute triangulation
   # The 5, 6 colums contains the indizes of the points
-  dt = deldir(as.data.frame(graph$coordinates))$delsgs[, 5:6]
+  dt = deldir(as.data.frame(coordinates))$delsgs[, 5:6]
   for (i in seq_row(dt)) {
     adj.mat[dt[i, 1L], dt[i, 2L]] = TRUE
     adj.mat[dt[i, 2L], dt[i, 1L]] = TRUE
@@ -382,11 +410,9 @@ addEdgesDelauney = function(graph) {
 #   Average degree of nodes.
 # @param beta [\code{numeric(1)}]\cr
 #   Scale between short and long edges.
-addEdgesWaxman = function(graph, alpha = 0.5, beta = 0.5) {
-  n = graph$n.nodes
-
+addEdgesWaxman = function(n, coordinates, alpha = 0.5, beta = 0.5, ...) {
   # get euclidean distances (only necessary for probability computation)
-  euc.dists = as.matrix(dist(graph$coordinates))
+  euc.dists = as.matrix(dist(coordinates))
   # maximal euclidean distance
   max.dist = max(euc.dists)
   # sanity checks on parameters
@@ -399,6 +425,23 @@ addEdgesWaxman = function(graph, alpha = 0.5, beta = 0.5) {
   diag(adj.mat) = FALSE
   adj.mat[lower.tri(adj.mat)] = t(adj.mat)[lower.tri(adj.mat)]
 
+  return(adj.mat)
+}
+
+addEdgesSpanningTree = function(n, coordinates, ...) {
+  # compute a spanning tree
+  stree = vegan::spantree(as.matrix(dist(coordinates)))
+
+  # build edges
+  edges = cbind(2:n, stree$kid)
+
+  # init empty adjacency matrix
+  adj.mat = matrix(FALSE, nrow = n, ncol = n)
+
+  # set edges
+  for (i in 1:(n - 1L)) {
+    adj.mat[edges[i, 1L], edges[i, 2L]] = adj.mat[edges[i, 2L], edges[i, 1L]] = TRUE
+  }
   return(adj.mat)
 }
 
