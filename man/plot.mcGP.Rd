@@ -4,7 +4,8 @@
 \alias{plot.mcGP}
 \title{Visualize bi-objective graph.}
 \usage{
-\method{plot}{mcGP}(x, y = NULL, show.cluster.centers = TRUE, ...)
+\method{plot}{mcGP}(x, y = NULL, show.cluster.centers = TRUE,
+  show.edges = TRUE, ...)
 }
 \arguments{
 \item{x}{[\code{mcGP}]\cr
@@ -15,6 +16,11 @@ Multi-objective graph problem.}
 \item{show.cluster.centers}{[\code{logical(1)}]\cr
 Display cluster centers?
 Default is \code{TRUE}. This option is ignored silently if the instance is not clustered.}
+
+\item{show.edges}{[\code{logical(1)}]\cr
+Display edges? Keep in mind, that the number of edges is \eqn{O(n^2)}
+where \eqn{n} is the number of nodes.
+Default is \code{TRUE}.}
 
 \item{...}{[any]\cr
 Not used at the moment.}

@@ -8,6 +8,10 @@
 #' @param show.cluster.centers [\code{logical(1)}]\cr
 #'   Display cluster centers?
 #'   Default is \code{TRUE}. This option is ignored silently if the instance is not clustered.
+#' @param show.edges [\code{logical(1)}]\cr
+#'   Display edges? Keep in mind, that the number of edges is \eqn{O(n^2)}
+#'   where \eqn{n} is the number of nodes.
+#'   Default is \code{TRUE}.
 #' @param ... [any]\cr
 #'   Not used at the moment.
 #' @param x [\code{mcGP}]\cr
@@ -17,22 +21,50 @@
 #' \code{pl.weights} (scatterplot of edge weights) and eventually \code{pl.coords} (scatterplot of
 #' nodes). The latter is \code{NULL}, if \code{graph} has no associated coordinates.
 #' @export
-plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, ...) {
-
+plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, show.edges = TRUE, ...) {
   assertFlag(show.cluster.centers)
 
-  pl.coords = NULL
+  # extract data
   n.nodes = x$n.nodes
   n.clusters = x$n.clusters
   n.weights = x$n.weights
+
+  pl.coords = NULL
+
   if (n.weights > 2L)
     stopf("plot.mcGP: More than 2 weights are currently not supported.")
+
+  # draw coordinates if possible
   if (!is.null(x$coordinates)) {
     dd = as.data.frame(x$coordinates)
     names(dd) = c("x1", "x2")
+    # add clusters if available
     if (!is.null(x$membership))
       dd$Cluster = as.factor(x$membership)
     pl.coords = ggplot2::ggplot(dd, aes_string(x = "x1", y = "x2"))
+
+    # add edges if desired
+    if (show.edges) {
+      adj.mat = if (!is.null(x$adj.mat))
+          x$adj.mat
+        else
+          matrix(TRUE, nrow = x$n.nodes, ncol = x$n.nodes)
+
+      edges = data.frame()
+      n = nrow(adj.mat)
+      for (i in 1:n) {
+        for (j in 1:n) {
+          if (!adj.mat[i, j])
+            next
+          coords = x$coordinates[c(i, j), ]
+          edges = rbind(edges, data.frame(
+            x1 = coords[1L, 1L], y1 = coords[1L, 2L],
+            x2 = coords[2L, 1L], y2 = coords[2L, 2L]))
+        }
+      }
+      pl.coords = pl.coords + geom_segment(data = edges, aes_string(x = "x1", y = "y1", xend = "x2", yend = "y2"))
+    }
+
     pl.coords = pl.coords + ggplot2::geom_point()
     pl.coords = if (n.clusters > 0L) pl.coords +
       ggplot2::geom_point(aes_string(colour = "Cluster")) else pl.coords + ggplot2::geom_point()
@@ -43,23 +75,6 @@ plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, ...) {
         ggplot2::geom_point(data = ddc, colour = "black", size = 3)
       pl.coords = pl.coords +
         ggplot2::geom_point(data = ddc, colour = "white", size = 2.2)
-    }
-
-    if (!is.null(x$adj.mat)) {
-      edges = data.frame()
-      adj.mat = x$adj.mat
-      n = nrow(adj.mat)
-      for (i in 1:n) {
-        for (j in 1:n) {
-          if (adj.mat[i, j] == 0)
-            next
-          coords = x$coordinates[c(i, j), ]
-          edges = rbind(edges, data.frame(
-            x1 = coords[1L, 1L], y1 = coords[1L, 2L],
-            x2 = coords[2L, 1L], y2 = coords[2L, 2L]))
-        }
-      }
-      pl.coords = pl.coords + geom_segment(data = edges, aes_string(x = "x1", y = "y1", xend = "x2", yend = "y2"))
     }
 
     pl.coords = pl.coords +
