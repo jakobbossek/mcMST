@@ -428,20 +428,26 @@ addEdgesWaxman = function(n, coordinates, alpha = 0.5, beta = 0.5, ...) {
   return(adj.mat)
 }
 
-addEdgesSpanningTree = function(n, coordinates, ...) {
+addEdgesSpanningTree = function(n, coordinates, runs = 1L, ...) {
   # compute a spanning tree
-  stree = vegan::spantree(as.matrix(dist(coordinates)))
-
-  # build edges
-  edges = cbind(2:n, stree$kid)
+  dist.mat = as.matrix(dist(coordinates))
 
   # init empty adjacency matrix
   adj.mat = matrix(FALSE, nrow = n, ncol = n)
 
-  # set edges
-  for (i in 1:(n - 1L)) {
-    adj.mat[edges[i, 1L], edges[i, 2L]] = adj.mat[edges[i, 2L], edges[i, 1L]] = TRUE
+  for (run in seq_len(runs)) {
+    stree = vegan::spantree(dist.mat)
+
+    # build edges
+    edges = cbind(2:n, stree$kid)
+
+    # set edges
+    for (i in 1:(n - 1L)) {
+      adj.mat[edges[i, 1L], edges[i, 2L]] = adj.mat[edges[i, 2L], edges[i, 1L]] = TRUE
+      dist.mat[edges[i, 1L], edges[i, 2L]] = dist.mat[edges[i, 2L], edges[i, 1L]] = NA
+    }
   }
+
   return(adj.mat)
 }
 
