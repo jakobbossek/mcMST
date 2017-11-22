@@ -8,6 +8,9 @@
 #' @param show.cluster.centers [\code{logical(1)}]\cr
 #'   Display cluster centers?
 #'   Default is \code{TRUE}. This option is ignored silently if the instance is not clustered.
+#' @param highlight.clusters [\code{logical(1)}]\cr
+#'   Shall nodes be coloured by cluster membership?
+#'   Default is \code{FALSE}.
 #' @param show.edges [\code{logical(1)}]\cr
 #'   Display edges? Keep in mind, that the number of edges is \eqn{O(n^2)}
 #'   where \eqn{n} is the number of nodes.
@@ -21,8 +24,10 @@
 #' \code{pl.weights} (scatterplot of edge weights) and eventually \code{pl.coords} (scatterplot of
 #' nodes). The latter is \code{NULL}, if \code{graph} has no associated coordinates.
 #' @export
-plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, show.edges = TRUE, ...) {
+plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, highlight.clusters = FALSE, show.edges = TRUE, ...) {
   assertFlag(show.cluster.centers)
+  assertFlag(highlight.clusters)
+  assertFlag(show.edges)
 
   # extract data
   n.nodes = x$n.nodes
@@ -66,7 +71,8 @@ plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, show.edges = TRUE
     }
 
     pl.coords = pl.coords + ggplot2::geom_point()
-    pl.coords = if (n.clusters > 0L) pl.coords +
+    catf("HC: %i", as.integer(highlight.clusters))
+    pl.coords = if (n.clusters > 0L & highlight.clusters) pl.coords +
       ggplot2::geom_point(aes_string(colour = "Cluster")) else pl.coords + ggplot2::geom_point()
     if (n.clusters > 0L & show.cluster.centers) {
       ddc = as.data.frame(x$center.coordinates)
@@ -82,6 +88,7 @@ plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, show.edges = TRUE
     pl.coords = pl.coords +
       ggplot2::xlab(expression(x[1])) +
       ggplot2::ylab(expression(x[2]))
+    pl.coords = pl.coords + theme(legend.position = "none")
   }
 
   pl.weights = NULL
@@ -106,4 +113,27 @@ plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, show.edges = TRUE
   }
 
   return(list(pl.coords = pl.coords, pl.weights = pl.weights))
+}
+
+addEdgesToPlot = function(x, g, edge.list) {
+  assertClass(x, "ggplot")
+  assertMatrix(edge.list, nrows = 2L, min.cols = 1L, any.missing = FALSE, all.missing = FALSE)
+
+  adj.mat = if (!is.null(g$adj.mat))
+    g$adj.mat
+  else
+    matrix(TRUE, nrow = g$n.nodes, ncol = g$n.nodes)
+
+  edges = data.frame()
+  for (i in 1:ncol(edge.list)) {
+    edge = edge.list[, i]
+    if (!adj.mat[edge[1L], edge[2L]])
+      next
+    coords = g$coordinates[edge, ]
+    edges = rbind(edges, data.frame(
+      x1 = coords[1L, 1L], y1 = coords[1L, 2L],
+      x2 = coords[2L, 1L], y2 = coords[2L, 2L]))
+  }
+
+  x + geom_segment(data = edges, aes_string(x = "x1", y = "y1", xend = "x2", yend = "y2"), colour = "tomato")
 }

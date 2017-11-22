@@ -54,7 +54,11 @@ mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
     assertList(weights, types = "matrix")
     assertNumber(lambda, lower = 0, upper = 1)
 
-    lambda * weights[[1L]] + (1 - lambda) * weights[[2L]]
+    dmat = lambda * weights[[1L]] + (1 - lambda) * weights[[2L]]
+
+    if (!is.null(instance$adj.mat))
+      dmat[!instance$adj.mat] = 1e7 # FIXME: magic number
+    return(dmat)
   }
 
   n = instance$n.nodes
@@ -65,13 +69,11 @@ mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
     mst.res = vegan::spantree(d = weight.mat)
     nodes1 = 2:n
     nodes2 = mst.res$kid
+    edgelist = matrix(c(nodes1, nodes2), byrow = TRUE, nrow = 2L)
 
-    mst.costs = c(0, 0)
-    for (i in 1:(n - 1)) {
-      mst.costs = mst.costs + c(instance$weights[[1L]][nodes1[i], nodes2[i]],
-        instance$weights[[2L]][nodes1[i], nodes2[i]])
-    }
-    pareto.front[, k] = mst.costs
+    pareto.front[, k] = getWeight(instance, edgelist = edgelist)
   }
+
   return(list(pareto.front = pareto.front))
 }
+

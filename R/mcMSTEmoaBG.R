@@ -73,8 +73,9 @@ mcMSTEmoaBG = function(instance,
   # now generate an initial population, i.e.,
   # a list of edge lists
   population = lapply(1:mu, function(i) {
-    pcode = sample(1:n, n - 2L, replace = TRUE)
-    prueferToEdgeList(pcode)
+    #pcode = sample(1:n, n - 2L, replace = TRUE)
+    #prueferToEdgeList(pcode)
+    getRandomSpanningTree(instance)
   })
 
   res = ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,
@@ -89,4 +90,27 @@ mcMSTEmoaBG = function(instance,
     instance = instance)
 
   return(res)
+}
+
+getRandomSpanningTree = function(g) {
+  adj.mat = g$adj.mat
+  n = g$n.nodes
+
+  # construct random distance matrix
+  dmat = matrix(100 * runif(n * n), ncol = n, nrow = n)
+
+  # stick to adjacency structure
+  if (!is.null(g$adj.mat))
+    dmat[!adj.mat] = 1e7
+  else
+    diag(dmat) = 1e7
+
+  nodes = 1:n
+
+  mstres = vegan::spantree(d = dmat)
+
+  edge.list = matrix(
+    c(nodes[2:n], nodes[mstres$kid]),
+    byrow = TRUE, nrow = 2L)
+  return(edge.list)
 }

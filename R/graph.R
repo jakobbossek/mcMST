@@ -343,6 +343,13 @@ addEdges = function(graph, method, type = "all", ...) { # nocov start
   # return(graph)
 } # nocov end
 
+# complete edge generator
+addEdgesComplete = function(n, coordinates, ...) {
+  adj.mat = matrix(TRUE, nrow = n, ncol = n)
+  diag(adj.mat) = FALSE
+  return(adj.mat)
+}
+
 # Edge generator for grid layout
 addEdgesGrid = function(n, coordinates, ...) {
   # get euclidean coordinates
@@ -490,7 +497,7 @@ addEdgesSpanningTree = function(n, coordinates, runs = 1L, ...) {
 #' @export
 addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = NULL, symmetric = TRUE, to.int = FALSE, rho = 0.5, ...) {
   assertClass(graph, "mcGP")
-  assertChoice(method, choices = c("correlated", "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski", "random"))
+  assertChoice(method, choices = c("correlated", "concave", "euclidean", "maximum", "manhattan", "canberra", "binary", "minkowski", "random"))
   assertFlag(to.int)
   assertNumber(rho, lower = -1, upper = 1)
 
@@ -534,6 +541,9 @@ addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = 
     Y = matrix(Y, ncol = nrow(ww.euc))
     diag(Y) = 0
 
+    if (symmetric)
+      Y[lower.tri(Y)] = t(Y)[lower.tri(t(Y))]
+
     if (!is.null(graph$adj.mat)) {
       ww.euc[!graph$adj.mat] = 1e6 #FIXME: numeric infinity value
       Y[!graph$adj.mat] = 1e6 #FIXME: numeric infinity value
@@ -543,6 +553,80 @@ addWeights = function(graph, method = "euclidean", weights = NULL, weight.fun = 
     graph$weights[[n.weights + 2L]] = Y
     graph$n.weights = graph$n.weights + 2L
     graph$weight.types = c(graph$weight.types, c("euclidean", sprintf("%.2f-correlated", rho)))
+  } else if (method == "concave") {
+    n = graph$n.nodes
+    xhi = 10
+    nu = 20
+    M = 100
+
+    degrees = rowSums(graph$adj.mat)
+    # first node is the one with highest degree
+    n1 = which.max(degrees)
+
+    # choose second node as the one with highest degree among all
+    # nodes adjacent to the first node
+    adj.to.n1 = which(graph$adj.mat[n1, ])
+    idx.n2 = which.max(degrees[adj.to.n1])
+    n2 = adj.to.n1[idx.n2]
+
+    # select third node as the one
+    adj.to.n2 = which(graph$adj.mat[n2, ])
+
+    adj.to.n1 = setdiff(adj.to.n1, n2)
+    adj.to.n2 = setdiff(adj.to.n2, n1)
+
+    # nodes adjacent to both n1 and n2
+    adj.to.n1n2 = intersect(adj.to.n1, adj.to.n2)
+    if (length(adj.to.n1n2) > 0) {
+      idx.n3 = which.max(degrees[adj.to.n1n2])
+    } else {
+      adj.to.n1n2 = unique(c(adj.to.n1, adj.to.n2))
+      idx.n3 = which.max(degrees[adj.to.n1n2])
+    }
+    n3 = adj.to.n1n2[idx.n3]
+
+    ns = c(n1, n2, n3)
+
+    ww1 = matrix(1e6, nrow = n, ncol = n)
+    ww2 = matrix(1e6, nrow = n, ncol = n)
+
+    for (i in 1:n) {
+      for (j in 1:n) {
+        if (i == j)
+          next
+        if (!(i %in% ns) & !(j %in% ns)) {
+          ww1[i, j] = sample(xhi:nu, 1L)
+          ww2[i, j] = sample(xhi:nu, 1L)
+        } else if (xor(i %in% ns, j %in% ns)) {
+          ww1[i, j] = sample((M - xhi):M, 1L)
+          ww2[i, j] = sample((M - xhi):M, 1L)
+        } else if (i == n1 & j == n2) {
+          ww1[i, j] = ww2[i, j] = xhi
+        } else if (i == n1 & j == n3) {
+          ww1[i, j] = 1
+          ww2[i, j] = M - xhi
+        } else if (i == n2 & j == n3) {
+          ww1[i, j] = M - xhi
+          ww2[i, j] = 1
+        }
+      }
+    }
+
+    if (symmetric) {
+      ww1[lower.tri(ww1)] = t(ww1)[lower.tri(t(ww1))]
+      ww2[lower.tri(ww2)] = t(ww2)[lower.tri(t(ww2))]
+    }
+
+    if (!is.null(graph$adj.mat)) {
+      ww1[!graph$adj.mat] = 1e6
+      ww2[!graph$adj.mat] = 1e6
+    }
+
+    graph$weights[[n.weights + 1L]] = ww1
+    graph$weights[[n.weights + 2L]] = ww2
+
+    graph$n.weights = graph$n.weights + 2L
+    graph$weight.types = c(graph$weight.types, "concave")
   } else if (method != "random") {
     if (is.null(graph$coordinates))
       stopf("Method '%s' needs coordinates.", method)
