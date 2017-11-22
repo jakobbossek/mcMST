@@ -14,6 +14,15 @@ Matrix of edges (each column is one edge).}
 \item{sigma}{[\code{integer()}]\cr
 Upper bound for the size of the selected subtree.}
 
+\item{scalarize}{[\code{logical(1)}]\cr
+Should a scalarized version of the the subproblem be solved?
+If \code{TRUE}, a random weight \eqn{\lambda \in [0,1]} is sampled
+from a \code{U[0, 1]}-distribution. Next, a weighted sum
+scalarization \eqn{\lambda \cdot c_1 + (1 - \lambda) \cdot c_2}
+of the subproblem is solved.
+Default is \code{FALSE}, i.e., the single-objective subproblem is
+solved. The objective to optimize for is sampled with equal probability.}
+
 \item{instance}{[\code{mcGP}]\cr
 Multi-objective graph problem.}
 }
