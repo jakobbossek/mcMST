@@ -2,11 +2,11 @@
 #'
 #' @template arg_mcGP
 #' @template arg_edgelist
-#' @param obj.type [\code{character(1)}]\cr
+#' @param aggr.funs [\code{character}]\cr
 #'   How to aggregate edge weights?
-#'   Possible values are \dQuote{sum} for sum objectives and \dQuote{bottleneck}
+#'   Possible values are \dQuote{sum} for sum objective and \dQuote{bottleneck}
 #'   for bottleneck/min-max objectives.
-#'   Default is \dQuote{sum}.
+#'   Default is \dQuote{sum} for each objective.
 #' @return [\code{numeric(2)}] Weight vector.
 #' @examples
 #' # generate a random bi-objective graph
@@ -16,20 +16,29 @@
 #' pcode = sample(1:5, 3, replace = TRUE)
 #'
 #' getWeight(g, prueferToEdgeList(pcode))
-#' getWeight(g, prueferToEdgeList(pcode), obj.type = "bottleneck")
+#' getWeight(g, prueferToEdgeList(pcode), obj.types = "bottleneck")
 #' @export
-getWeight = function(graph, edgelist, obj.type = "sum") {
+getWeight = function(graph, edgelist, obj.types = NULL) {
   assertClass(graph, "mcGP")
   assertMatrix(edgelist)
-  assertChoice(obj.type, choices = c("sum", "bottleneck"))
   m = ncol(edgelist)
 
   n.weights = graph$n.weights
 
+  if (is.null(obj.types))
+    obj.types = rep("sum", n.weights)
+  if (length(obj.types) == 1L)
+    obj.types = rep(obj.types, n.weights)
+
   # get edge weights (one column for each weight)
   edge.weights = getWeights(graph, edgelist)
-  aggr.fun = ifelse(obj.type == "sum", sum, max)
-  obj.vec = apply(edge.weights, 1L, aggr.fun)
+  obj.vec = numeric(n.weights)
+  for (i in 1:n.weights) {
+    obj.vec[i] = if (obj.types[i] == "sum")
+      sum(edge.weights[i, ])
+    else
+      max(edge.weights[i, ])
+  }
   return(obj.vec)
 }
 
