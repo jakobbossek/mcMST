@@ -106,20 +106,20 @@ mutEdgeExchange = makeMutator(
   supported = "custom")
 
 
-subgraphMST = function(edgelist, sigma, instance) {
+subgraphMST = function(edgelist, sigma, scalarize, instance) {
   m = ncol(edgelist)
   n.objectives = instance$n.weights
   nsel = sample(3:sigma, 1L)
   #catf("Selecting connected subgraph with >= %i nodes.", nsel)
+  inds = 1:m
   # select random edge in tree as the starting point
-  start = sample(1:m, 1L)
+  start = sample(inds, 1L)
   #catf("First edge: %i, (%i, %i)", start, edgelist[1, start], edgelist[2, start])
   sel.edges = start
   # the incident nodes of the edge determine the first
   sel.nodes = edgelist[, start]
   # walk through tree randomly
   #cur.node = sel.nodes[1L]
-  inds = 1:m
   # loop until we got a sufficiently big subtree
   while (length(sel.nodes) < nsel) {
     # check which edges are incident to selected nodes
@@ -135,8 +135,14 @@ subgraphMST = function(edgelist, sigma, instance) {
   # now extract subgraph and apply Prim
   sel.nodes = sort(sel.nodes)
   #catf("Finally extracted %i nodes %s", length(sel.nodes), collapse(sel.nodes))
-  obj.idx = sample(1:n.objectives, 1L)
-  dd = instance$weights[[obj.idx]][sel.nodes, sel.nodes]
+  dd = NULL
+  if (!scalarize) {
+    obj.idx = sample(1:n.objectives, 1L)
+    dd = instance$weights[[obj.idx]][sel.nodes, sel.nodes]
+  } else {
+    lambda = runif(1L)
+    dd = lambda * instance$weights[[1L]][sel.nodes, sel.nodes] + (1 - lambda) * instance$weights[[2L]][sel.nodes, sel.nodes]
+  }
   #catf("submatrix:")
   #print(dd)
   # get result of PRIM
@@ -175,8 +181,8 @@ subgraphMST = function(edgelist, sigma, instance) {
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubgraphMST = makeMutator(
-  mutator = function(ind, sigma = floor(ncol(ind) / 2), instance = NULL) {
-    subgraphMST(ind, sigma, instance)
+  mutator = function(ind, sigma = floor(ncol(ind) / 2), scalarize = FALSE, instance = NULL) {
+    subgraphMST(ind, sigma, scalarize, instance)
   },
   supported = "custom"
 )

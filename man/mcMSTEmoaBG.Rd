@@ -5,7 +5,7 @@
 \title{Subgraph EMOA for the multi-criteria MST problem.}
 \usage{
 mcMSTEmoaBG(instance, mu, lambda = mu, mut = NULL, selMating = NULL,
-  selSurvival = ecr::selNondom, ref.point = NULL, max.iter = 100L)
+  selSurvival = ecr::selNondom, ref.point = NULL, max.iter = 100L, ...)
 }
 \arguments{
 \item{instance}{[\code{mcGP}]\cr
@@ -40,6 +40,9 @@ with \eqn{(n-1)} edges.}
 \item{max.iter}{[\code{integer(1)}]\cr
 Maximal number of iterations.
 Default is \code{100}.}
+
+\item{...}{[\code{any}]\cr
+Further parameters passed to mutator.}
 }
 \value{
 [\code{\link[ecr]{ecr_result}}] List of type \code{\link[ecr]{ecr_result}}

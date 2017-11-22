@@ -36,6 +36,8 @@
 #' @param max.iter [\code{integer(1)}]\cr
 #'   Maximal number of iterations.
 #'   Default is \code{100}.
+#' @param ... [\code{any}]\cr
+#'   Further parameters passed to mutator.
 #' @template ret_ecrresult
 #' @examples
 #' inst = genRandomMCGP(10)
@@ -51,7 +53,8 @@ mcMSTEmoaBG = function(instance,
   mut = NULL,
   selMating = NULL, selSurvival = ecr::selNondom,
   ref.point = NULL,
-  max.iter = 100L) {
+  max.iter = 100L,
+  ...) {
 
   # get number of nodes
   n = instance$n.nodes
@@ -61,7 +64,7 @@ mcMSTEmoaBG = function(instance,
 
   # default is our subgraph mutator
   if (is.null(mut))
-    mut = setup(mutSubgraphMST, instance = instance)
+    mut = setup(mutSubgraphMST, instance = instance, ...)
 
   if (is.null(ref.point))
     ref.point = getReferencePoint(instance)
