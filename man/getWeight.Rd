@@ -13,7 +13,7 @@ Multi-objective graph problem.}
 \item{edgelist}{[\code{matrix(2, k)}]
 Matrix of edges (each column is one edge).}
 
-\item{aggr.funs}{[\code{character}]\cr
+\item{obj.types}{[\code{character}]\cr
 How to aggregate edge weights?
 Possible values are \dQuote{sum} for sum objective and \dQuote{bottleneck}
 for bottleneck/min-max objectives.

@@ -2,7 +2,7 @@
 #'
 #' @template arg_mcGP
 #' @template arg_edgelist
-#' @param aggr.funs [\code{character}]\cr
+#' @param obj.types [\code{character}]\cr
 #'   How to aggregate edge weights?
 #'   Possible values are \dQuote{sum} for sum objective and \dQuote{bottleneck}
 #'   for bottleneck/min-max objectives.
