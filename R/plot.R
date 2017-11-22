@@ -71,7 +71,6 @@ plot.mcGP = function(x, y = NULL, show.cluster.centers = TRUE, highlight.cluster
     }
 
     pl.coords = pl.coords + ggplot2::geom_point()
-    catf("HC: %i", as.integer(highlight.clusters))
     pl.coords = if (n.clusters > 0L & highlight.clusters) pl.coords +
       ggplot2::geom_point(aes_string(colour = "Cluster")) else pl.coords + ggplot2::geom_point()
     if (n.clusters > 0L & show.cluster.centers) {
