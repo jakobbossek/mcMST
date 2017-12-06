@@ -8,8 +8,8 @@ mcMSTEmoaBG(instance, mu, lambda = mu, mut = NULL, selMating = NULL,
   selSurvival = ecr::selNondom, ref.point = NULL, max.iter = 100L, ...)
 }
 \arguments{
-\item{instance}{[\code{mcGP}]\cr
-Multi-objective graph problem.}
+\item{instance}{[\code{\link[grapherator]{grapherator}}]\cr
+Multi-objective graph.}
 
 \item{mu}{[\code{integer(1)}]\cr
 Population size.}

@@ -23,8 +23,8 @@ of the subproblem is solved.
 Default is \code{FALSE}, i.e., the single-objective subproblem is
 solved. The objective to optimize for is sampled with equal probability.}
 
-\item{instance}{[\code{mcGP}]\cr
-Multi-objective graph problem.}
+\item{instance}{[\code{\link[grapherator]{grapherator}}]\cr
+Multi-objective graph.}
 }
 \value{
 [\code{matrix(2, m)}] Mutated edge list.

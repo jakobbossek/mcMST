@@ -11,7 +11,7 @@ genRandomMCGP(n)
 Instance size, i.e., number of nodes.}
 }
 \value{
-[\code{\link[grapherator]{grapherator}}]
+[\code{\link[grapherator]{grapherator}}] Graph.
 }
 \description{
 The instance is composed of two
