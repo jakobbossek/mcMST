@@ -1,6 +1,6 @@
 #' Get the overall costs/weight of a subgraph given its edgelist.
 #'
-#' @template arg_mcGP
+#' @template arg_grapherator
 #' @template arg_edgelist
 #' @param obj.types [\code{character}]\cr
 #'   How to aggregate edge weights?
@@ -19,11 +19,11 @@
 #' getWeight(g, prueferToEdgeList(pcode), obj.types = "bottleneck")
 #' @export
 getWeight = function(graph, edgelist, obj.types = NULL) {
-  assertClass(graph, "mcGP")
+  assertClass(graph, "grapherator")
   assertMatrix(edgelist)
   m = ncol(edgelist)
 
-  n.weights = graph$n.weights
+  n.weights = grapherator::getNumberOfWeights(graph)
 
   if (is.null(obj.types))
     obj.types = rep("sum", n.weights)
@@ -44,11 +44,11 @@ getWeight = function(graph, edgelist, obj.types = NULL) {
 
 
 getWeights = function(graph, edgelist) {
-  assertClass(graph, "mcGP")
+  assertClass(graph, "grapherator")
   assertMatrix(edgelist)
   m = ncol(edgelist)
 
-  n.weights = graph$n.weights
+  n.weights = grapherator::getNumberOfWeights(graph)
 
   # finally compute weights
   ws = matrix(NA, ncol = m, nrow = n.weights)

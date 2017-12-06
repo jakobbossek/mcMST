@@ -39,8 +39,8 @@ mcMSTEmoaZhou = function(instance,
     ref.point = getReferencePoint(instance)
 
   # get number of nodes
-  n = instance$n.nodes
-  n.objectives = instance$n.weights
+  n = grapherator::getNumberOfNodes(instance)
+  n.objectives = grapherator::getNumberOfWeights(instance)
 
   # now generate an initial population of Pruefer-numbers/codes
   population = lapply(1:mu, function(i) {

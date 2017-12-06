@@ -18,24 +18,23 @@ options(tibble.print_min = 4L, tibble.print_max = 4L)
 
 # Quickstart
 
-The **mcMST** package for the statistical programming language [R](https://www.r-project.org) contains methods for benchmark instance generation of multi-objective graph problems and methods for solving the multi-criteria spanning tree problem (mcMST).
+The **mcMST** package for the statistical programming language [R](https://www.r-project.org) contains methods for solving the multi-criteria minimum spanning tree problem (mcMST).
 
 ## Generating a benchmark instance
 
-Here we first generate a bi-criteria graph problem with n = 25 nodes. The first objective is the euclidean distance of node coordinates in [0, 10] x [0, 10] in the euclidean plane. The second objective follows a normal distribution with mean 5 and standard deviation 1.5. The instance generation process is modular and thus highly flexible (see the [vignette on graph generation](Generation.html) for details).
+Here we first generate a bi-criteria graph with n = 25 nodes with the [grapherator](https://github.com/jakobbossek/grapherator) package. The first weight is the Euclidean distance of node coordinates in [0, 10] x [0, 10] in the Euclidean plane. The second weight follows a normal distribution with mean 5 and standard deviation 1.5. The instance generation process is modular and thus highly flexible (see the grapherator package vignettes for details and further examples).
 
 ```{r, fig.width=8, out.width='100%', fig.cap='Plot of the bi-objective sample graph `g.'}
 library(mcMST)
-library(gridExtra)
+library(grapherator)
+
 set.seed(1) # reproducability
-g = mcGP(lower = 0, upper = 10)
-g = addCoordinates(g, n = 25, generator = coordUniform)
-g = addWeights(g, method = "euclidean")
-g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.5)
+g = graph(0, 10)
+g = addNodes(g, n = 25, generator = addNodesUniform)
+g = addWeights(g, generator = addWeightsDistance, method = "euclidean")
+g = addWeights(g, generator = addWeightsRandom, method = rnorm, mean = 5, sd = 1.5)
 print(g)
-plots = plot(g)
-plots$nrow = 1
-do.call(grid.arrange, plots)
+do.call(gridExtra::grid.arrange, c(plot(g), list(nrow = 1L)))
 ```
 
 ## Running an algorithm

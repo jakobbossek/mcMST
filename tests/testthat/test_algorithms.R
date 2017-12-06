@@ -12,7 +12,7 @@ test_that("BG EMOA works well", {
   expect_class(res, "ecr_result")
 
   # now increase number of weights
-  instance = addWeights(instance, method = "random", weight.fun = rnorm, mean = 100, sd = 3)
+  instance = grapherator::addWeights(instance, generator = addWeightsRandom, method = rnorm, mean = 100, sd = 3)
 
   res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L)
   expect_class(res, "ecr_result")

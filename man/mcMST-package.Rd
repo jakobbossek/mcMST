@@ -7,8 +7,7 @@
 \description{
 The \pkg{mcMST} package provides a set of algorithms to
 approximate the Pareto-optimal front of multi-criteria
-minimum spanning tree (mcMST) problems. Besides, the package
-contains a modular toolbox for benchmark problem generation.
+minimum spanning tree (mcMST) problems.
 }
 \section{Algorithms}{
 

@@ -2,7 +2,7 @@
 % Please edit documentation in R/generators.R
 \name{genRandomMCGP}
 \alias{genRandomMCGP}
-\title{Generate a bi-criteria graph with uniformly randomly distribted edge weights.}
+\title{Generate a bi-criteria graph with two uniformly randomly distribted edge weights.}
 \usage{
 genRandomMCGP(n)
 }
@@ -11,22 +11,22 @@ genRandomMCGP(n)
 Instance size, i.e., number of nodes.}
 }
 \value{
-[\code{mcGP}]
+[\code{\link[grapherator]{grapherator}}]
 }
 \description{
-No topology is defined. The instance is composed of two
+The instance is composed of two
 symmetric weight matrices. The first weight is drawn independently at
 random from a \eqn{\mathcal{R}[10, 100]} distribution, the second one
 from a \eqn{\mathcal{R}[10, 50]} distribution (see references).
 }
 \note{
 This is a simple wrapper around the much more flexible graph generation
-system (see, e.g., \code{\link{mcGP}}).
+system in package \pkg{grapherator}.
 }
 \examples{
 g = genRandomMCGP(10L)
 \dontrun{
-pl = plot(g)
+pl = grapherator::plot(g)
 }
 }
 \references{

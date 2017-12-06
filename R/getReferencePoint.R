@@ -6,8 +6,8 @@
 #   Problem instance
 # @return [\code{numeric(2)}]
 getReferencePoint = function(instance) {
-  assertClass(instance, "mcGP")
-  n = instance$n.nodes
+  assertClass(instance, "grapherator")
+  n = grapherator::getNumberOfNodes(instance)
 
   sapply(instance$weights, function(wmat) {
     sum(sort(as.numeric(wmat), decreasing = TRUE)[1:n])

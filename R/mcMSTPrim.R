@@ -31,8 +31,9 @@
 #' @export
 #FIXME: generalize to > 2 objectives
 mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
-  assertClass(instance, "mcGP")
-  if (instance$n.weights != 2L)
+  assertClass(instance, "grapherator")
+  n.weights = grapherator::getNumberOfWeights(instance)
+  if (n.weights != 2L)
     stopf("mcMSTPrim: At the moment only bi-objective problems supported.")
   if (is.null(n.lambdas) & is.null(lambdas))
     stopf("mcMSTPrim: At least n.lambdas or lambdas must be set.")
@@ -45,7 +46,7 @@ mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
   #FIXME: also return pareto.set as Pruefer number (needs
   # transformation edgelistToPrueferCode)
   #pareto.set = matrix(0, nrow = )
-  pareto.front = matrix(0, ncol = length(lambdas), nrow = instance$n.weights)
+  pareto.front = matrix(0, ncol = length(lambdas), nrow = n.weights)
 
   # Helper function to build the weighted sum
   # of edge weights

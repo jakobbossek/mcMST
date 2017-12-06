@@ -13,6 +13,7 @@ os:
 
 r_github_packages:
   - jakobbossek/ecr2
+  - jakobbossek/grapherator
   - jimhester/covr
 
 after_success:

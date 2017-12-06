@@ -7,8 +7,8 @@
 getExtremeSolutions(graph)
 }
 \arguments{
-\item{graph}{[\code{mcGP}]\cr
-Multi-objective graph problem.}
+\item{graph}{[\code{\link[grapherator]{grapherator}}]\cr
+Graph.}
 }
 \value{
 [\code{matrix(2, 2)}] The i-th column contains the objective vector

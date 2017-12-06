@@ -7,8 +7,8 @@
 getWeight(graph, edgelist, obj.types = NULL)
 }
 \arguments{
-\item{graph}{[\code{mcGP}]\cr
-Multi-objective graph problem.}
+\item{graph}{[\code{\link[grapherator]{grapherator}}]\cr
+Graph.}
 
 \item{edgelist}{[\code{matrix(2, k)}]
 Matrix of edges (each column is one edge).}

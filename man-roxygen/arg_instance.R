@@ -1,2 +1,2 @@
-#' @param instance [\code{mcGP}]\cr
-#'   Multi-objective graph problem.
+#' @param instance [\code{\link[grapherator]{grapherator}}]\cr
+#'   Multi-objective graph.

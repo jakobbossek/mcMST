@@ -47,12 +47,13 @@
 #' }
 #' @export
 getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives, simplify = TRUE) {
+  assertClass(instance, "grapherator")
   assertFunction(obj.fun)
   assertFunction(enumerator.fun, args = "n")
   n.objectives = asInt(n.objectives, lower = 2L)
   assertFlag(simplify)
 
-  n.nodes = instance$n.nodes
+  n.nodes = grapherator::getNumberOfNodes(instance)
   if (n.nodes > 10L)
     warningf("Doh! This may take some time.")
 

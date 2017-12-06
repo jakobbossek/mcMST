@@ -57,8 +57,8 @@ mcMSTEmoaBG = function(instance,
   ...) {
 
   # get number of nodes
-  n = instance$n.nodes
-  n.objectives = instance$n.weights
+  n = grapherator::getNumberOfNodes(instance)
+  n.objectives = grapherator::getNumberOfWeights(instance)
 
   force(instance)
 
@@ -96,14 +96,14 @@ mcMSTEmoaBG = function(instance,
 }
 
 getRandomSpanningTree = function(g) {
-  adj.mat = g$adj.mat
-  n = g$n.nodes
+  adj.mat = grapherator::getAdjacencyMatrix(g)
+  n = grapherator::getNumberOfNodes(g)
 
   # construct random distance matrix
   dmat = matrix(100 * runif(n * n), ncol = n, nrow = n)
 
   # stick to adjacency structure
-  if (!is.null(g$adj.mat))
+  if (!is.null(adj.mat))
     dmat[!adj.mat] = 1e7
   else
     diag(dmat) = 1e7
