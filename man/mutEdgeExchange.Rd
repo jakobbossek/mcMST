@@ -4,7 +4,7 @@
 \alias{mutEdgeExchange}
 \title{One-edge-exchange mutator for edge list representation of spanning trees.}
 \usage{
-mutEdgeExchange(ind, p = 1/ncol(ind))
+mutEdgeExchange(ind, p = 1/ncol(ind), instance = NULL)
 }
 \arguments{
 \item{ind}{[\code{matrix(2, m)}]\cr
@@ -13,6 +13,9 @@ Matrix of edges (each column is one edge).}
 \item{p}{[\code{numeric(1)}]\cr
 Probability of edge exchange.
 Default is \code{1 / ncol(ind)}.}
+
+\item{instance}{[\code{\link[grapherator]{grapherator}}]\cr
+Multi-objective graph.}
 }
 \value{
 [\code{matrix(2, m)}] Mutated edge list.

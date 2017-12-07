@@ -23,7 +23,9 @@ mutUniformPruefer = makeMutator(
   },
   supported = "custom")
 
-oneEdgeExchange = function(edgelist, edge.id) {
+oneEdgeExchange = function(edgelist, edge.id, instance) {
+  n = grapherator::getNumberOfNodes(instance)
+
   the.edge.idx = edge.id
   # get incident nodes
   node1 = edgelist[1L, the.edge.idx]
@@ -35,6 +37,19 @@ oneEdgeExchange = function(edgelist, edge.id) {
     if (length(set) == 1L)
       return(set)
     return(sample(set, 1L))
+  }
+
+  getReachableNodes = function(edgelist, node) {
+    rnodes = node
+    nsel = 0
+    nsel2 = 1
+    while (nsel2 > nsel) {
+      nsel = nsel2
+      ridx = which(apply(edgelist, 2L, function(x) any(x %in% rnodes)))
+      rnodes = c(unique(as.integer(edgelist[, ridx])), node)
+      nsel2 = length(rnodes)
+    }
+    return(rnodes)
   }
 
   getReachableNodes = function(edgelist, node) {
@@ -54,22 +69,108 @@ oneEdgeExchange = function(edgelist, edge.id) {
   }
 
   # now for each end node get all reachable nodes via DFS
+  #print(edgelist)
+  #print(edgelist)
   nodes1 = getReachableNodes(edgelist[, -the.edge.idx], node1)
   nodes2 = getReachableNodes(edgelist[, -the.edge.idx], node2)
+  #nodes2 = setdiff(1:n, c(the.edge.idx, nodes1))
 
-  #catf("Reachable from node %i: %s", node1, collapse(nodes1))
-  #catf("Reachable from node %i: %s", node2, collapse(nodes2))
+  # catf("Sel edge: %s", collapse(edgelist[, the.edge.idx]))
+  # catf("Reachable from node %i: [%i] %s", node1, length(nodes1), collapse(nodes1))
+  # catf("Reachable from node %i: [%i] %s", node2, length(nodes2), collapse(nodes2))
+  # catf("Intersection: %i", length(intersect(nodes1, nodes2)))
 
   # now sample one node from each set and return build the corresponding edge
-  new.node1 = getRandom(nodes1)
-  new.node2 = getRandom(nodes2)
+
+  # getRandomConnectingEdge = function(nodes1, nodes2) {
+  #   adj.mat = grapherator::getAdjacencyMatrix(instance)
+
+  #   # reduce to interesting submatrix
+  #   adj.mat = adj.mat[nodes1, nodes2, drop = FALSE]
+
+  #   # compute adjacency matrix
+  #   adj.list = lapply(1:nrow(adj.mat), function(i) which(adj.mat[i, ]))
+
+  #   # catf("Adj.mat: %s", collapse(dim(adj.mat)))
+  #   # catf("nodes1: %i, nodes2: %i,  adj.list: %i", length(nodes1), length(nodes2), length(adj.list))
+
+  #   #print(adj.mat)
+
+  #   # which edges between nodes1 and nodes2 exist?
+  #   adj.length = sapply(adj.list, length)
+  #   idx.nonempty = which(adj.length != 0) # at least one must be
+
+  #   # get random stuff
+  #   idx.first = getRandom(idx.nonempty)
+  #   idx.second = getRandom(adj.list[[idx.first]])
+
+  #   # print(idx.nonempty)
+  #   # print(adj.list)
+  #   # print(idx.first)
+  #   # print(idx.second)
+
+  #   return(c(nodes1[idx.first], nodes2[idx.second]))
+  # }
+
+#   getRandomConnectingEdge = function(nodes1, nodes2) {
+#     adj.mat = grapherator::getAdjacencyMatrix(instance)
+
+#     # compute adjacency list
+#     adj.list = lapply(1:nrow(adj.mat), function(i) which(adj.mat[i, ]))
+
+#     # get adjacency list only for node set 1
+#     adj.list2 = adj.list[nodes1]
+
+#  #   catf("nodes1: %i, nodes2: %i,  adj.list: %i", length(nodes1), length(nodes2), length(adj.list))
+
+#     # remove nodes within node set 1
+#     adj.list2 = lapply(adj.list2, setdiff, nodes1)
+# #    print(adj.list2)
+
+#     adj.length = sapply(adj.list2, length)
+#     idx.nonempty = which(adj.length > 0)
+
+#     idx.first = getRandom(idx.nonempty)
+#     idx.second = getRandom(adj.list2[[idx.first]])
+
+#     # print(idx.nonempty)
+#     # print(idx.first)
+#     # print(idx.second)
+
+#     return(c(nodes1[idx.first], idx.second))
+#   }
+
+  getRandomConnectingEdge = function(nodes1, nodes2) {
+    adj.mat = grapherator::getAdjacencyMatrix(instance)
+
+    # reduce to part of adjacency matrix
+    adj.mat2 = adj.mat[nodes1, nodes2, drop = FALSE]
+    #catf("Dim of subadjmat: %s", collapse(dim(adj.mat2)))
+
+    #print(adj.mat2)
+
+    # get matrix rows and cols
+    pos.edges = which(adj.mat2, arr.ind = TRUE)
+    #print(pos.edges)
+    if (!is.matrix(pos.edges))
+      pos.edges = matrix(pos.edges, nrow = 1L)
+
+    #print(nrow(pos.edges))
+    # sample an edge at random
+    idx.newnodes = pos.edges[getRandom(1:nrow(pos.edges)), ]
+    #catf("New edge idx: %s", collapse(idx.newnodes))
+
+    return(c(nodes1[idx.newnodes[1L]], nodes2[idx.newnodes[2L]]))
+  }
 
   # replace edge with new edge
-  edgelist[, the.edge.idx] = c(new.node1, new.node2)
+  edgelist[, the.edge.idx] = getRandomConnectingEdge(nodes1, nodes2)
+  #checkValidity(edgelist, instance)
+
   return(edgelist)
 }
 
-edgeExchange = function(edgelist, p = 1 / ncol(edgelist)) {
+edgeExchange = function(edgelist, p = 1 / ncol(edgelist), instance = NULL) {
   # get number of tree edges
   m = ncol(edgelist)
 
@@ -77,7 +178,7 @@ edgeExchange = function(edgelist, p = 1 / ncol(edgelist)) {
   for (i in 1:m) {
     if (runif(1L) < p) {
       # sample random edge in tree
-      edgelist = oneEdgeExchange(edgelist, i)
+      edgelist = oneEdgeExchange(edgelist, i, instance = instance)
     }
   }
   return(edgelist)
@@ -95,13 +196,14 @@ edgeExchange = function(edgelist, p = 1 / ncol(edgelist)) {
 #' @param p [\code{numeric(1)}]\cr
 #'   Probability of edge exchange.
 #'   Default is \code{1 / ncol(ind)}.
+#' @template arg_instance
 #' @return [\code{matrix(2, m)}] Mutated edge list.
 #' @family mcMST EMOA mutators
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutEdgeExchange = makeMutator(
-  mutator = function(ind, p = 1 / ncol(ind)) {
-    edgeExchange(ind, p)
+  mutator = function(ind, p = 1 / ncol(ind), instance = NULL) {
+    edgeExchange(ind, p, instance)
   },
   supported = "custom")
 

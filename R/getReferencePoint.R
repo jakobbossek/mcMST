@@ -10,6 +10,8 @@ getReferencePoint = function(instance) {
   n = grapherator::getNumberOfNodes(instance)
 
   sapply(instance$weights, function(wmat) {
-    sum(sort(as.numeric(wmat), decreasing = TRUE)[1:n])
+    wmat = as.numeric(wmat)
+    wmat = wmat[!is.infinite(wmat)]
+    sum(sort(wmat, decreasing = TRUE)[1:n])
   })
 }

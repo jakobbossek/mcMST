@@ -8,7 +8,7 @@ test_that("BG EMOA works well", {
   expect_class(res, "ecr_result")
 
   res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L,
-    mut = mutEdgeExchange)
+    mut = setup(mutEdgeExchange, instance = instance))
   expect_class(res, "ecr_result")
 
   # now increase number of weights
@@ -18,7 +18,7 @@ test_that("BG EMOA works well", {
   expect_class(res, "ecr_result")
 
   res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L,
-    mut = mutEdgeExchange)
+    mut = setup(mutEdgeExchange, instance = instance))
   expect_class(res, "ecr_result")
 })
 
