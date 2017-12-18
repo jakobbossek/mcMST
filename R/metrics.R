@@ -49,19 +49,14 @@ getSizeOfLargestCommonSubtree = function(x, y, n = NULL, normalize = TRUE) {
   assertFlag(normalize)
   if (is.null(n))
     n = ncol(x) + 1L
-  x.cv = edgeListToCharVec(x, n = n)
-  y.cv = edgeListToCharVec(y, n = n)
-  xy.cv = x.cv & y.cv
-  xy = charVecToEdgelist(xy.cv)
 
-  # now search for largest common, connected subtree
-  nedges = ncol(xy)
+  common.subtrees = getCommonSubtrees(x, y, n = n)
+  sizes = sapply(common.subtrees, ncol)
+  max.size = max(sizes)
 
-  # here we get only the number and throw away the tree
-  res = sapply(1:nedges, function(i) length(getReachableNodes(xy, xy[, i])))
   if (normalize)
-    return((max(res) - 1L) / (n - 1))
-  return(max(res) - 1L)
+    return(max.size / (n - 1))
+  return(max.size)
 }
 
 # Helper
@@ -84,3 +79,55 @@ getReachableNodes = function(edgelist, node) {
   return(nodes)
 }
 
+#' @title Get common subtrees of two trees.
+#'
+#' @description Given two spanning trees, the function returns the subtrees
+#' of the intersection of these.
+#'
+#' @param x [\code{matrix}]\cr
+#'   Edge list of first tree.
+#' @param y [\code{matrix}]\cr
+#'   Edge list of second tree.
+#' @param n [\code{integer(1)} | \code{NULL}]\cr
+#'   Number of nodes.
+#'   Default to \code{ncol(x) + 1}.
+#' @return [\code{list}] List of matrizes. Each matrix contains the edges of one
+#'   connected subtree.
+#' @examples
+#' # assume we have a graph with n = 10 nodes
+#' n.nodes = 10
+#' # we define two trees (matrices with colwise edges)
+#' stree1 = matrix(c(1, 2, 1, 3, 2, 4, 5, 6, 6, 7), byrow = FALSE, nrow = 2)
+#' stree2 = matrix(c(1, 3, 1, 2, 2, 4, 5, 8, 6, 7), byrow = FALSE, nrow = 2)
+#' # ... and compute all common subtrees
+#' subtrees = getCommonSubtrees(stree1, stree2, n = 10)
+#' @export
+getCommonSubtrees = function(x, y, n = NULL) {
+  if (is.null(n))
+    n = ncol(x) + 1L
+  x.cv = edgeListToCharVec(x, n = n)
+  y.cv = edgeListToCharVec(y, n = n)
+  xy.cv = x.cv & y.cv
+  xy = charVecToEdgelist(xy.cv)
+
+  nedges = ncol(xy)
+
+  # init component membership
+  comps = rep(NA, nedges)
+  comp = 1L
+  for (i in 1:nedges) {
+    # already in component
+    if (!is.na(comps[i]))
+      next
+    nodes = xy[, i]
+    reachable = getReachableNodes(xy, nodes)
+    # which edges are used by the components?
+    used.edges = apply(xy, 2L, function(edge) any(edge %in% reachable))
+    comps[used.edges] = comp
+    comp = comp + 1L
+  }
+
+  lapply(1:(comp - 1L), function(i) {
+    xy[, which(comps == i), drop = FALSE]
+  })
+}

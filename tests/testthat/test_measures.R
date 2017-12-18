@@ -44,3 +44,26 @@ test_that("similarity matrix calculation works", {
   # sim(i, j) = sim(j, i)
   expect_true(isSymmetric(sim.mat))
 })
+
+test_that("common subtrees calculation works", {
+  n = 10L
+  mu = 10L
+  g = genRandomMCGP(n)
+
+  # approximate front
+  res = mcMSTEmoaBG(g, mu = mu, max.iter = 50L)
+  set = res$pareto.set
+
+  # order Pareto-set by first objective
+  set = set[order(res$pareto.front[, 1L])]
+
+  # tree ids
+  t1 = set[[1L]]
+  t2 = set[[5L]]
+
+  NCE = getNumberOfCommonEdges(t1, t2, normalize = FALSE)
+
+  subtrees = getCommonSubtrees(t1, t2)
+  n.subtree.edges = sum(sapply(subtrees, ncol))
+  expect_true(n.subtree.edges == NCE)
+})
