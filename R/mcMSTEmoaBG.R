@@ -94,26 +94,3 @@ mcMSTEmoaBG = function(instance,
 
   return(res)
 }
-
-getRandomSpanningTree = function(g) {
-  adj.mat = grapherator::getAdjacencyMatrix(g)
-  n = grapherator::getNumberOfNodes(g)
-
-  # construct random distance matrix
-  dmat = matrix(100 * runif(n * n), ncol = n, nrow = n)
-
-  # stick to adjacency structure
-  if (!is.null(adj.mat))
-    dmat[!adj.mat] = 1e7
-  else
-    diag(dmat) = 1e7
-
-  nodes = 1:n
-
-  mstres = vegan::spantree(d = dmat)
-
-  edge.list = matrix(
-    c(nodes[2:n], nodes[mstres$kid]),
-    byrow = TRUE, nrow = 2L)
-  return(edge.list)
-}
