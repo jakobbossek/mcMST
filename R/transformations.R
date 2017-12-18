@@ -83,18 +83,37 @@ prueferToEdgeList = function(pcode) {
 #' @export
 edgeListToCharVec = function(edgelist, n = NULL) {
   # number of nodes is |E| + 1
+  n.edges = ncol(edgelist)
   if (is.null(n))
-    n = ncol(edgelist) + 1L
+    n = n.edges + 1L
 
   mat = matrix(0, nrow = n, ncol = n)
-  for (i in 1:(n - 1L)) {
+  for (i in 1:n.edges) {
     tmp = sort(edgelist[, i])
     mat[tmp[1L], tmp[2L]] = 1L
   }
   # convert matrix colwise into a vector
   cv = as.integer(mat)
-  stopifnot(sum(mat) == n - 1L)
-  return(as.integer(mat))
+  stopifnot(sum(cv) == n.edges)
+  return(cv)
+}
+
+#' Convert characteristic vector to edge list.
+#'
+#' @template arg_charvec
+#' @template ret_edgelist
+#' @examples
+#' # here we generate a random Pruefer-code representing
+#' # a random spanning tree of a graph with n = 10 nodes
+#' pcode = sample(1:10, 8, replace = TRUE)#'
+#' edgelist = charVecToEdgelist(prueferToCharVec(pcode))
+#' @family transformation functions
+#' @export
+charVecToEdgelist = function(charvec) {
+  n = sqrt(length(charvec))
+  mat = matrix(charvec, nrow = n, ncol = n, byrow = FALSE)
+  edgelist = t(which(mat == 1L, arr.ind = TRUE))
+  return(edgelist)
 }
 
 #' Convert Pruefer code to characteristic vector.

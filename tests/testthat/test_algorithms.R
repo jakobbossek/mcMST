@@ -14,11 +14,16 @@ test_that("BG EMOA works well", {
   # now increase number of weights
   instance = grapherator::addWeights(instance, generator = addWeightsRandom, method = rnorm, mean = 100, sd = 3)
 
-  res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L)
+  res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L, scalarize = TRUE)
   expect_class(res, "ecr_result")
 
   res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L,
     mut = setup(mutEdgeExchange, instance = instance))
+  expect_class(res, "ecr_result")
+
+  # check three objectives
+  instance = grapherator::addWeights(instance, generator = addWeightsRandom, method = runif, min = 10, max = 100)
+  res = mcMSTEmoaBG(instance, mu = 10L, max.iter = 50L)
   expect_class(res, "ecr_result")
 })
 

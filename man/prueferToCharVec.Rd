@@ -24,7 +24,8 @@ print(pcode)
 print(prueferToCharVec(pcode))
 }
 \seealso{
-Other transformation functions: \code{\link{edgeListToCharVec}},
+Other transformation functions: \code{\link{charVecToEdgelist}},
+  \code{\link{edgeListToCharVec}},
   \code{\link{permutationToCharVec}},
   \code{\link{permutationToEdgelist}},
   \code{\link{prueferToEdgeList}}

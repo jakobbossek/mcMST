@@ -39,33 +39,68 @@ oneEdgeExchange = function(edgelist, edge.id, instance) {
     return(sample(set, 1L))
   }
 
-  getReachableNodes = function(edgelist, node) {
-    rnodes = node
-    nsel = 0
-    nsel2 = 1
-    while (nsel2 > nsel) {
-      nsel = nsel2
-      ridx = which(apply(edgelist, 2L, function(x) any(x %in% rnodes)))
-      rnodes = c(unique(as.integer(edgelist[, ridx])), node)
-      nsel2 = length(rnodes)
-    }
-    return(rnodes)
-  }
+  #SLOW AS HELL! :)
+  # getReachableNodes = function(edgelist, node) {
+  #   rnodes = node
+  #   nsel = 0
+  #   nsel2 = 1
+  #   while (nsel2 > nsel) {
+  #     nsel = nsel2
+  #     ridx = which(apply(edgelist, 2L, function(x) any(x %in% rnodes)))
+  #     rnodes = c(unique(as.integer(edgelist[, ridx])), node)
+  #     nsel2 = length(rnodes)
+  #   }
+  #   return(rnodes)
+  # }
+
+  #SLOW AS HELL! :)
+  # getReachableNodes = function(edgelist, node) {
+  #   nodes = node
+  #   nodes2 = nodes
+  #   while (length(nodes2) > 0L) {
+  #     the.node = nodes2[1L]
+  #     # check which edges are incident to current node
+  #     is.adjacent = apply(edgelist, 2L, function(x) any(x == the.node))
+  #     # get all unique nodes
+  #     adjacent.nodes = unique(as.integer(edgelist[, is.adjacent]))
+  #     nodes2 = setdiff(c(nodes2, adjacent.nodes), the.node)
+  #     nodes = unique(c(nodes, adjacent.nodes))
+  #     edgelist = edgelist[, !is.adjacent, drop = FALSE]
+  #   }
+  #   return(nodes)
+  # }
 
   getReachableNodes = function(edgelist, node) {
-    nodes = node
-    nodes2 = nodes
-    while (length(nodes2) > 0L) {
-      the.node = nodes2[1L]
-      # check which edges are incident to current node
-      is.adjacent = apply(edgelist, 2L, function(x) any(x == the.node))
-      # get all unique nodes
-      adjacent.nodes = unique(as.integer(edgelist[, is.adjacent]))
-      nodes2 = setdiff(c(nodes2, adjacent.nodes), the.node)
-      nodes = unique(c(nodes, adjacent.nodes))
-      edgelist = edgelist[, !is.adjacent, drop = FALSE]
+    #print(instance)
+    n = instance$n.nodes
+
+    adj.list = replicate(n, c())
+    for (i in 1:ncol(edgelist)) {
+      n1 = edgelist[1L, i]
+      n2 = edgelist[2L, i]
+      #catf("n1: %i, n2: %i, n: %i", n1, n2, n)
+      adj.list[[n1]] = c(adj.list[[n1]], n2)
+      adj.list[[n2]] = c(adj.list[[n2]], n1)
     }
-    return(nodes)
+    adj.list.len = sapply(adj.list, length)
+
+    #print(adj.list)
+
+    queue = node
+    qn = 1L
+    visited = rep(FALSE, n)
+    while (qn > 0L) {
+      cur.node = queue[1L]
+      #catf("Curnode: %i", cur.node)
+      queue = queue[-1L]
+      qn = qn - 1L
+      if (visited[cur.node])
+        next
+      visited[cur.node] = TRUE
+      queue = c(queue, adj.list[[cur.node]])
+      qn = qn + adj.list.len[cur.node]
+    }
+    return(which(visited))
   }
 
   # now for each end node get all reachable nodes via DFS
@@ -242,9 +277,12 @@ subgraphMST = function(edgelist, sigma, scalarize, instance) {
     obj.idx = sample(1:n.objectives, 1L)
     dd = instance$weights[[obj.idx]][sel.nodes, sel.nodes]
   } else {
-    lambda = runif(1L)
-    dd = lambda * instance$weights[[1L]][sel.nodes, sel.nodes] + (1 - lambda) * instance$weights[[2L]][sel.nodes, sel.nodes]
+    lambdas = sampleWeights(n.objectives)
+    dd = scalarizeWeights(instance$weights, lambdas)[sel.nodes, sel.nodes]
+    # lambda = runif(1L)
+    # dd = lambda * instance$weights[[1L]][sel.nodes, sel.nodes] + (1 - lambda) * instance$weights[[2L]][sel.nodes, sel.nodes]
   }
+
   #catf("submatrix:")
   #print(dd)
   # get result of PRIM

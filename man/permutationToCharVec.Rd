@@ -28,7 +28,8 @@ print(perm)
 permutationToCharVec(perm, n = 10)
 }
 \seealso{
-Other transformation functions: \code{\link{edgeListToCharVec}},
+Other transformation functions: \code{\link{charVecToEdgelist}},
+  \code{\link{edgeListToCharVec}},
   \code{\link{permutationToEdgelist}},
   \code{\link{prueferToCharVec}},
   \code{\link{prueferToEdgeList}}
