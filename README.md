@@ -9,30 +9,32 @@
 
 ## Introduction
 
-It is well known, that the single-objective spanning tree problem (MST) is solvable in polynomial time, e.g., by the Prim's algorithm. However, in real-world applications, e.g., in network design, often multiple conflicting objectives have to be considered simultaneously. The multi-criteria version of the MST is NP-hard. The **mcMST** package for the [R](https://www.r-project.org) programming language contains methods for benchmark instance generation of multi-objective graph problems and methods for solving the multi-criteria spanning tree problem (mcMST).
+It is well known, that the single-objective spanning tree problem (MST) is solvable in polynomial time, e.g., by the Prim's algorithm. However, in real-world applications, e.g., in network design, often multiple conflicting objectives have to be considered simultaneously. The multi-criteria version of the MST is NP-hard. The **mcMST** package for the [R](https://www.r-project.org) programming language contains several methods for solving the multi-criteria spanning tree problem (mcMST).
 
 Key features of the **mcMST** package are:
 
 * A multi-objective version of Prim's algorithm.
 * Evolutionary multi-objective algorithms (based on the Prüfer-encoding or  direct edge list representation) with several mutation operators.
-* A modular approach for benchmark problem generation. 
+* A modular approach for benchmark problem generation (**outsourced to R package [grapherator](https://github.com/jakobbossek/grapherator)**.)
 
 ## Example
 
-Here we first generate a bi-criteria graph problem with n = 25 nodes. The first objective is the euclidean distance of node coordinates in the euclidean plane [0, 10] x [0, 10]. The second objective follows a normal distribution (N(5, 1.5)). 
+Here we first generate a bi-criteria graph problem with n = 25 nodes with [grapherator](https://github.com/jakobbossek/grapherator). The first objective is the euclidean distance of node coordinates in the euclidean plane [0, 10] x [0, 10]. The second objective follows a normal distribution (N(5, 1.5)). 
 ```r
+library(grapherator) # install from github repo (not yet on CRAN)
 set.seed(1)
-g = mcGP(lower = 0, upper = 10)
-g = addCoordinates(g, n = 25, generator = coordUniform)
-g = addWeights(g, method = "euclidean")
-g = addWeights(g, method = "random", weight.fun = rnorm, mean = 5, sd = 1.5)
+g = graph(lower = 0, upper = 100)
+g = addNodes(g, n = 25, generator = addNodesUniform)
+g = addEdges(g, generator = addEdgesDelauney)
+g = addWeights(g, generator = addWeightsDistance, method = "euclidean")
+g = addWeights(g, generator = addWeightsRandom, method = rnorm, mean = 5, sd = 1.5)
 print(g)
 ```
 
-Next, we apply the genetic algorithm proposed by Zhou & Gen with population size `mu = 10` and number of offspring `lambda = 10` for `max.iter = 100` generations.
+Next, we apply the multi-objective evolutionary algorithm proposed by Bossek & Grimme with population size `mu = 10` and number of offspring `lambda = 10` for `max.iter = 100` generations.
 ```r
 library(ggplot2)
-res = mcMSTEmoaZhou(g, mu = 10L, lambda = 10L, max.iter = 100L)
+res = mcMSTEmoaBG(g, mu = 30L, max.iter = 300L)
 ecr::plotFront(res$pareto.front)
 ```
 See the package vignettes for more details.
@@ -56,6 +58,14 @@ If you encounter problems using this software, e.g., bugs or insufficient/mislea
 In order to reproduce potential problems, please provide a minimal and reproducible code example.
 
 Contributions to this software package are welcome via [pull requests](https://help.github.com/articles/about-pull-requests/) and will be merged at the sole discretion of the author. 
+
+## Publications
+
+The following publications are strongly related to the package.
+
+Bossek, J., & Grimme, C. (2017). A Pareto-Beneficial Sub-Tree Mutation for the Multi-Criteria Minimum Spanning Tree Problem. In Proceedings of the IEEE Symposium Series on Computational Intelligence, Honolulu, Hawai.
+
+Bossek, J. (2017). mcMST: A Toolbox for the Multi-Criteria Minimum Spanning Tree Problem. The Journal of Open Source Software, 2017.
 
 ## Related work
 
