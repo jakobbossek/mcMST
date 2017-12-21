@@ -2,6 +2,14 @@ mcMST 1.1.0
 ===========
 
 * added genRandomSpanningTree(s)
+* graph generation moved to dedicated package grapherator
+* mcMST EMOA algorithms now work on graphs with >= 3 weights per edge
+* mcMST EMOA algorithms work on non-complete graphs
+* added option scalarize to subGraph mutation
+* added similarity metrics between trees: getNumberOfCommonEdges, getSizeOfLargestCommonSubtree
+* added function getCommonSubtrees to get edgelists of all common subtrees of two trees
+* added transformation function charVecToEdgelist
+* added function computeSimilarityMatrix
 
 mcMST 1.0.1
 ===========
