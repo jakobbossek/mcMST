@@ -4,8 +4,7 @@
 #' graph problem by iteratively applying Prim's algorithm for the single-objective
 #' MST problem to a scalarized version of the problem. I.e., the weight vector
 #' \eqn{(w_1, w_2)} of an edge \eqn{(i, j)} is substituted with a weighted
-#' sum \eqn{\lambda_i w_1 + (1 - \lambda_i) w_2} with weight \eqn{\lambda_i \in [0, 1]}
-#' for different weights.
+#' sum \eqn{\lambda_i w_1 + (1 - \lambda_i) w_2} for different weights \eqn{\lambda_i \in [0, 1]}.
 #'
 #' @note Note that this procedure can only find socalled supported efficient
 #' solutions, i.e., solutions on the convex hull of the Pareto-optimal front.
@@ -15,8 +14,8 @@
 #' of the 2001 Congress on Evolutionary Computation (IEEE Cat. No.01TH8546),
 #' vol. 1, 2001, pp. 544–551 vol. 1.
 #'
-#' @param instance [\code{mcGP}]\cr
-#'   Multi-objective graph problem.
+#' @param instance [\code{\link[grapherator]{grapherator}}]\cr
+#'   Graph.
 #' @param n.lambdas [\code{integer(1) | NULL}]\cr
 #'   Number of weights to generate. The weights are generated equdistantly
 #'   in the interval \eqn{[0, 1]}.
@@ -43,9 +42,7 @@ mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
   }
   assertNumeric(lambdas, any.missing = FALSE, all.missing = FALSE)
 
-  #FIXME: also return pareto.set as Pruefer number (needs
-  # transformation edgelistToPrueferCode)
-  #pareto.set = matrix(0, nrow = )
+  pareto.set = vector(mode = "list", length = length(lambdas))
   pareto.front = matrix(0, ncol = length(lambdas), nrow = n.weights)
 
   # Helper function to build the weighted sum
@@ -73,8 +70,12 @@ mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
     edgelist = matrix(c(nodes1, nodes2), byrow = TRUE, nrow = 2L)
 
     pareto.front[, k] = getWeight(instance, edgelist = edgelist)
+    pareto.set[[k]] = edgelist
   }
 
-  return(list(pareto.front = pareto.front))
+  return(list(
+    pareto.set = pareto.set,
+    pareto.front = pareto.front)
+  )
 }
 

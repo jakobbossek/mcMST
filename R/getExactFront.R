@@ -102,11 +102,11 @@ getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives, simpli
   )
 }
 
-getExactFrontMCMST = function(instance) {
+getExactFrontMCMST = function(instance, ...) {
   objfunMCMST = function(pcode, instance) {
     #print(pcode)
     getWeight(instance, prueferToEdgeList(pcode))
   }
   getExactFront(instance, obj.fun = objfunMCMST,
-    enumerator.fun = enumerateMST, n.objectives = 2L)
+    enumerator.fun = enumerateMST, n.objectives = 2L, ...)
 }

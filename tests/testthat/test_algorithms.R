@@ -64,4 +64,5 @@ test_that("Scalarization works well", {
   res = mcMSTPrim(g, n.lambdas = 10L)
   expect_list(res)
   expect_true(all(ecr::nondominated(res$pareto.front)))
+  checkValidSpanningTrees(res$pareto.set, g)
 })
