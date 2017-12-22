@@ -17,3 +17,9 @@ test_that("scalrization of weights matrices", {
   expect_matrix(s, mode = "numeric", nrows = n, ncols = n)
   expect_true(all(s == 10))
 })
+
+test_that("number of spanning trees", {
+  n = 10L
+  g = genRandomMCGP(n)
+  expect_true(getNumberOfSpanningTrees(n) == n^(n - 2L))
+})
