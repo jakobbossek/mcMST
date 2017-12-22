@@ -9,6 +9,8 @@
 * added function getCommonSubtrees to get edgelists of all common subtrees of two trees
 * added transformation function charVecToEdgelist
 * added function computeSimilarityMatrix
+* added getNumberOfSpanningTrees (based on Kirchhoff's tree theorem)
+* added visual methods to analyse solution sets: plotEdges, plotEdgeFrequency
 
 # mcMST 1.0.1
 
