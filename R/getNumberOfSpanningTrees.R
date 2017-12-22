@@ -27,5 +27,8 @@ getNumberOfSpanningTrees = function(graph) {
   lap.mat = lap.mat[-1L, -1L]
 
   n.strees = det(lap.mat)
+
+  # due to numeric inaccuracy we get a double value
+  n.strees = as.integer(ceiling(n.strees))
   return(n.strees)
 }
