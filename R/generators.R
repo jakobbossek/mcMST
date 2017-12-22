@@ -31,7 +31,7 @@ genRandomMCGP = function(n) {
   n = asInt(n, lower = 2L)
   g = grapherator::graph(lower = 0, upper = 100)
   g = grapherator::addNodes(g, n = n, generator = grapherator::addNodesUniform)
-  g = grapherator::addWeights(g, generator = grapherator::addWeightsRandom, method = runif, symmetric = TRUE, min = 10, max = 100)
-  g = grapherator::addWeights(g, generator = grapherator::addWeightsRandom, method = runif, symmetric = TRUE, min = 10, max = 50)
+  g = grapherator::addWeights(g, generator = grapherator::addWeightsRandom, method = runif, symmetric = TRUE, min = 10, max = 100, to.int = TRUE)
+  g = grapherator::addWeights(g, generator = grapherator::addWeightsRandom, method = runif, symmetric = TRUE, min = 10, max = 50, to.int = TRUE)
   return(g)
 }
