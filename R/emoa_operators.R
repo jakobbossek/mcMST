@@ -37,68 +37,33 @@ oneEdgeExchange = function(edgelist, edge.id, instance) {
     return(sample(set, 1L))
   }
 
-  getReachableNodes = function(edgelist, node) {
-    #print(instance)
-    n = instance$n.nodes
+  # build igraph from edgelist
+  tmp = igraph::graph_from_edgelist(t(edgelist), directed = FALSE)
 
-    adj.list = replicate(n, c())
-    for (i in 1:ncol(edgelist)) {
-      n1 = edgelist[1L, i]
-      n2 = edgelist[2L, i]
-      #catf("n1: %i, n2: %i, n: %i", n1, n2, n)
-      adj.list[[n1]] = c(adj.list[[n1]], n2)
-      adj.list[[n2]] = c(adj.list[[n2]], n1)
-    }
-    adj.list.len = sapply(adj.list, length)
+  # now delete selected edges
+  tmp = igraph::delete_edges(tmp, collapse(edgelist[, the.edge.idx], sep = "|"))
 
-    queue = node
-    qn = 1L
-    visited = rep(FALSE, n)
-    while (qn > 0L) {
-      cur.node = queue[1L]
-      #catf("Curnode: %i", cur.node)
-      queue = queue[-1L]
-      qn = qn - 1L
-      if (visited[cur.node])
-        next
-      visited[cur.node] = TRUE
-      queue = c(queue, adj.list[[cur.node]])
-      qn = qn + adj.list.len[cur.node]
-    }
-    return(which(visited))
-  }
+  # ... and search for components
+  components = igraph::components(tmp, mode = "weak")
+  comp.node1 = components$membership[node1]
+  comp.node2 = components$membership[node2]
 
-  # tmp = igraph::graph_from_edgelist(t(edgelist), directed = FALSE)
-  # components = igraph::components(tmp, mode = "weak")
-  # comp.node1 = components$membership[node1]
-  # comp.node2 = components$membership[node2]
-
-  # nodes1 = which(components$membership == comp.node1)
-  # nodes2 = which(components$membership == comp.node2)
-
-  # now for each end node get all reachable nodes via DFS
-  nodes1 = getReachableNodes(edgelist[, -the.edge.idx], node1)
-  nodes2 = getReachableNodes(edgelist[, -the.edge.idx], node2)
+  nodes1 = which(components$membership == comp.node1)
+  nodes2 = which(components$membership == comp.node2)
 
   getRandomConnectingEdge = function(nodes1, nodes2) {
     adj.mat = grapherator::getAdjacencyMatrix(instance)
 
     # reduce to part of adjacency matrix
     adj.mat2 = adj.mat[nodes1, nodes2, drop = FALSE]
-    #catf("Dim of subadjmat: %s", collapse(dim(adj.mat2)))
-
-    #print(adj.mat2)
 
     # get matrix rows and cols
     pos.edges = which(adj.mat2, arr.ind = TRUE)
-    #print(pos.edges)
     if (!is.matrix(pos.edges))
       pos.edges = matrix(pos.edges, nrow = 1L)
 
-    #print(nrow(pos.edges))
     # sample an edge at random
     idx.newnodes = pos.edges[getRandom(1:nrow(pos.edges)), ]
-    #catf("New edge idx: %s", collapse(idx.newnodes))
 
     return(c(nodes1[idx.newnodes[1L]], nodes2[idx.newnodes[2L]]))
   }
