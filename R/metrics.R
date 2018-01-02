@@ -50,8 +50,13 @@ getSizeOfLargestCommonSubtree = function(x, y, n = NULL, normalize = TRUE) {
   if (is.null(n))
     n = ncol(x) + 1L
 
-  common.subtrees = getCommonSubtrees(x, y, n = n)
-  sizes = sapply(common.subtrees, ncol)
+  x = igraph::graph_from_edgelist(t(x), directed = FALSE)
+  y = igraph::graph_from_edgelist(t(y), directed = FALSE)
+
+  z = igraph::intersection(x, y)
+  common.subtrees = igraph::components(z, mode = "weak")
+  # subtract 1 since we are interested in number of edges
+  sizes = common.subtrees$csize - 1L
   max.size = max(sizes)
 
   if (normalize)
