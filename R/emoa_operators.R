@@ -31,44 +31,11 @@ oneEdgeExchange = function(edgelist, edge.id, instance) {
   node1 = edgelist[1L, the.edge.idx]
   node2 = edgelist[2L, the.edge.idx]
 
-  #catf("End nodes: %i, %i", node1, node2)
-
   getRandom = function(set) {
     if (length(set) == 1L)
       return(set)
     return(sample(set, 1L))
   }
-
-  #SLOW AS HELL! :)
-  # getReachableNodes = function(edgelist, node) {
-  #   rnodes = node
-  #   nsel = 0
-  #   nsel2 = 1
-  #   while (nsel2 > nsel) {
-  #     nsel = nsel2
-  #     ridx = which(apply(edgelist, 2L, function(x) any(x %in% rnodes)))
-  #     rnodes = c(unique(as.integer(edgelist[, ridx])), node)
-  #     nsel2 = length(rnodes)
-  #   }
-  #   return(rnodes)
-  # }
-
-  #SLOW AS HELL! :)
-  # getReachableNodes = function(edgelist, node) {
-  #   nodes = node
-  #   nodes2 = nodes
-  #   while (length(nodes2) > 0L) {
-  #     the.node = nodes2[1L]
-  #     # check which edges are incident to current node
-  #     is.adjacent = apply(edgelist, 2L, function(x) any(x == the.node))
-  #     # get all unique nodes
-  #     adjacent.nodes = unique(as.integer(edgelist[, is.adjacent]))
-  #     nodes2 = setdiff(c(nodes2, adjacent.nodes), the.node)
-  #     nodes = unique(c(nodes, adjacent.nodes))
-  #     edgelist = edgelist[, !is.adjacent, drop = FALSE]
-  #   }
-  #   return(nodes)
-  # }
 
   getReachableNodes = function(edgelist, node) {
     #print(instance)
@@ -83,8 +50,6 @@ oneEdgeExchange = function(edgelist, edge.id, instance) {
       adj.list[[n2]] = c(adj.list[[n2]], n1)
     }
     adj.list.len = sapply(adj.list, length)
-
-    #print(adj.list)
 
     queue = node
     qn = 1L
@@ -103,77 +68,17 @@ oneEdgeExchange = function(edgelist, edge.id, instance) {
     return(which(visited))
   }
 
+  # tmp = igraph::graph_from_edgelist(t(edgelist), directed = FALSE)
+  # components = igraph::components(tmp, mode = "weak")
+  # comp.node1 = components$membership[node1]
+  # comp.node2 = components$membership[node2]
+
+  # nodes1 = which(components$membership == comp.node1)
+  # nodes2 = which(components$membership == comp.node2)
+
   # now for each end node get all reachable nodes via DFS
-  #print(edgelist)
-  #print(edgelist)
   nodes1 = getReachableNodes(edgelist[, -the.edge.idx], node1)
   nodes2 = getReachableNodes(edgelist[, -the.edge.idx], node2)
-  #nodes2 = setdiff(1:n, c(the.edge.idx, nodes1))
-
-  # catf("Sel edge: %s", collapse(edgelist[, the.edge.idx]))
-  # catf("Reachable from node %i: [%i] %s", node1, length(nodes1), collapse(nodes1))
-  # catf("Reachable from node %i: [%i] %s", node2, length(nodes2), collapse(nodes2))
-  # catf("Intersection: %i", length(intersect(nodes1, nodes2)))
-
-  # now sample one node from each set and return build the corresponding edge
-
-  # getRandomConnectingEdge = function(nodes1, nodes2) {
-  #   adj.mat = grapherator::getAdjacencyMatrix(instance)
-
-  #   # reduce to interesting submatrix
-  #   adj.mat = adj.mat[nodes1, nodes2, drop = FALSE]
-
-  #   # compute adjacency matrix
-  #   adj.list = lapply(1:nrow(adj.mat), function(i) which(adj.mat[i, ]))
-
-  #   # catf("Adj.mat: %s", collapse(dim(adj.mat)))
-  #   # catf("nodes1: %i, nodes2: %i,  adj.list: %i", length(nodes1), length(nodes2), length(adj.list))
-
-  #   #print(adj.mat)
-
-  #   # which edges between nodes1 and nodes2 exist?
-  #   adj.length = sapply(adj.list, length)
-  #   idx.nonempty = which(adj.length != 0) # at least one must be
-
-  #   # get random stuff
-  #   idx.first = getRandom(idx.nonempty)
-  #   idx.second = getRandom(adj.list[[idx.first]])
-
-  #   # print(idx.nonempty)
-  #   # print(adj.list)
-  #   # print(idx.first)
-  #   # print(idx.second)
-
-  #   return(c(nodes1[idx.first], nodes2[idx.second]))
-  # }
-
-#   getRandomConnectingEdge = function(nodes1, nodes2) {
-#     adj.mat = grapherator::getAdjacencyMatrix(instance)
-
-#     # compute adjacency list
-#     adj.list = lapply(1:nrow(adj.mat), function(i) which(adj.mat[i, ]))
-
-#     # get adjacency list only for node set 1
-#     adj.list2 = adj.list[nodes1]
-
-#  #   catf("nodes1: %i, nodes2: %i,  adj.list: %i", length(nodes1), length(nodes2), length(adj.list))
-
-#     # remove nodes within node set 1
-#     adj.list2 = lapply(adj.list2, setdiff, nodes1)
-# #    print(adj.list2)
-
-#     adj.length = sapply(adj.list2, length)
-#     idx.nonempty = which(adj.length > 0)
-
-#     idx.first = getRandom(idx.nonempty)
-#     idx.second = getRandom(adj.list2[[idx.first]])
-
-#     # print(idx.nonempty)
-#     # print(idx.first)
-#     # print(idx.second)
-
-#     return(c(nodes1[idx.first], idx.second))
-#   }
 
   getRandomConnectingEdge = function(nodes1, nodes2) {
     adj.mat = grapherator::getAdjacencyMatrix(instance)
@@ -251,55 +156,32 @@ subgraphMST = function(edgelist, sigma, scalarize, instance) {
   inds = 1:m
   # select random edge in tree as the starting point
   start = sample(inds, 1L)
-  #catf("First edge: %i, (%i, %i)", start, edgelist[1, start], edgelist[2, start])
-  sel.edges = start
-  # the incident nodes of the edge determine the first
-  sel.nodes = edgelist[, start]
-  # walk through tree randomly
-  #cur.node = sel.nodes[1L]
-  # loop until we got a sufficiently big subtree
-  while (length(sel.nodes) < nsel) {
-    # check which edges are incident to selected nodes
-    rr = apply(edgelist, 2L, function(x) any(x %in% sel.nodes))
-    #catf("Edges incident to nodes %s: %s", collapse(sel.nodes), collapse(which(rr)))
-    # filter already selected
-    rr = setdiff(which(rr), sel.edges)
-    #catf("Edges incident to nodes %s: %s", collapse(sel.nodes), collapse(rr))
-    #FIXME: this can be made better
-    sel.edges = sort(c(sel.edges, rr))
-    sel.nodes = unique(as.integer(edgelist[, sel.edges]))
-  }
+
+  tmp = igraph::graph_from_edgelist(t(edgelist), directed = FALSE)
+  bfs.res = igraph::bfs(tmp, root = start)
+  sel.nodes = as.integer(bfs.res$order[1:nsel])
+  sel.edges = which(apply(edgelist, 2L, function(x) all(x %in% sel.nodes)))
+
   # now extract subgraph and apply Prim
   sel.nodes = sort(sel.nodes)
-  #catf("Finally extracted %i nodes %s", length(sel.nodes), collapse(sel.nodes))
   dd = NULL
   if (!scalarize) {
     obj.idx = sample(1:n.objectives, 1L)
     dd = instance$weights[[obj.idx]][sel.nodes, sel.nodes]
   } else {
     lambdas = sampleWeights(n.objectives)
-    dd = scalarizeWeights(instance$weights, lambdas)[sel.nodes, sel.nodes]
-    # lambda = runif(1L)
-    # dd = lambda * instance$weights[[1L]][sel.nodes, sel.nodes] + (1 - lambda) * instance$weights[[2L]][sel.nodes, sel.nodes]
+    dd = lapply(instance$weights, function(w) w[sel.nodes, sel.nodes])
+    dd = scalarizeWeights(dd, lambdas)
   }
 
-  #catf("submatrix:")
-  #print(dd)
   # get result of PRIM
   mstres = vegan::spantree(d = dd)
 
-  #print(mstres)
-  #catf("N(sel.edges): %i", length(sel.edges))
-  #catf("N(mstnodes):  %i", length(mstres$kid))
   repl.edges = matrix(
-    #FIXME: is this correct?!?
     c(sel.nodes[2:(length(sel.edges) + 1L)],
       sel.nodes[mstres$kid]), byrow = TRUE, nrow = 2L)
 
-    #catf("Replacing edges %s:", collapse(sel.edges))
-    #print(edgelist[, sel.edges])
-    #catf("... with ")
-    #print(repl.edges)
+  # replace edges
   edgelist[, sel.edges] = repl.edges
   return(edgelist)
 }
