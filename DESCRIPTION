@@ -22,7 +22,8 @@ Imports:
     ggplot2 (>= 1.0.0),
     vegan,
     qgraph,
-    viridis
+    viridis,
+    igraph
 Suggests:
     testthat (>= 0.9.1),
     knitr,
