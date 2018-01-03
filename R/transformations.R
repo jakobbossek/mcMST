@@ -98,6 +98,28 @@ edgeListToCharVec = function(edgelist, n = NULL) {
   return(cv)
 }
 
+#' Convert sequence of nodes to edge list.
+#'
+#' @param nodelist [\code{integer}]\cr
+#'   Sequence of nodes.
+#' @template ret_edgelist
+#' @examples
+#' # first generate a random permutation, e.g., representing
+#' # a roundtrip tour in a graph
+#' nodelist = sample(1:8)
+#' # now convert into an edge list
+#' nodelistToEdgelist(nodelist)
+#' @family transformation functions
+#' @export
+nodelistToEdgelist = function(nodelist) {
+  n = length(nodelist)
+  edgelist = matrix(NA, nrow = 2L, ncol = n - 1L)
+  for (i in 1:(n - 1L)) {
+    edgelist[, i] = nodelist[i:(i + 1L)]
+  }
+  return(edgelist)
+}
+
 #' Convert characteristic vector to edge list.
 #'
 #' @template arg_charvec

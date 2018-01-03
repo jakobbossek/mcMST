@@ -56,3 +56,13 @@ test_that("trafo for roundtrip tours work well", {
     expect_true(all(cvec1 %in% c(0, 1)))
   }
 })
+
+test_that("trafo between node list and edge list works", {
+  for (i in 1:10L) {
+    n = sample(2:10, 1L)
+    nodelist = sample(1:10, size = n, replace = FALSE)
+    edgelist = nodelistToEdgelist(nodelist)
+    expect_matrix(edgelist, nrows = 2L, ncols = n - 1L, mode = "numeric")
+    expect_true(all(as.integer(edgelist) %in% nodelist))
+  }
+})

@@ -24,6 +24,7 @@ edgelist = charVecToEdgelist(prueferToCharVec(pcode))
 }
 \seealso{
 Other transformation functions: \code{\link{edgeListToCharVec}},
+  \code{\link{nodelistToEdgelist}},
   \code{\link{permutationToCharVec}},
   \code{\link{permutationToEdgelist}},
   \code{\link{prueferToCharVec}},
