@@ -75,16 +75,29 @@ oneEdgeExchange = function(edgelist, edge.id, instance) {
   return(edgelist)
 }
 
+# Replace each edge with a given probability
 edgeExchange = function(edgelist, p = 1 / ncol(edgelist), instance = NULL) {
   # get number of tree edges
   m = ncol(edgelist)
 
   # replace each edge with prob p
-  for (i in 1:m) {
+  for (edge.id in 1:m) {
     if (runif(1L) < p) {
       # sample random edge in tree
-      edgelist = oneEdgeExchange(edgelist, i, instance = instance)
+      edgelist = oneEdgeExchange(edgelist, edge.id, instance = instance)
     }
+  }
+  return(edgelist)
+}
+
+# Replace k random edges
+kEdgeExchange = function(edgelist, k = 1L, instance = NULL) {
+  m = ncol(edgelist)
+
+  # select k random edges
+  sel.edges = sample(1:m, size = k, replace = FALSE)
+  for (edge.id in sel.edges) {
+    edgelist = oneEdgeExchange(edgelist, edge.id, instance = instance)
   }
   return(edgelist)
 }
@@ -112,6 +125,24 @@ mutEdgeExchange = makeMutator(
   },
   supported = "custom")
 
+
+#' @title k-edge-exchange mutator for edge list representation of spanning trees.
+#'
+#' @description Let \eqn{m} be the number of spanning tree edges. Then, the operator
+#' selects \eqn{1 \leq k \leq m} edges randomly and replaces each of the \eqn{k}
+#' edges with another feasible edge.
+#'
+#' @inheritParams mutEdgeExchange
+#' @param k [\code{integer(1)}]\cr
+#'   Number of edges to swap.
+#' @family mcMST EMOA mutators
+#' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
+#' @export
+mutKEdgeExchange = makeMutator(
+  mutator = function(ind, k = 1L, instance = NULL) {
+    kEdgeExchange(ind, k = k, instance = instance)
+  },
+  supported = "custom")
 
 subgraphMST = function(edgelist, sigma, scalarize, instance) {
   m = ncol(edgelist)

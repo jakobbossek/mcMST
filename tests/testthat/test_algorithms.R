@@ -25,6 +25,11 @@ test_that("BG EMOA works well", {
   expect_class(res, "ecr_result")
   checkValidSpanningTrees(res$pareto.set, g)
 
+  res = mcMSTEmoaBG(g, mu = 10L, max.iter = 50L,
+    mut = setup(mutKEdgeExchange, k = 2L, instance = g))
+  expect_class(res, "ecr_result")
+  checkValidSpanningTrees(res$pareto.set, g)
+
   # check three objectives
   g = grapherator::addWeights(g, generator = addWeightsRandom, method = runif, min = 10, max = 100)
   res = mcMSTEmoaBG(g, mu = 10L, max.iter = 50L)

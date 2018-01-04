@@ -39,5 +39,6 @@ regarding one of the objectives with equal probability.
 Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 
 Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
+  \code{\link{mutKEdgeExchange}},
   \code{\link{mutUniformPruefer}}
 }
