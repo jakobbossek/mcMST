@@ -25,6 +25,7 @@ edges with another feasible edge.
 Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 
 Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
+  \code{\link{mutSubforestMST}},
   \code{\link{mutSubgraphMST}},
   \code{\link{mutUniformPruefer}}
 }

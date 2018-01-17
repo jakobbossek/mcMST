@@ -26,5 +26,6 @@ Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaZhou}}
 
 Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
   \code{\link{mutKEdgeExchange}},
+  \code{\link{mutSubforestMST}},
   \code{\link{mutSubgraphMST}}
 }
