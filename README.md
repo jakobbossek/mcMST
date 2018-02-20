@@ -19,9 +19,9 @@ Key features of the **mcMST** package are:
 
 ## Example
 
-Here we first generate a bi-criteria graph problem with n = 25 nodes with [grapherator](https://github.com/jakobbossek/grapherator). The first objective is the euclidean distance of node coordinates in the euclidean plane [0, 10] x [0, 10]. The second objective follows a normal distribution (N(5, 1.5)). 
+Here we first generate a bi-criteria graph problem with n = 25 nodes with [grapherator](https://github.com/jakobbossek/grapherator). The first objective is the Euclidean distance of node coordinates in the euclidean plane [0, 10] x [0, 10]. The second objective follows a normal distribution (N(5, 1.5)). 
 ```r
-library(grapherator) # install from github repo (not yet on CRAN)
+library(grapherator)
 set.seed(1)
 g = graph(lower = 0, upper = 100)
 g = addNodes(g, n = 25, generator = addNodesUniform)
