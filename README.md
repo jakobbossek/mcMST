@@ -1,5 +1,6 @@
 # mcMST: A Toolbox for the Multi-Criteria Minimum Spanning Tree Problem
 
+[![DOI](http://joss.theoj.org/papers/10.21105/joss.00374/status.svg)](https://doi.org/10.21105/joss.00374)
 [![CRAN Status Badge](http://www.r-pkg.org/badges/version/mcMST)](http://cran.r-project.org/web/packages/mcMST)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/mcMST)](http://cran.rstudio.com/web/packages/mcMST/index.html)
 [![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/mcMST?color=orange)](http://cran.rstudio.com/web/packages/mcMST/index.html)
