@@ -10,9 +10,6 @@
 #'   First spanning tree represented as a list of edges.
 #' @param y [\code{matrix(2, n)}]\cr
 #'   Second spanning tree represented as a list of edges.
-#' @param n [\code{integer(1)} | \code{NULL}]\cr
-#'   Number of nodes of the graph.
-#'   Defaults to \code{length(x)}.
 #' @param normalize [\code{logical(1)}]\cr
 #'   Should measure be normalized to \eqn{[0, 1]} by devision
 #'   through the number of edges?
@@ -31,16 +28,20 @@
 #' # And the size of the largest common subtree
 #' SLS = getSizeOfLargestCommonSubtree(st1, st2)
 #' @export
-getNumberOfCommonEdges = function(x, y, n = NULL, normalize = TRUE) {
+getNumberOfCommonEdges = function(x, y, normalize = TRUE) {
   assertFlag(normalize)
-  if (is.null(n))
-    n = ncol(x) + 1L
-  x.cv = edgeListToCharVec(x, n = n)
-  y.cv = edgeListToCharVec(y, n = n)
-  xy.cv = x.cv & y.cv
-  if (normalize)
-    return(sum(xy.cv / (n - 1L)))
-  sum(xy.cv)
+  n.common = x$getNumberOfCommonEdges(y)
+
+  if (!normalize)
+    return(n.common)
+  return(n.common / x$getE())
+}
+
+#' @rdname similarity_metrics
+#' @export
+getNumberOfCommonComponents = function(x, y, normalize = TRUE) {
+  n.common = x$getNumberOfCommonComponents(y)
+  return(n.common)
 }
 
 #' @rdname similarity_metrics

@@ -4,7 +4,7 @@
 \alias{mutSubgraphMST}
 \title{Subgraph-mutator for edge list representation.}
 \usage{
-mutSubgraphMST(ind, sigma = floor(ncol(ind)/2), scalarize = FALSE,
+mutSubgraphMST(ind, sigma = floor(ind$getE()/2), scalarize = FALSE,
   instance = NULL)
 }
 \arguments{

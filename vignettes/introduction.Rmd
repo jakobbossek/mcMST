@@ -43,6 +43,6 @@ Next, we apply a (30 + 10) genetic algorithm based on the Pruefer-number encodin
 
 ```{r, fig.width=8, out.width='100%', fig.cap="Approximation of the Pareto-front of the benchmark graph instance."}
 res = mcMSTEmoaZhou(g, mu = 30L, lambda = 10L, max.iter = 500L)
-head(res$pareto.front, n = 5)
-ecr::plotFront(res$pareto.front)
+head(res$pareto.front)
+#ecr::plotFront(res$pareto.front)
 ```

@@ -56,41 +56,44 @@ mcMSTEmoaBG = function(instance,
   max.iter = 100L,
   ...) {
 
+  checkmate::assertClass(instance, "grapherator")
+
   # get number of nodes
   n = grapherator::getNumberOfNodes(instance)
   n.objectives = grapherator::getNumberOfWeights(instance)
 
-  force(instance)
+  # convert to C++ graph structure
+  instance.gpp = grapheratorToCPPGraph(instance)
+  force(instance.gpp)
 
   # default is our subgraph mutator
-  if (is.null(mut))
-    mut = setup(mutSubgraphMST, instance = instance, ...)
+  mut = ecr::setup(mut, instance = instance.gpp, ...)
 
   if (is.null(ref.point))
     ref.point = getReferencePoint(instance)
 
-  fitness.fun = function(edgelist, instance) {
-    getWeight(instance, edgelist)
+  fitness.fun = function(ind, instance) {
+    ind$getSumOfEdgeWeights()
   }
 
   # now generate an initial population, i.e.,
-  # a list of edge lists
+  # a list of random spanning trees
   population = lapply(1:mu, function(i) {
-    #pcode = sample(1:n, n - 2L, replace = TRUE)
-    #prueferToEdgeList(pcode)
-    getRandomSpanningTree(instance)
+    instance.gpp$getRandomMST()
   })
 
-  res = ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,
+  print(population)
+
+  res = ecr::ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,
     mu = mu, lambda = lambda, survival.strategy = "plus", representation = "custom",
     initial.solutions = population,
-    survival.selector = selSurvival, parent.selector = selMating,
+    survival.selector = ecr::selSurvival, parent.selector = ecr::selMating,
     mutator = mut, p.mut = 1,
     log.stats = list(fitness = list("HV" = list(
       fun = computeHV,
       pars = list(ref.point = ref.point)))),
     terminators = list(stopOnIters(max.iter)),
-    instance = instance)
+    instance = instance.gpp)
 
   return(res)
 }

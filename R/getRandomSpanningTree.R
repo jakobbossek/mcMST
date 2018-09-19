@@ -15,24 +15,5 @@
 #' stree = getRandomSpanningTree(g)
 #' @export
 getRandomSpanningTree = function(graph) {
-  adj.mat = grapherator::getAdjacencyMatrix(graph)
-  n = grapherator::getNumberOfNodes(graph)
-
-  # construct random distance matrix
-  dmat = matrix(1 * runif(n * n) + 0.01, ncol = n, nrow = n)
-
-  # stick to adjacency structure
-  if (!is.null(adj.mat))
-    dmat[!adj.mat] = Inf
-  else
-    diag(dmat) = Inf
-
-  nodes = 1:n
-
-  mstres = vegan::spantree(d = dmat)
-
-  edge.list = matrix(
-    c(nodes[2:n], nodes[mstres$kid]),
-    byrow = TRUE, nrow = 2L)
-  return(edge.list)
+  graph$getMST()
 }

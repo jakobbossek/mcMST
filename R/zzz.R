@@ -3,7 +3,13 @@
 #' @importFrom gtools permutations
 #' @import ecr
 #' @import grapherator
+#' @import methods
+#' @import Rcpp
 #' @importFrom vegan spantree
 #' @importFrom stats dist runif rnorm as.formula
 #' @importFrom utils read.csv write.table read.table
+#' @useDynLib mcMST
+# .registration=TRUE
 NULL
+
+Rcpp::loadModule("graph_module", TRUE)

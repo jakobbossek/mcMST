@@ -90,18 +90,6 @@ edgeExchange = function(edgelist, p = 1 / ncol(edgelist), instance = NULL) {
   return(edgelist)
 }
 
-# Replace k random edges
-kEdgeExchange = function(edgelist, k = 1L, instance = NULL) {
-  m = ncol(edgelist)
-
-  # select k random edges
-  sel.edges = sample(1:m, size = k, replace = FALSE)
-  for (edge.id in sel.edges) {
-    edgelist = oneEdgeExchange(edgelist, edge.id, instance = instance)
-  }
-  return(edgelist)
-}
-
 #' @title One-edge-exchange mutator for edge list representation of spanning trees.
 #'
 #' @description Each edge is replaced with another feasible edge with probability p.
@@ -140,47 +128,10 @@ mutEdgeExchange = makeMutator(
 #' @export
 mutKEdgeExchange = makeMutator(
   mutator = function(ind, k = 1L, instance = NULL) {
-    kEdgeExchange(ind, k = k, instance = instance)
+    #kEdgeExchange(ind, k = k, instance = instance)
+    instance$getMSTByEdgeExchange(ind, k)
   },
   supported = "custom")
-
-subgraphMST = function(edgelist, sigma, scalarize, instance) {
-  m = ncol(edgelist)
-  n.objectives = instance$n.weights
-  nsel = sample(3:sigma, 1L)
-  #catf("Selecting connected subgraph with >= %i nodes.", nsel)
-  inds = 1:m
-  # select random edge in tree as the starting point
-  start = sample(inds, 1L)
-
-  tmp = igraph::graph_from_edgelist(t(edgelist), directed = FALSE)
-  bfs.res = igraph::bfs(tmp, root = start)
-  sel.nodes = as.integer(bfs.res$order[1:nsel])
-  sel.edges = which(apply(edgelist, 2L, function(x) all(x %in% sel.nodes)))
-
-  # now extract subgraph and apply Prim
-  sel.nodes = sort(sel.nodes)
-  dd = NULL
-  if (!scalarize) {
-    obj.idx = sample(1:n.objectives, 1L)
-    dd = instance$weights[[obj.idx]][sel.nodes, sel.nodes]
-  } else {
-    lambdas = sampleWeights(n.objectives)
-    dd = lapply(instance$weights, function(w) w[sel.nodes, sel.nodes])
-    dd = scalarizeWeights(dd, lambdas)
-  }
-
-  # get result of PRIM
-  mstres = vegan::spantree(d = dd)
-
-  repl.edges = matrix(
-    c(sel.nodes[2:(length(sel.edges) + 1L)],
-      sel.nodes[mstres$kid]), byrow = TRUE, nrow = 2L)
-
-  # replace edges
-  edgelist[, sel.edges] = repl.edges
-  return(edgelist)
-}
 
 #' @title Subgraph-mutator for edge list representation.
 #'
@@ -207,113 +158,13 @@ subgraphMST = function(edgelist, sigma, scalarize, instance) {
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubgraphMST = makeMutator(
-  mutator = function(ind, sigma = floor(ncol(ind) / 2), scalarize = FALSE, instance = NULL) {
-    subgraphMST(ind, sigma, scalarize, instance)
+  mutator = function(ind, sigma = floor(ind$getE() / 2), scalarize = FALSE, instance = NULL) {
+    #subgraphMST(ind, sigma, scalarize, instance)
+    #FIXME: implement scalarize argument in C++ function
+    instance$getMSTBySubgraphMutation(ind, sigma)
   },
   supported = "custom"
 )
-
-subforestMST = function(edgelist, sigma = ncol(edgelist), scalarize, instance) {
-  #print(instance)
-  n = grapherator::getNumberOfNodes(instance)
-  n.objectives = grapherator::getNumberOfWeights(instance)
-
-  # sample number between 1 and |V| - 1
-  k = sample(1:sigma, 1L)
-
-  # sample k random edges from given tree T
-  edge.ids.dropped = sample(1:ncol(edgelist), k, replace = FALSE)
-  #print(edgelist)
-  #print(edge.ids.dropped)
-  # now we deleted the selected edges
-
-  # build igraph from edgelist
-  tmp = igraph::graph_from_edgelist(t(edgelist), directed = FALSE)
-  #print(tmp)
-
-  # now delete selected edges
-  tmp = igraph::delete_edges(tmp, edge.ids.dropped)
-  #print(tmp)
-
-  # ... and search for components
-  components = igraph::components(tmp, mode = "weak")
-  #print(components)
-
-  # build new distance matrix between components
-  n.comps = components$no
-
-  # init distance matrix of component-graph
-  dd = matrix(Inf, nrow = n.comps, ncol = n.comps)
-
-  # ... and storage for edges in original graph
-  dd.edge = array(dim = c(n.comps, n.comps, 2L))
-
-  # scalarize stuff
-  #FIXME: i guess we can do the scalarizeWeights stuff within the loop
-  lambdas = sampleWeights(n.objectives)
-  dd.scal = scalarizeWeights(instance$weights, lambdas)
-  #dd.scal = instance$weights[[1L]]
-
-  #print(dd.scal)
-
-  comp.nodes = lapply(1:n.comps, function(i) which(components$membership == i))
-
-  for (i in 1:n.comps) {
-    for (j in i:n.comps) {
-      if (j == i)
-        next
-      # now get all nodes from the corresponding components
-      nodes.i = comp.nodes[[i]]
-      nodes.j = comp.nodes[[j]]
-
-      #catf("nodes in first comp: %s", collapse(nodes.i, ", "))
-      #catf("nodes in second comp: %s", collapse(nodes.j, ", "))
-
-      # now get all edges between nodes from component i and j
-      dd.tmp = dd.scal[nodes.i, nodes.j, drop = FALSE]
-
-      # get row and col indizes of cheapest edge between components i and j
-      min.edge = which(dd.tmp == min(dd.tmp[dd.tmp > 0]), arr.ind = TRUE)
-
-      # break ties at random
-      if (nrow(min.edge) > 1L)
-        min.edge = min.edge[sample(1:nrow(min.edge), 1L), ]
-      min.edge = as.integer(min.edge)
-
-      #catf("Indices of minimale edge: %s", collapse(min.edge))
-
-      # store values
-      dd[i, j] = dd[j, i] = dd.tmp[min.edge[1L], min.edge[2L]]
-      # ... and edge for reconstruction
-      dd.edge[i, j, ] = dd.edge[j, i, ] = c(nodes.i[min.edge[1L]], nodes.j[min.edge[2L]])
-    }
-  }
-
-  #print(dd)
-  #print(dd.edge)
-
-  # now compute MST between supernodes of components
-  mstres = vegan::spantree(d = dd)
-  #print(mstres)
-
-  # edglist of spanning tree of component graph
-  edgelist.compgraph = matrix(
-    c(2:n.comps,
-    mstres$kid), byrow = TRUE, nrow = 2L)
-
-  # finally map to "true" nodes in G
-  repl.edges = apply(edgelist.compgraph, 2L, function(edge) {
-    dd.edge[edge[1L], edge[2L], ]
-  })
-
-  #catf("replacing with edges:")
-  #print(repl.edges)
-
-  # finally replace edges
-  edgelist[, edge.ids.dropped] = repl.edges
-  return(edgelist)
-}
-
 
 #' @title Forest-mutator for edge list representation.
 #'
@@ -340,7 +191,8 @@ subforestMST = function(edgelist, sigma = ncol(edgelist), scalarize, instance) {
 #' @export
 mutSubforestMST = makeMutator(
   mutator = function(ind, sigma = ncol(ind), scalarize = FALSE, instance = NULL) {
-    subforestMST(ind, sigma, scalarize, instance)
+    #subforestMST(ind, sigma, scalarize, instance)
+    instance$getMSTBySubforestMutation(ind, sigma)
   },
   supported = "custom"
 )
