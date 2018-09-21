@@ -28,19 +28,22 @@ mcMSTEmoaZhou = function(instance,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
   ref.point = NULL, max.iter = 100L) {
 
+  converter = new(RepresentationConverter)
+
   force(instance)
+  force(converter)
 
   fitness.fun = function(pcode, instance) {
-    edgelist = prueferToEdgeList(pcode)
-    getWeight(instance, edgelist)
+    tree = converter$prueferCodeToGraph(instance, pcode)
+    tree$getSumOfEdgeWeights()
   }
 
-  if (is.null(ref.point))
-    ref.point = getReferencePoint(instance)
+  # if (is.null(ref.point))
+  #   ref.point = getReferencePoint(instance)
 
   # get number of nodes
-  n = grapherator::getNumberOfNodes(instance)
-  n.objectives = grapherator::getNumberOfWeights(instance)
+  n = instance$getV()
+  n.objectives = g$getW()
 
   # now generate an initial population of Pruefer-numbers/codes
   population = lapply(1:mu, function(i) {
@@ -52,10 +55,13 @@ mcMSTEmoaZhou = function(instance,
     initial.solutions = population,
     survival.selector = selSurvival, parent.selector = selMating,
     mutator = mut, p.mut = 1,
-    log.stats = list(fitness = list("HV" = list(
-      fun = computeHV,
-      pars = list(ref.point = ref.point)))),
     terminators = list(stopOnIters(max.iter)),
     instance = instance)
+
+  res$pareto.set = lapply(res$pareto.set, function(pcode) {
+    tree = converter$prueferCodeToGraph(instance, pcode)
+    tree$toEdgeList()
+  })
+
   return(res)
 }

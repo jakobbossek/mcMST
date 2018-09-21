@@ -86,12 +86,9 @@ mcMSTEmoaBG = function(instance,
     initial.solutions = population,
     survival.selector = selSurvival, parent.selector = selMating,
     mutator = mut, p.mut = 1,
-    log.stats = list(fitness = list("HV" = list(
-      fun = computeHV,
-      pars = list(ref.point = c(100000, 100000))))),
     terminators = list(stopOnIters(max.iter)),
     instance = instance)
 
-  #res$pareto.set = lapply(res$pareto.set, function(el) el$toEdgeList())
+  res$pareto.set = lapply(res$pareto.set, function(el) el$toEdgeList())
   return(res)
 }

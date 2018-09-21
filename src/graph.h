@@ -985,6 +985,19 @@ public:
 
     return tree;
   }
+
+  Graph edgeListToGraph(Graph *g, NumericMatrix edgeList) {
+    Graph g2(g->getV(), g->getW(), false);
+
+    for (int i = 0; i < edgeList.ncol(); ++i) {
+      int u = edgeList(0, i);
+      int v = edgeList(1, i);
+      std::pair<double, double> weight = g->getEdge(u, v).second;
+      g2.addEdge(u, v, weight.first, weight.second);
+    }
+
+    return g2;
+  }
 };
 
 Graph getMST(Graph * mst) {
@@ -1128,5 +1141,7 @@ RCPP_MODULE(graph_module) {
   ;
   class_<RepresentationConverter>("RepresentationConverter")
     .constructor()
-    .method("prueferCodeToGraph", &RepresentationConverter::prueferCodeToGraph);
+    .method("prueferCodeToGraph", &RepresentationConverter::prueferCodeToGraph)
+    .method("edgeListToGraph", &RepresentationConverter::edgeListToGraph)
+  ;
 }
