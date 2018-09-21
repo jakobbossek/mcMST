@@ -50,27 +50,26 @@
 #' @export
 mcMSTEmoaBG = function(instance,
   mu, lambda = mu,
-  mut = NULL,
+  mut = mcMST::mutSubgraphMST,
   selMating = NULL, selSurvival = ecr::selNondom,
   ref.point = NULL,
   max.iter = 100L,
   ...) {
 
-  checkmate::assertClass(instance, "grapherator")
+  #checkmate::assertClass(instance, "grapherator")
 
   # get number of nodes
-  n = grapherator::getNumberOfNodes(instance)
-  n.objectives = grapherator::getNumberOfWeights(instance)
+  n = instance$getV()
+  n.objectives = instance$getW()
 
   # convert to C++ graph structure
-  instance.gpp = grapheratorToCPPGraph(instance)
-  force(instance.gpp)
+  force(instance)
 
   # default is our subgraph mutator
-  mut = ecr::setup(mut, instance = instance.gpp, ...)
+  mut = ecr::setup(mut, instance = instance, ...)
 
-  if (is.null(ref.point))
-    ref.point = getReferencePoint(instance)
+  # if (is.null(ref.point))
+  #   ref.point = getReferencePoint(instance)
 
   fitness.fun = function(ind, instance) {
     ind$getSumOfEdgeWeights()
@@ -79,21 +78,20 @@ mcMSTEmoaBG = function(instance,
   # now generate an initial population, i.e.,
   # a list of random spanning trees
   population = lapply(1:mu, function(i) {
-    instance.gpp$getRandomMST()
+    instance$getRandomMST()
   })
-
-  print(population)
 
   res = ecr::ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,
     mu = mu, lambda = lambda, survival.strategy = "plus", representation = "custom",
     initial.solutions = population,
-    survival.selector = ecr::selSurvival, parent.selector = ecr::selMating,
+    survival.selector = selSurvival, parent.selector = selMating,
     mutator = mut, p.mut = 1,
     log.stats = list(fitness = list("HV" = list(
       fun = computeHV,
-      pars = list(ref.point = ref.point)))),
+      pars = list(ref.point = c(100000, 100000))))),
     terminators = list(stopOnIters(max.iter)),
-    instance = instance.gpp)
+    instance = instance)
 
+  #res$pareto.set = lapply(res$pareto.set, function(el) el$toEdgeList())
   return(res)
 }

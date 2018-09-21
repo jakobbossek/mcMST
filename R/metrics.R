@@ -44,6 +44,14 @@ getNumberOfCommonComponents = function(x, y, normalize = TRUE) {
   return(n.common)
 }
 
+getSizeOfLargestCommonComponent = function(x, y, normalize = TRUE) {
+  assertFlag(normalize)
+  size = x$getSizeOfLargestCommonComponent(y)
+  if (!normalize)
+    return(size)
+  return(size / x$getE())
+}
+
 #' @rdname similarity_metrics
 #' @export
 getSizeOfLargestCommonSubtree = function(x, y, n = NULL, normalize = TRUE) {

@@ -3,10 +3,13 @@
 \name{similarity_metrics}
 \alias{similarity_metrics}
 \alias{getNumberOfCommonEdges}
+\alias{getNumberOfCommonComponents}
 \alias{getSizeOfLargestCommonSubtree}
 \title{Metrics for spanning tree comparisson.}
 \usage{
-getNumberOfCommonEdges(x, y, n = NULL, normalize = TRUE)
+getNumberOfCommonEdges(x, y, normalize = TRUE)
+
+getNumberOfCommonComponents(x, y, normalize = TRUE)
 
 getSizeOfLargestCommonSubtree(x, y, n = NULL, normalize = TRUE)
 }
@@ -16,10 +19,6 @@ First spanning tree represented as a list of edges.}
 
 \item{y}{[\code{matrix(2, n)}]\cr
 Second spanning tree represented as a list of edges.}
-
-\item{n}{[\code{integer(1)} | \code{NULL}]\cr
-Number of nodes of the graph.
-Defaults to \code{length(x)}.}
 
 \item{normalize}{[\code{logical(1)}]\cr
 Should measure be normalized to \eqn{[0, 1]} by devision

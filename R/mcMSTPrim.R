@@ -31,6 +31,7 @@
 #FIXME: generalize to > 2 objectives
 mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
   assertClass(instance, "grapherator")
+
   n.weights = grapherator::getNumberOfWeights(instance)
   if (n.weights != 2L)
     stopf("mcMSTPrim: At the moment only bi-objective problems supported.")
@@ -45,32 +46,14 @@ mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
   pareto.set = vector(mode = "list", length = length(lambdas))
   pareto.front = matrix(0, ncol = length(lambdas), nrow = n.weights)
 
-  # Helper function to build the weighted sum
-  # of edge weights
-  scalarize = function(instance, lambda) {
-    weights = instance$weights
-    assertList(weights, types = "matrix")
-    assertNumber(lambda, lower = 0, upper = 1)
+  instance.gpp = grapheratorToCPPGraph(instance)
 
-    dmat = lambda * weights[[1L]] + (1 - lambda) * weights[[2L]]
-
-    if (!is.null(instance$adj.mat))
-      dmat[!instance$adj.mat] = 1e7 # FIXME: magic number
-    return(dmat)
-  }
-
-  n = instance$n.nodes
-
+  n.lambdas = length(lambdas)
   # now apply scalarization and compute supported efficient solution(s)
-  for (k in 1:length(lambdas)) {
-    weight.mat = scalarize(instance, lambda = lambdas[k])
-    mst.res = vegan::spantree(d = weight.mat)
-    nodes1 = 2:n
-    nodes2 = mst.res$kid
-    edgelist = matrix(c(nodes1, nodes2), byrow = TRUE, nrow = 2L)
-
-    pareto.front[, k] = getWeight(instance, edgelist = edgelist)
-    pareto.set[[k]] = edgelist
+  for (k in seq_len(n.lambdas)) {
+    tree = instance.gpp$getMSTByWeightedSumScalarization(lambdas[k])
+    pareto.front[, k] = tree$getSumOfEdgeWeights()
+    pareto.set[[k]] = tree$toEdgeList()
   }
 
   return(list(

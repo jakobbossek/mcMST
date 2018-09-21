@@ -3,13 +3,14 @@ context("Algorithms for the mcMST problem")
 test_that("BG EMOA works well", {
   # bi-objective g
   g = genRandomMCGP(10L)
+  gcpp = grapheratorToCPPGraph(g)
 
   res = mcMSTEmoaBG(g, mu = 10L, max.iter = 50L)
   expect_class(res, "ecr_result")
   checkValidSpanningTrees(res$pareto.set, g)
 
   res = mcMSTEmoaBG(g, mu = 10L, max.iter = 50L,
-    mut = setup(mutEdgeExchange, instance = g))
+    mut = mutKEdgeExchange)
   expect_class(res, "ecr_result")
   checkValidSpanningTrees(res$pareto.set, g)
 
@@ -21,12 +22,12 @@ test_that("BG EMOA works well", {
   checkValidSpanningTrees(res$pareto.set, g)
 
   res = mcMSTEmoaBG(g, mu = 10L, max.iter = 50L,
-    mut = setup(mutEdgeExchange, instance = g))
+    mut = mutKEdgeExchange)
   expect_class(res, "ecr_result")
   checkValidSpanningTrees(res$pareto.set, g)
 
   res = mcMSTEmoaBG(g, mu = 10L, max.iter = 50L,
-    mut = setup(mutKEdgeExchange, k = 2L, instance = g))
+    mut = ecr::setup(mutKEdgeExchange, k = 2L, instance = gcpp))
   expect_class(res, "ecr_result")
   checkValidSpanningTrees(res$pareto.set, g)
 
@@ -44,12 +45,13 @@ test_that("BG EMOA works on non-complete graphs", {
   g = grapherator::addEdges(g, type = "intracluster", generator = grapherator::addEdgesDelauney)
   g = grapherator::addEdges(g, type = "intercluster", generator = grapherator::addEdgesSpanningTree, runs = 2L, k = 3L)
   g = grapherator::addWeights(g, generator = grapherator::addWeightsCorrelated, rho = -0.6)
+  gcpp = grapheratorToCPPGraph(g)
 
   res = mcMSTEmoaBG(g, mu = 10L, max.iter = 50L, scalarize = TRUE)
   expect_class(res, "ecr_result")
   checkValidSpanningTrees(res$pareto.set, g)
 
-  res = mcMSTEmoaBG(g, mu = 10L, max.iter = 50L, mut = ecr::setup(mutEdgeExchange, instance = g))
+  res = mcMSTEmoaBG(g, mu = 10L, max.iter = 50L, mut = ecr::setup(mutKEdgeExchange, instance = gcpp))
   expect_class(res, "ecr_result")
   checkValidSpanningTrees(res$pareto.set, g)
 })
@@ -64,7 +66,7 @@ test_that("Zhou EMOA works well", {
 })
 
 test_that("Scalarization works well", {
-  g = genRandomMCGP(10L)
+  g = genRandomMCGP(25L)
 
   res = mcMSTPrim(g, n.lambdas = 10L)
   expect_list(res)

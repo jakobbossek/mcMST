@@ -95,7 +95,7 @@ public:
 
   void saveVectorOfEdges() {
     this->edgeVector = this->getEdges();
-    std::cout << "Saved vector of edges." << std::endl;
+    //std::cout << "Saved vector of edges." << std::endl;
   }
 
   void setEdgeProbabilities(std::vector<double> probs) {
@@ -108,6 +108,17 @@ public:
 
   std::vector<double> getEdgeProbabilities() {
     return this->edgeDistribution.probabilities();
+  }
+
+  Edge2 getEdge(int u, int v) const {
+    Edge2 e;
+    for (Edge edge: this->adjList[u]) {
+      if (edge.first == v) {
+        e = {{u, v}, edge.second};
+        break;
+      }
+    }
+    return e;
   }
 
   std::vector<Edge2> getEdges() const {
@@ -207,45 +218,45 @@ public:
     return g;
   }
 
-  static Graph importFromGrapheratorFile(std::string pathToFile) {
-    std::ifstream infile(pathToFile, std::ios::in);
+  // static Graph importFromGrapheratorFile(std::string pathToFile) {
+  //   std::ifstream infile(pathToFile, std::ios::in);
 
-    char sep = ',';
+  //   char sep = ',';
 
-    // read first line (nnodes, nedges, nclusters, nweights)
-    int V, E, C, W;
-    infile >> V >> sep >> E >> sep >> C >> sep >> W;
+  //   // read first line (nnodes, nedges, nclusters, nweights)
+  //   int V, E, C, W;
+  //   infile >> V >> sep >> E >> sep >> C >> sep >> W;
 
-    // init graph
-    Graph g(V, W, false);
+  //   // init graph
+  //   Graph g(V, W, false);
 
-    // now go to first character and ignore first 4 + |V| lines
-    // (meta data + node coordinates)
-    //FIXME: have a look ad ignore function
-    infile.seekg(0);
-    unsigned int linesToSkip = 4 + V;
-    if (C > 0)
-      linesToSkip += 1; // skip cluster membership
-    unsigned int curLine = 1;
-    std::string line;
-    while (curLine <= linesToSkip) {
-      std::getline(infile, line); // discard
-      curLine++;
-    }
+  //   // now go to first character and ignore first 4 + |V| lines
+  //   // (meta data + node coordinates)
+  //   //FIXME: have a look ad ignore function
+  //   infile.seekg(0);
+  //   unsigned int linesToSkip = 4 + V;
+  //   if (C > 0)
+  //     linesToSkip += 1; // skip cluster membership
+  //   unsigned int curLine = 1;
+  //   std::string line;
+  //   while (curLine <= linesToSkip) {
+  //     std::getline(infile, line); // discard
+  //     curLine++;
+  //   }
 
-    // now we are ready to read edge costs section
-    //FIXME: generalize to >= 2 objectives
-    int u, v;
-    double c1, c2;
+  //   // now we are ready to read edge costs section
+  //   //FIXME: generalize to >= 2 objectives
+  //   int u, v;
+  //   double c1, c2;
 
-    while (infile.good()) {
-      infile >> u >> sep >> v >> sep >> c1 >> sep >> c2;
-      g.addEdge(u, v, c1, c2);
-    }
+  //   while (infile.good()) {
+  //     infile >> u >> sep >> v >> sep >> c1 >> sep >> c2;
+  //     g.addEdge(u, v, c1, c2);
+  //   }
 
-    infile.close();
-    return g;
-  }
+  //   infile.close();
+  //   return g;
+  // }
 
 
   void removeEdge(const int u, const int v) {
@@ -276,13 +287,13 @@ public:
 
   bool isSpanningTree() {
     if (this->getE() != this->getV() - 1) {
-      std::cout << "Number of edges is wrong!" << std::endl;
+      // std::cout << "Number of edges is wrong!" << std::endl;
       return false;
     }
 
     std::vector<std::vector<int>> comps = this->getConnectedComponents();
     if (comps.size() != 1) {
-      std::cout << "ST must have 1 conn component, but has " << comps.size() << std::endl;
+      // std::cout << "ST must have 1 conn component, but has " << comps.size() << std::endl;
     }
 
     return (comps.size() == 1);
@@ -481,7 +492,7 @@ public:
     assert(weight >= 0 && weight <= 1);
 
     std::vector<std::vector<int>> components = initialTree.getConnectedComponents();
-    std::cout << "Building MST from " << components.size() << " components" << std::endl;
+    //std::cout << "Building MST from " << components.size() << " components" << std::endl;
     UnionFind UF(this->V, components);
     //UF.print();
 
@@ -568,7 +579,7 @@ public:
     for (int i = 0; i < maxDrop; ++i) {
       int selectedEdgeID = selEdges[i];
       Edge2 edge = edges[selectedEdgeID];
-      std::cout << "Removing " << (i+1) << "-th edge" << std::endl;
+      //std::cout << "Removing " << (i+1) << "-th edge" << std::endl;
       forest.removeEdge(edge.first.first, edge.first.second);
     }
 
@@ -582,17 +593,20 @@ public:
   }
 
 
-  std::vector<std::pair<int, int>> getCircleEdges(int u) const {
+  std::vector<Edge2> getCircleEdges(int u) const {
     unsigned int V = this->getV();
 
     // circle edges
-    std::vector<std::pair<int, int>> circleEdges;
+    std::vector<Edge2> circleEdges;
 
     // bookkeeping of visited nodes
     std::vector<bool> visited(V + 1);
 
     // implicit bookkeeping of DFS tree, i.e., pi[v] = w means (w, v) is DFS tree edge
     std::vector<int> pi(V + 1);
+
+    // costs of DFS tree edges
+    std::vector<std::pair<double, double>> wi(V + 1);
 
     // create stack for iterative DFS
     std::stack<int> stack;
@@ -619,16 +633,17 @@ public:
         if (!visited[v]) {
           // set predecessor
           pi[v] = u;
+          wi[v] = edge.second;
           stack.push(v);
         }
 
         // found circle! Reconstruct edges on circle
         if (visited[v] && !(v == pi[u])) {
-          circleEdges.push_back({u, v});
+          circleEdges.push_back({{u, v}, edge.second});
           int w;
           while (pi[u] != u) {
             w = pi[u];
-            circleEdges.push_back({w, u});
+            circleEdges.push_back({{w, u}, wi[u]});
             u = w;
           }
           return(circleEdges);
@@ -639,7 +654,7 @@ public:
   }
 
 
-  Graph getMSTByEdgeExchange(Graph &mst, unsigned int repls) {
+  Graph getMSTByEdgeExchange(Graph &mst, unsigned int repls, bool deleteLargest = false) {
     unsigned int V = this->getV();
     unsigned int E = this->getE();
 
@@ -650,7 +665,7 @@ public:
     Graph mst2(mst);
 
     for (unsigned int repl = 0; repl < repls; ++repl) {
-      std::cout << "Performing edge exchange " << repl + 1 << std::endl;
+      //std::cout << "Performing edge exchange " << repl + 1 << std::endl;
       int edgeToAddId = this->getRandomEdgeId();
       Edge2 edgeToAdd = this->edgeVector[edgeToAddId];
       int u = edgeToAdd.first.first;
@@ -659,24 +674,129 @@ public:
       double w2 = edgeToAdd.second.second;
       // do nothing if edge already in tree
       if (mst2.hasEdge(u, v)) {
-        std::cout << "Selected edge already in tree." << std::endl;
+        // std::cout << "Selected edge already in tree." << std::endl;
         continue;
       }
       // otherwise add edge ...
       mst2.addEdge(u, v, w1, w2);
       // and get rid of random edge on introduced circle
-      std::vector<std::pair<int, int>> edgesOnCircle = mst2.getCircleEdges(u);
-      std::cout << "Added edge: (" << u << ", " << v << "). There is a circle of length " << edgesOnCircle.size() << " edges now!" << std::endl;
-      int edgeToDeleteIdx = getRandomNumber(edgesOnCircle.size()) - 1;
-      std::pair<int, int> edgeToDelete = edgesOnCircle[edgeToDeleteIdx];
-      mst2.removeEdge(edgeToDelete.first, edgeToDelete.second);
+      std::vector<Edge2> edgesOnCircle = mst2.getCircleEdges(u);
+      // std::cout << "Added edge: (" << u << ", " << v << "). There is a circle of length " << edgesOnCircle.size() << " edges now!" << std::endl;
+      if (!deleteLargest) {
+        int edgeToDeleteIdx = getRandomNumber(edgesOnCircle.size()) - 1;
+        std::pair<int, int> edgeToDelete = edgesOnCircle[edgeToDeleteIdx].first;
+        mst2.removeEdge(edgeToDelete.first, edgeToDelete.second);
+      } else {
+        int largestIdx = 0;
+        double largestWeight = -1;
+        // sample random weight
+        double rndWeight = (double)rand() / (double)RAND_MAX;
+        for (int i = 1; i < edgesOnCircle.size(); ++i) {
+          std::pair<double, double> edgeWeight = edgesOnCircle[i].second;
+          double scalWeight = rndWeight * edgeWeight.first + (1 - rndWeight) * edgeWeight.second;
+          if (scalWeight > largestWeight) {
+            largestWeight = scalWeight;
+            largestIdx = i;
+          }
+        }
+        std::pair<int, int> edgeToDelete = edgesOnCircle[largestIdx].first;
+        mst2.removeEdge(edgeToDelete.first, edgeToDelete.second);
+      }
       assert(isSpanningTree(mst2));
     }
 
     return(mst2);
   }
 
-  Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect) {
+  // Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true) {
+  //   assert(maxSelect <= this->getV());
+
+  //   unsigned int V = this->getV();
+
+  //   // first make a copy of input
+  //   Graph forest(mst);
+
+  //   // get random start node
+  //   //FIXME: write helper getRandomInteger(max)
+  //   int rndNode = (int)(((double)rand() / (double)RAND_MAX) * V) + 1;
+  //   // prevent memory not mapped error
+  //   if (rndNode > V) {
+  //     rndNode = V;
+  //   }
+
+  //   // now we need to extract connected subtree and delete edges
+  //   // we need to store node and its predecessor in BFS tree
+  //   std::vector<int> queue;
+  //   queue.push_back(rndNode);
+
+  //   std::vector<bool> done(V + 1);
+  //   for (int i = 0; i <= V; ++i) {
+  //     done[i] = false;
+  //   }
+
+  //   //FIXME: we know the size (maxNodes)
+  //   std::vector<int> nodesintree;
+
+  //   unsigned int nsel = 0;
+
+  //   /*
+  //   IDEA:
+  //   - copy mst O(V)
+  //   - BFS until W nodes selected (keep boolean array
+  //     w with w[i] = true if i-th node selected) O(W)
+  //   - go through nodes selected an go through their
+  //     adj. list in source graph, check whether neighbour
+  //     selected (O(1)) and eventually add to forest.
+  //   - Apply Kruskal to forest: O(W^2 log(W))
+
+
+  //   */
+
+  //   unsigned int curNode = -1;
+  //   while (nsel < maxSelect && queue.size() > 0) {
+  //     // get node
+  //     curNode = queue.back();
+  //     queue.pop_back();
+  //     nodesintree.push_back(curNode);
+  //     done[curNode] = true;
+
+  //     // access adjList and put all neighbours into queue
+  //     for (Edge edge: forest.adjList[curNode]) {
+  //       // skip nodes already added
+  //       if (!done[edge.first]) {
+  //         queue.push_back(edge.first);
+  //         // here we remove the edge
+  //         //forest.removeEdge(curNode, edge.first);
+  //       }
+  //     }
+  //     nsel += 1;
+  //   } // while
+
+  //   // now add all existing edges between nodes in nodesintree
+  //   // to forest
+  //   for (int i = 0; i < nodesintree.size(); ++i) {
+  //     int u = nodesintree[i];
+  //     for (Edge edge: this->adjList[u]) {
+  //       int v = edge.first;
+  //       if (done[v]) {
+  //         forest.addEdge(u, v, edge.second.first, edge.second.second);
+  //       }
+  //     }
+  //   }
+
+  //   // now we need to rewire the edges
+  //   double rndWeight = (double)rand() / (double)RAND_MAX;
+  //   if (!scalarize) {
+  //     rndWeight = round(rndWeight);
+  //   }
+
+  //   // build new spanning tree by reconnecting forest
+  //   Graph mst2 = forest.getMSTKruskal(rndWeight);
+
+  //   return mst2;
+  // }
+
+  Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true) {
     assert(maxSelect <= this->getV());
 
     unsigned int V = this->getV();
@@ -707,6 +827,17 @@ public:
 
     unsigned int nsel = 0;
 
+
+    // IDEA:
+    // - copy mst O(V)
+    // - BFS until W nodes selected (keep boolean array
+    //   w with w[i] = true if i-th node selected) O(W)
+    // - go through nodes selected an go through their
+    //   adj. list in source graph, check whether neighbour
+    //   selected (O(1)) and eventually add to forest.
+    // - Apply Kruskal to forest: O(W^2 log(W))
+
+
     unsigned int curNode = -1;
     while (nsel < maxSelect && queue.size() > 0) {
       // get node
@@ -729,6 +860,9 @@ public:
 
     // now we need to rewire the edges
     double rndWeight = (double)rand() / (double)RAND_MAX;
+    if (!scalarize) {
+      rndWeight = round(rndWeight);
+    }
 
     // build new spanning tree by reconnecting forest
     Graph mst2 = this->getMSTKruskal(rndWeight, forest);
@@ -748,13 +882,110 @@ private:
   std::default_random_engine rngGenerator;
   std::discrete_distribution<int> edgeDistribution;
 };
-#endif // GRAPH
+#endif
 
-// Graph importFromGrapheratorFileR(int pathToFileR) {
-//   std::string pathToFile = "test"; //Rcpp::as<std::string>(pathToFileR);
-//   Graph g = Graph::importFromGrapheratorFile(pathToFile);
-//   return g;
-// }
+class GraphImporter {
+public:
+  Graph importFromGrapheratorFileCPP(CharacterVector pathToFileR) {
+    std::string pathToFile = Rcpp::as<std::string>(pathToFileR);
+
+    std::ifstream infile(pathToFile, std::ios::in);
+
+    char sep = ',';
+
+    // read first line (nnodes, nedges, nclusters, nweights)
+    int V, E, C, W;
+    infile >> V >> sep >> E >> sep >> C >> sep >> W;
+
+    // init graph
+    Graph g(V, W, false);
+
+    // now go to first character and ignore first 4 + |V| lines
+    // (meta data + node coordinates)
+    //FIXME: have a look ad ignore function
+    infile.seekg(0);
+    unsigned int linesToSkip = 4 + V;
+    if (C > 0)
+      linesToSkip += 1; // skip cluster membership
+    unsigned int curLine = 1;
+    std::string line;
+    while (curLine <= linesToSkip) {
+      std::getline(infile, line); // discard
+      curLine++;
+    }
+
+    // now we are ready to read edge costs section
+    //FIXME: generalize to >= 2 objectives
+    int u, v;
+    double c1, c2;
+
+    while (infile.good()) {
+      infile >> u >> sep >> v >> sep >> c1 >> sep >> c2;
+      g.addEdge(u, v, c1, c2);
+    }
+
+    infile.close();
+    return g;
+  }
+};
+
+class RepresentationConverter {
+public:
+  Graph prueferCodeToGraph(Graph *g, IntegerVector pcode) {
+    int n = pcode.size();
+    int V = n + 2;
+
+    Graph tree(V, g->getW(), false);
+
+    std::vector<int> degrees(V + 1);
+
+    // initialize
+    for (int i = 1; i <= V; ++i) {
+      degrees[i] = 0;
+    }
+
+    // update node which are in Pruefer Code
+    for (int i = 0; i < n; ++i) {
+      degrees[pcode[i]] += 1;
+    }
+
+    // now build the tree
+    int v = 1;
+    for (int i = 0; i < n; ++i) {
+      int u = pcode[i];
+      for (v = 1; v <= V; ++v) {
+        if (degrees[v] == 0) {
+          // add edge
+          std::pair<double, double> weight = g->getEdge(u, v).second;
+          tree.addEdge(u, v, weight.first, weight.second);
+
+          // reduce degrees
+          degrees[u] -= 1;
+          degrees[v] -= 1;
+          break;
+        }
+      }
+    }
+
+    // now two more nodes with degree 1 are left
+    int u = 0;
+    v = 0;
+    for (int i = 1; i <= V; ++i) {
+      if (degrees[i] == 0) {
+        if (u == 0) {
+          u = i;
+        } else {
+          v = i;
+          break;
+        }
+      }
+    }
+    std::pair<double, double> weight = g->getEdge(u, v).second;
+    tree.addEdge(u, v, weight.first, weight.second);
+
+    return tree;
+  }
+};
 
 Graph getMST(Graph * mst) {
   double rndWeight = (double)rand() / (double)RAND_MAX;
@@ -767,18 +998,23 @@ Graph getRandomMST(Graph* mst) {
   return g2;
 }
 
+Graph getMSTByWeightedSumScalarization(Graph* g, double weight) {
+  Graph mst = g->getMSTKruskal(weight);
+  return mst;
+}
+
 Graph getMSTBySubforestMutationR(Graph* g, Graph* mst, int maxDrop) {
   Graph mstnew = g->getMSTBySubforestMutation(*mst, maxDrop);
   return mstnew;
 }
 
-Graph getMSTBySubgraphMutationR(Graph* g, Graph* mst, int maxSelect) {
-  Graph mstnew = g->getMSTBySubgraphMutation(*mst, maxSelect);
+Graph getMSTBySubgraphMutationR(Graph* g, Graph* mst, int maxSelect, bool scalarize) {
+  Graph mstnew = g->getMSTBySubgraphMutation(*mst, maxSelect, scalarize);
   return mstnew;
 }
 
-Graph getMSTByEdgeExchangeR(Graph* g, Graph *mst, int repls) {
-  Graph mstnew = g->getMSTByEdgeExchange(*mst, repls);
+Graph getMSTByEdgeExchangeR(Graph* g, Graph *mst, int repls, bool dropLargest) {
+  Graph mstnew = g->getMSTByEdgeExchange(*mst, repls, dropLargest);
   return mstnew;
 }
 
@@ -801,6 +1037,18 @@ int getNumberOfCommonComponents(Graph* g1, Graph* g2) {
   Graph intersection = Graph::getIntersectionGraph(*g1, *g2);
   std::vector<std::vector<int>> components = intersection.getConnectedComponents();
   return components.size();
+}
+
+int getSizeOfLargestCommonComponent(Graph* g1, Graph* g2) {
+  Graph intersection = Graph::getIntersectionGraph(*g1, *g2);
+  std::vector<std::vector<int>> components = intersection.getConnectedComponents();
+  int largest = components[0].size();
+  for (int i = 1; i < components.size(); ++i) {
+    if (components[i].size() > largest) {
+      largest = components[i].size();
+    }
+  }
+  return largest;
 }
 
 bool setEdgeProbabilitiesR(Graph* g, NumericVector probs) {
@@ -843,30 +1091,42 @@ NumericMatrix toEdgeList(Graph *g) {
 }
 
 RCPP_EXPOSED_CLASS(Graph)
-//RCPP_EXPOSED_CLASS(UnionFind)
+RCPP_EXPOSED_CLASS(GraphImporter)
+RCPP_EXPOSED_CLASS(RepresentationConverter)
 
 RCPP_MODULE(graph_module) {
+  using namespace Rcpp;
   class_<Graph>("Graph")
-  .constructor<int, int, bool>()
-  .method("getV", &Graph::getV)
-  .method("getE", &Graph::getE)
-  .method("getDegree", &Graph::getDegree)
-  .method("saveVectorOfEdges", &Graph::saveVectorOfEdges)
-  .method("addEdge", &Graph::addEdge)
-  .method("isSpanningTree", &Graph::isSpanningTree)
-  //.method("getMSTKruskal", &Graph::getMSTKruskal)
-  //.method("importFromGrapheratorFile", &importFromGrapheratorFileR)
-  .method("getMST", &getMST)
-  .method("getRandomMST", &getRandomMST)
-  .method("getSumOfEdgeWeights", &getSumOfEdgeWeightsR)
-  .method("getNumberOfCommonEdges", &getNumberOfCommonEdges)
-  .method("getNumberOfCommonComponents", &getNumberOfCommonComponents)
-  .method("getMSTBySubforestMutation", &getMSTBySubforestMutationR)
-  .method("getMSTBySubgraphMutation", &getMSTBySubgraphMutationR)
-  .method("getMSTByEdgeExchange", &getMSTByEdgeExchangeR)
-  .method("getWeightsAsMatrix", &getWeightsAsMatrix)
-  .method("toEdgeList", &toEdgeList)
-  .method("getEdgeProbabilities", &getEdgeProbabilitiesR)
-  .method("setEdgeProbabilities", &setEdgeProbabilitiesR)
+    .constructor<int, int, bool>()
+    .method("getV", &Graph::getV)
+    .method("getE", &Graph::getE)
+    .method("getW", &Graph::getW)
+    .method("getDegree", &Graph::getDegree)
+    .method("saveVectorOfEdges", &Graph::saveVectorOfEdges)
+    .method("addEdge", &Graph::addEdge)
+    .method("isSpanningTree", &Graph::isSpanningTree)
+    //.method("getMSTKruskal", &Graph::getMSTKruskal)
+    //.method("importFromGrapheratorFile", &importFromGrapheratorFileR)
+    .method("getMST", &getMST)
+    .method("getRandomMST", &getRandomMST)
+    .method("getMSTByWeightedSumScalarization", &getMSTByWeightedSumScalarization)
+    .method("getSumOfEdgeWeights", &getSumOfEdgeWeightsR)
+    .method("getNumberOfCommonEdges", &getNumberOfCommonEdges)
+    .method("getNumberOfCommonComponents", &getNumberOfCommonComponents)
+    .method("getSizeOfLargestCommonComponent", &getSizeOfLargestCommonComponent)
+    .method("getMSTBySubforestMutation", &getMSTBySubforestMutationR)
+    .method("getMSTBySubgraphMutation", &getMSTBySubgraphMutationR)
+    .method("getMSTByEdgeExchange", &getMSTByEdgeExchangeR)
+    .method("getWeightsAsMatrix", &getWeightsAsMatrix)
+    .method("toEdgeList", &toEdgeList)
+    .method("getEdgeProbabilities", &getEdgeProbabilitiesR)
+    .method("setEdgeProbabilities", &setEdgeProbabilitiesR)
   ;
+  class_<GraphImporter>("GraphImporter")
+    .constructor()
+    .method("importFromGrapheratorFile", &GraphImporter::importFromGrapheratorFileCPP)
+  ;
+  class_<RepresentationConverter>("RepresentationConverter")
+    .constructor()
+    .method("prueferCodeToGraph", &RepresentationConverter::prueferCodeToGraph);
 }

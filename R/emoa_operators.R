@@ -127,9 +127,8 @@ mutEdgeExchange = makeMutator(
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutKEdgeExchange = makeMutator(
-  mutator = function(ind, k = 1L, instance = NULL) {
-    #kEdgeExchange(ind, k = k, instance = instance)
-    instance$getMSTByEdgeExchange(ind, k)
+  mutator = function(ind, k = 1L, drop.largest = FALSE, instance = NULL) {
+    instance$getMSTByEdgeExchange(ind, k, drop.largest)
   },
   supported = "custom")
 
@@ -158,10 +157,9 @@ mutKEdgeExchange = makeMutator(
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubgraphMST = makeMutator(
-  mutator = function(ind, sigma = floor(ind$getE() / 2), scalarize = FALSE, instance = NULL) {
-    #subgraphMST(ind, sigma, scalarize, instance)
-    #FIXME: implement scalarize argument in C++ function
-    instance$getMSTBySubgraphMutation(ind, sigma)
+  mutator = function(ind, sigma = floor(ind$getV() / 2L), scalarize = FALSE, instance = NULL) {
+    n.select = sample(3:sigma, 1L)
+    instance$getMSTBySubgraphMutation(ind, n.select, scalarize = scalarize)
   },
   supported = "custom"
 )
@@ -190,9 +188,9 @@ mutSubgraphMST = makeMutator(
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubforestMST = makeMutator(
-  mutator = function(ind, sigma = ncol(ind), scalarize = FALSE, instance = NULL) {
-    #subforestMST(ind, sigma, scalarize, instance)
-    instance$getMSTBySubforestMutation(ind, sigma)
+  mutator = function(ind, sigma = floor(ind$getV() / 2), scalarize = FALSE, instance = NULL) {
+    n.select = sample(1:sigma, 1L)
+    instance$getMSTBySubforestMutation(ind, n.select)
   },
   supported = "custom"
 )

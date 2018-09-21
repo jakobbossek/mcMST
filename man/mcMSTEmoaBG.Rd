@@ -4,8 +4,9 @@
 \alias{mcMSTEmoaBG}
 \title{Subgraph EMOA for the multi-criteria MST problem.}
 \usage{
-mcMSTEmoaBG(instance, mu, lambda = mu, mut = NULL, selMating = NULL,
-  selSurvival = ecr::selNondom, ref.point = NULL, max.iter = 100L, ...)
+mcMSTEmoaBG(instance, mu, lambda = mu, mut = mcMST::mutSubgraphMST,
+  selMating = NULL, selSurvival = ecr::selNondom, ref.point = NULL,
+  max.iter = 100L, ...)
 }
 \arguments{
 \item{instance}{[\code{\link[grapherator]{grapherator}}]\cr
