@@ -47,13 +47,13 @@
 #' }
 #' @export
 getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives, simplify = TRUE) {
-  assertClass(instance, "grapherator")
+  #assertClass(instance, "grapherator")
   assertFunction(obj.fun)
   assertFunction(enumerator.fun, args = "n")
   n.objectives = asInt(n.objectives, lower = 2L)
   assertFlag(simplify)
 
-  n.nodes = grapherator::getNumberOfNodes(instance)
+  n.nodes = instance$getV()
   if (n.nodes > 10L)
     warningf("Doh! This may take some time.")
 
@@ -96,6 +96,9 @@ getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives, simpli
   if (simplify & matrix.pp)
     pareto.set = do.call(rbind, pareto.set)
 
+  pareto.front = as.data.frame(t(pareto.front))
+  colnames(pareto.front) = c("y1", "y2")
+
   return(list(
     pareto.set = pareto.set,
     pareto.front = pareto.front)
@@ -104,8 +107,9 @@ getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives, simpli
 
 getExactFrontMCMST = function(instance, ...) {
   objfunMCMST = function(pcode, instance) {
-    #print(pcode)
-    getWeight(instance, prueferToEdgeList(pcode))
+    conveter = new(RepresentationConverter)
+    tree = conveter$prueferCodeToGraph(instance, pcode)
+    tree$getSumOfEdgeWeights()
   }
   getExactFront(instance, obj.fun = objfunMCMST,
     enumerator.fun = enumerateMST, n.objectives = 2L, ...)
