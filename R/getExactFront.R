@@ -107,10 +107,17 @@ getExactFront = function(instance, obj.fun, enumerator.fun, n.objectives, simpli
 
 getExactFrontMCMST = function(instance, ...) {
   objfunMCMST = function(pcode, instance) {
-    conveter = new(RepresentationConverter)
-    tree = conveter$prueferCodeToGraph(instance, pcode)
+    converter = new(RepresentationConverter)
+    tree = converter$prueferCodeToGraph(instance, pcode)
     tree$getSumOfEdgeWeights()
   }
-  getExactFront(instance, obj.fun = objfunMCMST,
-    enumerator.fun = enumerateMST, n.objectives = 2L, ...)
+  res = getExactFront(instance, obj.fun = objfunMCMST,
+    enumerator.fun = enumerateMST, n.objectives = 2L, simplify = FALSE, ...)
+  print(res)
+  res$pareto.set = lapply(res$pareto.set, function(pcode) {
+    converter = new(RepresentationConverter)
+    tree = converter$prueferCodeToGraph(instance, pcode)
+    tree$toEdgeList()
+  })
+  return(res)
 }

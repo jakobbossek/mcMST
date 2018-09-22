@@ -21,10 +21,8 @@ Imports:
     reshape2 (>= 1.4.1),
     gtools,
     ggplot2 (>= 1.0.0),
-    vegan,
     qgraph,
-    viridis,
-    igraph
+    viridis
 Suggests:
     testthat (>= 0.9.1),
     knitr,
