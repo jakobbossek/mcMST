@@ -29,7 +29,8 @@
 #' @family mcMST algorithms
 #' @export
 mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
-
+  if (inherits(instance, "grapherator"))
+    instance = grapheratorToGraph(instance)
   n.weights = instance$getW()
   if (n.weights != 2L)
     stopf("mcMSTPrim: At the moment only bi-objective problems supported.")
@@ -42,22 +43,22 @@ mcMSTPrim = function(instance, n.lambdas = NULL, lambdas = NULL) {
   assertNumeric(lambdas, any.missing = FALSE, all.missing = FALSE)
 
   pareto.set = vector(mode = "list", length = length(lambdas))
-  pareto.front = matrix(0, nrow = length(lambdas), ncol = n.weights)
+  pareto.front = matrix(0, ncol = length(lambdas), nrow = n.weights)
 
   n.lambdas = length(lambdas)
   # now apply scalarization and compute supported efficient solution(s)
   for (k in seq_len(n.lambdas)) {
     tree = instance$getMSTByWeightedSumScalarization(lambdas[k])
-    pareto.front[k, ] = tree$getSumOfEdgeWeights()
+    pareto.front[, k] = tree$getSumOfEdgeWeights()
     pareto.set[[k]] = tree$toEdgeList()
   }
 
-  pareto.front = as.data.frame(pareto.front)
-  colnames(pareto.front) = c("y1", "y2")
+  pareto.front = ecr::toParetoDf(pareto.front)
 
-  return(list(
+  res = list(
     pareto.set = pareto.set,
-    pareto.front = pareto.front)
+    pareto.front = pareto.front
   )
+  return(ecr::filterDuplicated(res))
 }
 

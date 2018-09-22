@@ -1,4 +1,4 @@
-grapheratorToCPPGraph = function(g) {
+grapheratorToGraph = function(g) {
   n = grapherator::getNumberOfNodes(g)
   w = grapherator::getNumberOfWeights(g)
   gpp = new(Graph, n, w, FALSE)

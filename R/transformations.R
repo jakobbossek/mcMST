@@ -195,3 +195,17 @@ permutationToEdgelist = function(perm) {
 permutationToCharVec = function(perm, n) {
   edgeListToCharVec(permutationToEdgelist(perm), n)
 }
+
+#' Convert edge list to C++ graph.
+#'
+#' @template arg_edgelist
+#' @param [\code{Graph}]\cr
+#'   Object of type graph.
+#' @return [\code{Graph}]
+#' @family transformation functions
+#' @export
+edgeListToGraph = function(edgelist, g) {
+  converter = new(RepresentationConverter)
+  converter$edgeListToGraph(g, edgelist)
+}
+
