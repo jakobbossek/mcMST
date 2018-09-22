@@ -113,7 +113,6 @@ getExactFrontMCMST = function(instance, ...) {
   }
   res = getExactFront(instance, obj.fun = objfunMCMST,
     enumerator.fun = enumerateMST, n.objectives = 2L, simplify = FALSE, ...)
-  print(res)
   res$pareto.set = lapply(res$pareto.set, function(pcode) {
     converter = new(RepresentationConverter)
     tree = converter$prueferCodeToGraph(instance, pcode)

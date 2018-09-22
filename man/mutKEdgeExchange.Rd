@@ -4,7 +4,7 @@
 \alias{mutKEdgeExchange}
 \title{k-edge-exchange mutator for edge list representation of spanning trees.}
 \usage{
-mutKEdgeExchange(ind, k = 1L, instance = NULL)
+mutKEdgeExchange(ind, k = 1L, drop.largest = FALSE, instance = NULL)
 }
 \arguments{
 \item{ind}{[\code{matrix(2, m)}]\cr

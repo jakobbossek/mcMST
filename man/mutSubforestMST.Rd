@@ -4,7 +4,7 @@
 \alias{mutSubforestMST}
 \title{Forest-mutator for edge list representation.}
 \usage{
-mutSubforestMST(ind, sigma = ncol(ind), scalarize = FALSE,
+mutSubforestMST(ind, sigma = floor(ind$getV()/2), scalarize = FALSE,
   instance = NULL)
 }
 \arguments{

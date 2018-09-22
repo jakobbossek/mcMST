@@ -4,14 +4,11 @@
 \alias{similarity_metrics}
 \alias{getNumberOfCommonEdges}
 \alias{getNumberOfCommonComponents}
-\alias{getSizeOfLargestCommonSubtree}
 \title{Metrics for spanning tree comparisson.}
 \usage{
 getNumberOfCommonEdges(x, y, normalize = TRUE)
 
 getNumberOfCommonComponents(x, y, normalize = TRUE)
-
-getSizeOfLargestCommonSubtree(x, y, n = NULL, normalize = TRUE)
 }
 \arguments{
 \item{x}{[\code{matrix(2, n)}]\cr
