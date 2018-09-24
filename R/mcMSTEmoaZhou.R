@@ -28,6 +28,7 @@ mcMSTEmoaZhou = function(instance,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
   ref.point = NULL, max.iter = 100L) {
 
+  n = instance$getV()
   converter = new(RepresentationConverter)
 
   force(instance)
@@ -38,8 +39,8 @@ mcMSTEmoaZhou = function(instance,
     tree$getSumOfEdgeWeights()
   }
 
-  # if (is.null(ref.point))
-  #   ref.point = getReferencePoint(instance)
+  if (is.null(ref.point))
+    ref.point = instance$getMaxWeight() * n
 
   # get number of nodes
   n = instance$getV()

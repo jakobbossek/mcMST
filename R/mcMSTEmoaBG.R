@@ -68,8 +68,8 @@ mcMSTEmoaBG = function(instance,
   # default is our subgraph mutator
   mut = ecr::setup(mut, instance = instance, ...)
 
-  # if (is.null(ref.point))
-  #   ref.point = getReferencePoint(instance)
+  if (is.null(ref.point))
+    ref.point = instance$getMaxWeight() * n
 
   fitness.fun = function(ind, instance) {
     ind$getSumOfEdgeWeights()

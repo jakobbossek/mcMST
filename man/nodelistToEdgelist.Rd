@@ -26,6 +26,7 @@ nodelistToEdgelist(nodelist)
 \seealso{
 Other transformation functions: \code{\link{charVecToEdgelist}},
   \code{\link{edgeListToCharVec}},
+  \code{\link{edgeListToGraph}},
   \code{\link{permutationToCharVec}},
   \code{\link{permutationToEdgelist}},
   \code{\link{prueferToCharVec}},

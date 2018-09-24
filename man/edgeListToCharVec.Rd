@@ -31,6 +31,7 @@ print(cvec)
 }
 \seealso{
 Other transformation functions: \code{\link{charVecToEdgelist}},
+  \code{\link{edgeListToGraph}},
   \code{\link{nodelistToEdgelist}},
   \code{\link{permutationToCharVec}},
   \code{\link{permutationToEdgelist}},

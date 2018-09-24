@@ -3,6 +3,7 @@
 export(charVecToEdgelist)
 export(computeSimilarityMatrix)
 export(edgeListToCharVec)
+export(edgeListToGraph)
 export(enumerateMST)
 export(enumerateTSP)
 export(genRandomMCGP)

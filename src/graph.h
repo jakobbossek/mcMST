@@ -1041,6 +1041,28 @@ NumericVector getSumOfEdgeWeightsR(Graph* g) {
   return out;
 }
 
+NumericVector getMaxWeight(Graph* g) {
+  NumericVector m(g->getW());
+
+  std::vector<Edge2> edges = g->getEdges();
+  // for each weight
+  for (Edge2 edge: edges) {
+    for (int i = 0; i < g->getW(); ++i) {
+      if (i == 0) {
+        if (edge.second.first > m[i]) {
+          m[i] = edge.second.first;
+        }
+      } else {
+        if (edge.second.second > m[i]) {
+          m[i] = edge.second.second;
+        }
+      }
+    }
+  }
+
+  return m;
+}
+
 int getNumberOfCommonEdges(Graph* g1, Graph* g2) {
   Graph intersection = Graph::getIntersectionGraph(*g1, *g2);
   return intersection.getE();
@@ -1124,6 +1146,7 @@ RCPP_MODULE(graph_module) {
     .method("getRandomMST", &getRandomMST)
     .method("getMSTByWeightedSumScalarization", &getMSTByWeightedSumScalarization)
     .method("getSumOfEdgeWeights", &getSumOfEdgeWeightsR)
+    .method("getMaxWeight", &getMaxWeight)
     .method("getNumberOfCommonEdges", &getNumberOfCommonEdges)
     .method("getNumberOfCommonComponents", &getNumberOfCommonComponents)
     .method("getSizeOfLargestCommonComponent", &getSizeOfLargestCommonComponent)
