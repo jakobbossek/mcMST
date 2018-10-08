@@ -1026,7 +1026,7 @@ Graph getMSTBySubgraphMutationR(Graph* g, Graph* mst, int maxSelect, bool scalar
   return mstnew;
 }
 
-Graph getMSTByEdgeExchangeR(Graph* g, Graph *mst, int repls, bool dropLargest) {
+Graph getMSTByEdgeExchangeR(Graph* g, Graph* mst, int repls, bool dropLargest) {
   Graph mstnew = g->getMSTByEdgeExchange(*mst, repls, dropLargest);
   return mstnew;
 }

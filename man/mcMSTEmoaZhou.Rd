@@ -6,7 +6,7 @@
 \usage{
 mcMSTEmoaZhou(instance, mu, lambda = mu, mut = mutUniformPruefer,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
-  ref.point = NULL, max.iter = 100L)
+  ref.point = NULL, max.iter = 100L, ...)
 }
 \arguments{
 \item{instance}{[\code{\link[grapherator]{grapherator}}]\cr
@@ -42,6 +42,9 @@ with \eqn{(n-1)} edges.}
 \item{max.iter}{[\code{integer(1)}]\cr
 Maximal number of iterations.
 Default is \code{100}.}
+
+\item{...}{[\code{any}]\cr
+Further parameters passed to \code{\link[ecr]{ecr}}.}
 }
 \value{
 [\code{\link[ecr]{ecr_result}}] List of type \code{\link[ecr]{ecr_result}}

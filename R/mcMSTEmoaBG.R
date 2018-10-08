@@ -37,7 +37,7 @@
 #'   Maximal number of iterations.
 #'   Default is \code{100}.
 #' @param ... [\code{any}]\cr
-#'   Further parameters passed to mutator.
+#'   Further parameters passed to \code{\link[ecr]{ecr}}.
 #' @template ret_ecrresult
 #' @examples
 #' inst = genRandomMCGP(10)
@@ -66,7 +66,7 @@ mcMSTEmoaBG = function(instance,
   force(instance)
 
   # default is our subgraph mutator
-  mut = ecr::setup(mut, instance = instance, ...)
+  mut = ecr::setup(mut, instance = instance)
 
   if (is.null(ref.point))
     ref.point = instance$getMaxWeight() * n
@@ -87,7 +87,8 @@ mcMSTEmoaBG = function(instance,
     survival.selector = selSurvival, parent.selector = selMating,
     mutator = mut, p.mut = 1,
     terminators = list(stopOnIters(max.iter)),
-    instance = instance)
+    instance = instance,
+    ...)
 
   res$pareto.set = lapply(res$pareto.set, function(el) el$toEdgeList())
   return(res)

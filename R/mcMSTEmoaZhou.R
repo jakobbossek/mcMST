@@ -26,7 +26,7 @@ mcMSTEmoaZhou = function(instance,
   mu, lambda = mu,
   mut = mutUniformPruefer,
   selMating = ecr::selSimple, selSurvival = ecr::selNondom,
-  ref.point = NULL, max.iter = 100L) {
+  ref.point = NULL, max.iter = 100L, ...) {
 
   n = instance$getV()
   converter = new(RepresentationConverter)
@@ -44,7 +44,7 @@ mcMSTEmoaZhou = function(instance,
 
   # get number of nodes
   n = instance$getV()
-  n.objectives = g$getW()
+  n.objectives = instance$getW()
 
   # now generate an initial population of Pruefer-numbers/codes
   population = lapply(1:mu, function(i) {
@@ -57,7 +57,8 @@ mcMSTEmoaZhou = function(instance,
     survival.selector = selSurvival, parent.selector = selMating,
     mutator = mut, p.mut = 1,
     terminators = list(stopOnIters(max.iter)),
-    instance = instance)
+    instance = instance,
+    ...)
 
   res$pareto.set = lapply(res$pareto.set, function(pcode) {
     tree = converter$prueferCodeToGraph(instance, pcode)

@@ -43,7 +43,7 @@ Maximal number of iterations.
 Default is \code{100}.}
 
 \item{...}{[\code{any}]\cr
-Further parameters passed to mutator.}
+Further parameters passed to \code{\link[ecr]{ecr}}.}
 }
 \value{
 [\code{\link[ecr]{ecr_result}}] List of type \code{\link[ecr]{ecr_result}}
