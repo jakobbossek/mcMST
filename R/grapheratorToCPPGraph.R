@@ -14,5 +14,6 @@ grapheratorToGraph = function(g) {
     }
   }
   gpp$saveVectorOfEdges()
+  gpp$setEdgeProbabilities(rep(1, gpp$getE()))
   return(gpp)
 }
