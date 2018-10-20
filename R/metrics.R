@@ -46,7 +46,7 @@ getNumberOfCommonComponents = function(x, y, normalize = TRUE) {
 
 getSizeOfLargestCommonComponent = function(x, y, normalize = TRUE) {
   assertFlag(normalize)
-  size = x$getSizeOfLargestCommonComponent(y)
+  size = x$getSizeOfLargestCommonComponent(y) - 1L # size of components counts the number of nodes!
   if (!normalize)
     return(size)
   return(size / x$getE())
