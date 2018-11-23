@@ -7,8 +7,8 @@ grapheratorToGraph = function(g) {
       if (i == j)
         next
       if (g$adj.mat[i, j]) {
-        w1 = g$weights[[1]][i, j]
-        w2 = g$weights[[2]][i, j]
+        w1 = as.numeric(g$weights[[1]][i, j])
+        w2 = as.numeric(g$weights[[2]][i, j])
         gpp$addEdge(i, j, w1, w2)
       }
     }

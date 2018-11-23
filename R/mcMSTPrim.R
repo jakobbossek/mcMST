@@ -37,7 +37,7 @@ mcMSTPrim = function(instance) {
 
   # the trees are stored in a large matrix. Each two consecitive rows describe
   # one efficient tree
-  pareto.set = lapply(seq(1, n.trees, by = 2L), function(i) {
+  pareto.set = lapply(seq(1, 2 * n.trees, by = 2L), function(i) {
     result$edges[i:(i + 1), , drop = FALSE]
   })
 

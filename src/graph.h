@@ -552,6 +552,10 @@ public:
         break;
       }
     }
+
+    if (!initialTree.isSpanningTree()) {
+      Rcout << "Massive fail" << std::endl;
+    }
     return initialTree;
   }
 
@@ -761,13 +765,24 @@ public:
 
     // now loop trees are actually trees
     unsigned int i = 1;
-    while (i <= V - 2) {
+    while (i < V - 1) {
+      Rcout << "Adding " << i << "-th edge" << std::endl;
       std::vector<Graph> trees2;
       // for each partial tree, append edges and check
       for (Graph partialTree: trees) {
         // go through neighbors of partial tree, i.e., determine candidate edges
         //FIXME: ugly and computaionally expensive
         std::vector<Edge2> candidateEdges;
+        // std::vector<int> nonzeroDegreeNodes;
+        // for (int i = 1; i <= V; ++i) {
+        //   if (partialTree.getDegree(i) > 0) {
+        //     nonzeroDegreeNodes.push_back(i);
+        //   }
+        // }
+        // for (int i = 0; i < nonzeroDegreeNodes.size(); ++i) {
+        //   for (int j = 0; j <)
+        // }
+
         for (Edge2 edge: this->edgeVector) {
           int v = edge.first.first;
           int w = edge.first.second;
@@ -779,7 +794,7 @@ public:
 
         // now search for non dominated edges among those selected
         nonDomEdges = getNonDominatedEdges(candidateEdges);
-        Rcout << "Found " << nonDomEdges.size() << " nondominated edges!" << std::endl;
+        //Rcout << "Found " << nonDomEdges.size() << " nondominated edges!" << std::endl;
         //FIXME: copy&paste from inialization
         for (Edge2 edge: nonDomEdges) {
           // make copy of partial tree
@@ -799,9 +814,10 @@ public:
       i += 1;
     }
 
-    std::vector<std::vector<double>> treeCosts;
     for (Graph mst: trees) {
-      treeCosts.push_back(mst.getSumOfEdgeWeights());
+      if (!mst.isSpanningTree()) {
+        Rcout << "FAIL" << std::endl;
+      }
     }
     return trees;
   }
@@ -1100,32 +1116,67 @@ public:
 
 std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) {
   int n = points.size();
-  std::vector<bool> nondominated(n);
+  int m = points[1].size();
+
+  // Ugly: make new vector and store indizes so they are ordered as well
+  std::vector<std::pair<int, std::vector<double>>> points2;
   for (int i = 0; i < n; ++i) {
-    nondominated[i] = true;
+    points2.push_back({i, points[i]});
   }
 
-  // FIXME: inefficient
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
-      if (i == j) {
-        continue;
+  // now sort regarding first dimension in ascending order
+  std::sort(points2.begin(), points2.end(),
+    [](const std::pair<int, std::vector<double>>& x, const std::pair<int, std::vector<double>>& y) {
+      if (x.second[0] == y.second[0]) {
+        if (x.second[1] < x.second[1]) {
+          return true;
+        }
+        return false;
       }
-      std::vector<double> p1 = points[i];
-      std::vector<double> p2 = points[j];
-      if ((p2[0] < p1[0] && p2[1] <= p1[1]) || (p2[0] <= p1[0] && p2[1] < p1[1]) || ((j < i) && (p1[0] == p2[0]) && (p1[1] == p2[1]))) {
-        nondominated[i] = false;
-        break; // break nested loop
-      }
-    }
-  }
+      return x.second[0] < y.second[0];
+    });
 
+  // finally go through points in accending order. Each time we find a point
+  // with a lower x2 value than the minimum so far, save as non-dominated point.
   std::vector<int> nondomIndizes;
+  double minX2 = points2[0].second[1] + 10;
   for (int i = 0; i < n; ++i) {
-    if (nondominated[i]) {
-      nondomIndizes.push_back(i);
+    double X2 = points2[i].second[1];
+    if (X2 < minX2) {
+      minX2 = X2;
+      nondomIndizes.push_back(points2[i].first);
     }
+    //  else if (i > 0 && points2[i].second[1] == points2[i-1].second[1] && points2[i].second[0] == points2[i-1].second[0]) {
+    //   nondomIndizes.push_back(points2[i].first);
+    // }
   }
+
+  // std::vector<bool> nondominated(n);
+  // for (int i = 0; i < n; ++i) {
+  //   nondominated[i] = true;
+  // }
+
+  // // FIXME: inefficient
+  // for (int i = 0; i < n; ++i) {
+  //   for (int j = 0; j < n; ++j) {
+  //     if (i == j) {
+  //       continue;
+  //     }
+  //     std::vector<double> p1 = points[i];
+  //     std::vector<double> p2 = points[j];
+  //     if ((p2[0] < p1[0] && p2[1] <= p1[1]) || (p2[0] <= p1[0] && p2[1] < p1[1]) || ((j < i) && (p1[0] == p2[0]) && (p1[1] == p2[1]))) {
+  //       nondominated[i] = false;
+  //       break; // break nested loop
+  //     }
+  //   }
+  // }
+
+  // std::vector<int> nondomIndizes;
+  // for (int i = 0; i < n; ++i) {
+  //   if (nondominated[i]) {
+  //     nondomIndizes.push_back(i);
+  //   }
+  // }
   return nondomIndizes;
 }
 
