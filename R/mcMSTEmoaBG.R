@@ -56,7 +56,8 @@ mcMSTEmoaBG = function(instance,
   max.iter = 100L,
   ...) {
 
-  #checkmate::assertClass(instance, "grapherator")
+  if (inherits(instance, "grapherator"))
+    instance = grapheratorToGraph(instance)
 
   # get number of nodes
   n = instance$getV()

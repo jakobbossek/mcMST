@@ -20,6 +20,8 @@ typedef std::pair< int, std::pair <double, double> > Edge;
 typedef std::pair< std::pair<int, int>, std::pair<double, double> > Edge2;
 typedef std::vector< std::vector <Edge> > AdjacencyList;
 
+std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points);
+
 class Graph {
 public:
   Graph(int V, int W, bool directed = false) {
@@ -653,6 +655,40 @@ public:
     return circleEdges;
   }
 
+  std::vector<Graph> filterNondominatedTrees(std::vector<Graph> graphs) const {
+    int n = graphs.size();
+    std::vector<std::vector<double>> costs;
+    for (Graph g: graphs) {
+      costs.push_back(g.getSumOfEdgeWeights());
+    }
+
+    std::vector<int> nondomIndizes = getNondominatedPoints(costs);
+
+    std::vector<Graph> nondomGraphs;
+    for (int i: nondomIndizes) {
+      nondomGraphs.push_back(graphs[i]);
+    }
+    return nondomGraphs;
+  }
+
+  std::vector<Edge2> getNonDominatedEdges(std::vector<Edge2> edges) const {
+    int m = edges.size();
+    std::vector<std::vector<double>> costs;
+    for (Edge2 edge: edges) {
+      std::vector<double> edgeCosts(2);
+      edgeCosts[0] = edge.second.first;
+      edgeCosts[1] = edge.second.second;
+      costs.push_back(edgeCosts);
+    }
+
+    std::vector<int> nondomIndizes = getNondominatedPoints(costs);
+
+    std::vector<Edge2> nondomEdges;
+    for (int i: nondomIndizes) {
+      nondomEdges.push_back(edges[i]);
+    }
+    return nondomEdges;
+  }
 
   Graph getMSTByEdgeExchange(Graph &mst, unsigned int repls, bool deleteLargest = false) {
     unsigned int V = this->getV();
@@ -706,6 +742,68 @@ public:
     }
 
     return(mst2);
+  }
+
+  std::vector<Graph> doMCPrim() {
+    int V = this->getV();
+    int W = this->getW();
+
+    std::vector<Graph> trees;
+
+    // get non-dominated edges
+    std::vector<Edge2> nonDomEdges = this->getNonDominatedEdges(this->edgeVector);
+    // now build initial partial trees, each one for each non-dominated edge
+    for (Edge2 edge: nonDomEdges) {
+      Graph tree(V, W, false);
+      tree.addEdge(edge.first.first, edge.first.second, edge.second.first, edge.second.second);
+      trees.push_back(tree);
+    }
+
+    // now loop trees are actually trees
+    unsigned int i = 1;
+    while (i <= V - 2) {
+      std::vector<Graph> trees2;
+      // for each partial tree, append edges and check
+      for (Graph partialTree: trees) {
+        // go through neighbors of partial tree, i.e., determine candidate edges
+        //FIXME: ugly and computaionally expensive
+        std::vector<Edge2> candidateEdges;
+        for (Edge2 edge: this->edgeVector) {
+          int v = edge.first.first;
+          int w = edge.first.second;
+          if ((partialTree.getDegree(v) == 0 && partialTree.getDegree(w) > 0) ||
+            (partialTree.getDegree(v) > 0 && partialTree.getDegree(w) == 0)) {
+            candidateEdges.push_back(edge);
+          }
+        }
+
+        // now search for non dominated edges among those selected
+        nonDomEdges = getNonDominatedEdges(candidateEdges);
+        Rcout << "Found " << nonDomEdges.size() << " nondominated edges!" << std::endl;
+        //FIXME: copy&paste from inialization
+        for (Edge2 edge: nonDomEdges) {
+          // make copy of partial tree
+          Graph partialTreeCopy(partialTree);
+          // add nondominated edge
+          partialTreeCopy.addEdge(edge.first.first, edge.first.second, edge.second.first, edge.second.second);
+          // save partial tree
+          trees2.push_back(partialTreeCopy);
+        }
+      }
+      trees = trees2;
+
+      // finally filter dominated partial trees
+      trees = this->filterNondominatedTrees(trees);
+
+      Rcout << "Now we have " << trees.size() << " partial trees!" << std::endl;
+      i += 1;
+    }
+
+    std::vector<std::vector<double>> treeCosts;
+    for (Graph mst: trees) {
+      treeCosts.push_back(mst.getSumOfEdgeWeights());
+    }
+    return trees;
   }
 
   // Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true) {
@@ -1000,6 +1098,38 @@ public:
   }
 };
 
+std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) {
+  int n = points.size();
+  std::vector<bool> nondominated(n);
+  for (int i = 0; i < n; ++i) {
+    nondominated[i] = true;
+  }
+
+  // FIXME: inefficient
+  for (int i = 0; i < n; ++i) {
+    for (int j = 0; j < n; ++j) {
+      if (i == j) {
+        continue;
+      }
+      std::vector<double> p1 = points[i];
+      std::vector<double> p2 = points[j];
+      if ((p2[0] < p1[0] && p2[1] <= p1[1]) || (p2[0] <= p1[0] && p2[1] < p1[1]) || ((j < i) && (p1[0] == p2[0]) && (p1[1] == p2[1]))) {
+        nondominated[i] = false;
+        break; // break nested loop
+      }
+    }
+  }
+
+  std::vector<int> nondomIndizes;
+  for (int i = 0; i < n; ++i) {
+    if (nondominated[i]) {
+      nondomIndizes.push_back(i);
+    }
+  }
+  return nondomIndizes;
+}
+
+
 Graph getMST(Graph * mst) {
   double rndWeight = (double)rand() / (double)RAND_MAX;
   Graph g2 = mst->getMSTKruskal(rndWeight);
@@ -1125,6 +1255,41 @@ NumericMatrix toEdgeList(Graph *g) {
   return edgeMatrix;
 }
 
+List doMCPrim(Graph *g) {
+  int V = g->getV();
+
+  std::vector<Graph> trees = g->doMCPrim();
+  unsigned int ntrees = trees.size();
+  //FIXME: generalize
+  unsigned int weights = 2;
+
+  NumericMatrix costMatrix(weights, ntrees);
+  //FIXME: this is absolutely ultra-ugly!!!
+  NumericMatrix edgeMatrix(2 * ntrees, V - 1);
+
+  for (int i = 0; i < ntrees; ++i) {
+    // Fixme
+    Graph tree = trees[i];
+    std::vector<double> costs = trees[i].getSumOfEdgeWeights();
+    costMatrix(0, i) = costs[0];
+    costMatrix(1, i) = costs[1];
+
+    std::vector<Edge2> treeEdges = tree.getEdges();
+    for (int j = 0; j < treeEdges.size(); ++j) {
+      Edge2 edge = treeEdges[j];
+      // store each two rows for edges
+      edgeMatrix(2 * i, j) = edge.first.first;
+      edgeMatrix(2 * i + 1, j) = edge.first.second;
+    }
+  }
+
+  List output;
+  output["weights"] = costMatrix;
+  output["edges"] = edgeMatrix;
+  return output;
+}
+
+
 RCPP_EXPOSED_CLASS(Graph)
 RCPP_EXPOSED_CLASS(GraphImporter)
 RCPP_EXPOSED_CLASS(RepresentationConverter)
@@ -1157,6 +1322,7 @@ RCPP_MODULE(graph_module) {
     .method("toEdgeList", &toEdgeList)
     .method("getEdgeProbabilities", &getEdgeProbabilitiesR)
     .method("setEdgeProbabilities", &setEdgeProbabilitiesR)
+    .method("doMCPrim", &doMCPrim)
   ;
   class_<GraphImporter>("GraphImporter")
     .constructor()
