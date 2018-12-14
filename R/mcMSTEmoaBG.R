@@ -83,6 +83,7 @@ mcMSTEmoaBG = function(instance,
   })
 
   res = ecr::ecr(fitness.fun = fitness.fun, n.objectives = n.objectives,
+    minimize = rep(TRUE, n.objectives),
     mu = mu, lambda = lambda, survival.strategy = "plus", representation = "custom",
     initial.solutions = population,
     survival.selector = selSurvival, parent.selector = selMating,
