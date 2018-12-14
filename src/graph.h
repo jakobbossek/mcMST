@@ -1127,25 +1127,34 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) 
   // now sort regarding first dimension in ascending order
   std::sort(points2.begin(), points2.end(),
     [](const std::pair<int, std::vector<double>>& x, const std::pair<int, std::vector<double>>& y) {
-      if (x.second[0] == y.second[0]) {
-        if (x.second[1] < x.second[1]) {
-          return true;
-        }
-        return false;
-      }
+      // if (x.second[0] == y.second[0]) {
+      //   if (x.second[1] < x.second[1]) {
+      //     return true;
+      //   }
+      //   return false;
+      // }
       return x.second[0] < y.second[0];
     });
 
   // finally go through points in accending order. Each time we find a point
   // with a lower x2 value than the minimum so far, save as non-dominated point.
   std::vector<int> nondomIndizes;
-  double minX2 = points2[0].second[1] + 10;
-  for (int i = 0; i < n; ++i) {
+  nondomIndizes.push_back(points2[0].first);
+  double minX2 = points2[0].second[1];
+  for (int i = 1; i < n; ++i) {
     double X2 = points2[i].second[1];
     if (X2 < minX2) {
       minX2 = X2;
       nondomIndizes.push_back(points2[i].first);
     }
+    // if (points2[i].second[0] == points2[i-1].second[0] && points2[i].second[1] > points2[i-1].second[1]) {
+    //   nondomIndizes.push_back(points2[i].first);
+    // } else if (points2[i].second[0] > points2[i-1].second[0] && points2[i].second[1] == points2[i-1].second[1]) {
+    //   nondomIndizes.push_back(points2[i].first);
+    // } else if (X2 < minX2) {
+    //   minX2 = X2;
+    //   nondomIndizes.push_back(points2[i].first);
+    // }
     //  else if (i > 0 && points2[i].second[1] == points2[i-1].second[1] && points2[i].second[0] == points2[i-1].second[0]) {
     //   nondomIndizes.push_back(points2[i].first);
     // }
