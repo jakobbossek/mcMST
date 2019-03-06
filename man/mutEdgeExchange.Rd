@@ -34,3 +34,4 @@ Other mcMST EMOA mutators: \code{\link{mutKEdgeExchange}},
   \code{\link{mutSubgraphMST}},
   \code{\link{mutUniformPruefer}}
 }
+\concept{mcMST EMOA mutators}

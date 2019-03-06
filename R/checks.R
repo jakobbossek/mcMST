@@ -20,29 +20,10 @@ checkValidEdges = function(sols, g) {
 
 # Check if each solution of a set is actually a spanning tree.
 checkValidSpanningTrees = function(sols, g) {
-  assertList(sols)
-  assertClass(g, "grapherator")
-
-  n = grapherator::getNumberOfNodes(g)
-
-  # check existence of used edges
-  if (!checkValidEdges(sols, g))
-    stopf("There are solutions with non-existent edges!")
-
-  for (sol in sols) {
-    if (ncol(sol) != (n - 1))
-      stopf("Each spanning tree of the graph must have %i edges, but solution has %i.", n - 1L, ncol(sol))
-
-    if (!checkValidEdges(list(sol), g))
-      stopf("There are solutions with non-existent edges!")
-
-    # which nodes are reachable from node 1 (should be all
-    # in a spanning tree)
-    reachable.node.ids = getReachableNodes(sol, 1L)
-    if (!setequal(1:n, reachable.node.ids)) {
-      node.diff = setdiff(1:n, reachable.node.ids)
-      stopf("Not all nodes in tree! The following nodes are not covered: %s", length(node.diff), collapse(node.diff, ", "))
-    }
-  }
-  return(invisible(TRUE))
+  converter = new(RepresentationConverter)
+  res = sapply(sols, function(sol) {
+    tree = converter$edgeListToGraph(g, sol)
+    tree$isSpanningTree()
+  })
+  return(invisible(all(res)))
 }

@@ -33,3 +33,4 @@ Other transformation functions: \code{\link{charVecToEdgelist}},
   \code{\link{permutationToEdgelist}},
   \code{\link{prueferToCharVec}}
 }
+\concept{transformation functions}

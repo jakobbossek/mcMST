@@ -86,5 +86,7 @@ Mutators \code{\link{mutSubgraphMST}} and \code{\link{mutEdgeExchange}}
 Other mcMST EMOAs: \code{\link{mcMSTEmoaZhou}}
 
 Other mcMST algorithms: \code{\link{mcMSTEmoaZhou}},
-  \code{\link{mcMSTPrim}}
+  \code{\link{mcMSTPrim}}, \code{\link{mcMSTWeightedSum}}
 }
+\concept{mcMST EMOAs}
+\concept{mcMST algorithms}

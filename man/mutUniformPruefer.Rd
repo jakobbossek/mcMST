@@ -29,3 +29,4 @@ Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
   \code{\link{mutSubforestMST}},
   \code{\link{mutSubgraphMST}}
 }
+\concept{mcMST EMOA mutators}

@@ -31,3 +31,4 @@ Other transformation functions: \code{\link{edgeListToCharVec}},
   \code{\link{prueferToCharVec}},
   \code{\link{prueferToEdgeList}}
 }
+\concept{transformation functions}

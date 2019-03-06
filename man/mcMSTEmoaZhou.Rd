@@ -81,5 +81,7 @@ Mutator \code{\link{mutUniformPruefer}}
 Other mcMST EMOAs: \code{\link{mcMSTEmoaBG}}
 
 Other mcMST algorithms: \code{\link{mcMSTEmoaBG}},
-  \code{\link{mcMSTPrim}}
+  \code{\link{mcMSTPrim}}, \code{\link{mcMSTWeightedSum}}
 }
+\concept{mcMST EMOAs}
+\concept{mcMST algorithms}

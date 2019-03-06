@@ -33,3 +33,4 @@ indicates the number of graphs the edge is part of.
 \seealso{
 Other result visualization: \code{\link{plotEdgeFrequency}}
 }
+\concept{result visualization}

@@ -4,7 +4,8 @@
 \alias{plotEdgeFrequency}
 \title{Visualization of edge frequency among solution set.}
 \usage{
-plotEdgeFrequency(graphs, approx.sets, facet.args = list(), names = NULL)
+plotEdgeFrequency(graphs, approx.sets, facet.args = list(),
+  names = NULL)
 }
 \arguments{
 \item{graphs}{[\code{list(grapherator)}]\cr
@@ -40,3 +41,4 @@ plotEdgeFrequency(list(g), list(res$pareto.set))
 \seealso{
 Other result visualization: \code{\link{plotEdges}}
 }
+\concept{result visualization}

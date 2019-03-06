@@ -43,3 +43,4 @@ Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
   \code{\link{mutSubforestMST}},
   \code{\link{mutUniformPruefer}}
 }
+\concept{mcMST EMOA mutators}
