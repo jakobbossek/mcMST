@@ -53,11 +53,14 @@ mcMSTWeightedSum = function(instance, n.lambdas = NULL, lambdas = NULL) {
     pareto.set[[k]] = tree$toEdgeList()
   }
 
-  pareto.front = ecr::toParetoDf(pareto.front)
+  # filter dominated solutions
+  idx.nondom = ecr::which.nondominated(pareto.front)
+  pareto.front = pareto.front[, idx.nondom, drop = FALSE]
+  pareto.set = pareto.set[idx.nondom]
 
   res = list(
     pareto.set = pareto.set,
-    pareto.front = pareto.front
+    pareto.front = ecr::toParetoDf(pareto.front)
   )
   return(ecr::filterDuplicated(res))
 }

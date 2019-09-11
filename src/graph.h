@@ -742,7 +742,7 @@ public:
         std::pair<int, int> edgeToDelete = edgesOnCircle[largestIdx].first;
         mst2.removeEdge(edgeToDelete.first, edgeToDelete.second);
       }
-      assert(isSpanningTree(mst2));
+      assert(mst2.isSpanningTree());
     }
 
     return(mst2);
@@ -1127,38 +1127,58 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) 
   // now sort regarding first dimension in ascending order
   std::sort(points2.begin(), points2.end(),
     [](const std::pair<int, std::vector<double>>& x, const std::pair<int, std::vector<double>>& y) {
-      // if (x.second[0] == y.second[0]) {
-      //   if (x.second[1] < x.second[1]) {
-      //     return true;
-      //   }
+      // assure strict weak order (i.e., comp(x,x) == FALSE for all x)
+      // Otherwise you get some awesome segfaults
+      // See, e.g. https://stackoverflow.com/questions/18291620/why-will-stdsort-crash-if-the-comparison-function-is-not-as-operator
+      // if (x.second[0] == y.second[0] && x.second[1] == y.second[1])
       //   return false;
-      // }
-      return x.second[0] < y.second[0];
+      // if (x.second[0] == y.second[0]) {
+      //    return (x.second[1] < y.second[1]);
+      // } else {
+      return (x.second[0] < y.second[0]);
+      //}
     });
 
-  // finally go through points in accending order. Each time we find a point
-  // with a lower x2 value than the minimum so far, save as non-dominated point.
+
+  // std::vector<int> nondomIndizes;
+  // nondomIndizes.push_back(points2[0].first);
+  // double lastX1 = points2[0].second[0];
+  // double minX2 = points2[0].second[1];
+  // for (int i = 1; i < n; ++i) {
+  //   double X1 = points2[i].second[0];
+  //   double X2 = points2[i].second[1];
+  //   if (X1 == lastX1 && X2 == minX2) {
+  //     nondomIndizes.push_back(points2[i].first);
+  //   } else if ((X1 > lastX1)) {
+  //     lastX1 = X1;
+  //     if (X2 < minX2) {
+  //       nondomIndizes.push_back(points2[i].first);
+  //       minX2 = X2;
+  //     }
+  //   }
+
   std::vector<int> nondomIndizes;
-  nondomIndizes.push_back(points2[0].first);
-  double minX2 = points2[0].second[1];
+  double currentX1 = points2[0].second[0];
+  double bestX2 = points2[0].second[1];
+
+  int tokeep = 0;
+
   for (int i = 1; i < n; ++i) {
+    double X1 = points2[i].second[0];
     double X2 = points2[i].second[1];
-    if (X2 < minX2) {
-      minX2 = X2;
-      nondomIndizes.push_back(points2[i].first);
+
+    if (X1 == currentX1 && X2 < bestX2) {
+      tokeep = i;
+      bestX2 = X2;
+    } else if (X1 > currentX1 && X2 < bestX2) {
+      nondomIndizes.push_back(points2[tokeep].first);
+      tokeep = i;
+      bestX2 = X2;
+      currentX1 = X1;
     }
-    // if (points2[i].second[0] == points2[i-1].second[0] && points2[i].second[1] > points2[i-1].second[1]) {
-    //   nondomIndizes.push_back(points2[i].first);
-    // } else if (points2[i].second[0] > points2[i-1].second[0] && points2[i].second[1] == points2[i-1].second[1]) {
-    //   nondomIndizes.push_back(points2[i].first);
-    // } else if (X2 < minX2) {
-    //   minX2 = X2;
-    //   nondomIndizes.push_back(points2[i].first);
-    // }
-    //  else if (i > 0 && points2[i].second[1] == points2[i-1].second[1] && points2[i].second[0] == points2[i-1].second[0]) {
-    //   nondomIndizes.push_back(points2[i].first);
-    // }
   }
+  nondomIndizes.push_back(points2[tokeep].first);
+
 
   // std::vector<bool> nondominated(n);
   // for (int i = 0; i < n; ++i) {
