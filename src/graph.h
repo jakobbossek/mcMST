@@ -763,25 +763,15 @@ public:
       trees.push_back(tree);
     }
 
-    // now loop trees are actually trees
+    // now loop until partial trees are actually spanning trees
     unsigned int i = 1;
     while (i < V - 1) {
-      Rcout << "Adding " << i << "-th edge" << std::endl;
+      Rcout << "Adding " << i + 1 << "-th edge" << std::endl;
       std::vector<Graph> trees2;
       // for each partial tree, append edges and check
       for (Graph partialTree: trees) {
         // go through neighbors of partial tree, i.e., determine candidate edges
-        //FIXME: ugly and computaionally expensive
         std::vector<Edge2> candidateEdges;
-        // std::vector<int> nonzeroDegreeNodes;
-        // for (int i = 1; i <= V; ++i) {
-        //   if (partialTree.getDegree(i) > 0) {
-        //     nonzeroDegreeNodes.push_back(i);
-        //   }
-        // }
-        // for (int i = 0; i < nonzeroDegreeNodes.size(); ++i) {
-        //   for (int j = 0; j <)
-        // }
 
         for (Edge2 edge: this->edgeVector) {
           int v = edge.first.first;
@@ -795,7 +785,6 @@ public:
         // now search for non dominated edges among those selected
         nonDomEdges = getNonDominatedEdges(candidateEdges);
         //Rcout << "Found " << nonDomEdges.size() << " nondominated edges!" << std::endl;
-        //FIXME: copy&paste from inialization
         for (Edge2 edge: nonDomEdges) {
           // make copy of partial tree
           Graph partialTreeCopy(partialTree);
@@ -1116,7 +1105,7 @@ public:
 
 std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) {
   int n = points.size();
-  int m = points[1].size();
+  //int m = points[1].size();
 
   // Ugly: make new vector and store indizes so they are ordered as well
   std::vector<std::pair<int, std::vector<double>>> points2;
@@ -1135,27 +1124,10 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) 
       // if (x.second[0] == y.second[0]) {
       //    return (x.second[1] < y.second[1]);
       // } else {
-      return (x.second[0] < y.second[0]);
+        return (x.second[0] < y.second[0]);
       //}
     });
 
-
-  // std::vector<int> nondomIndizes;
-  // nondomIndizes.push_back(points2[0].first);
-  // double lastX1 = points2[0].second[0];
-  // double minX2 = points2[0].second[1];
-  // for (int i = 1; i < n; ++i) {
-  //   double X1 = points2[i].second[0];
-  //   double X2 = points2[i].second[1];
-  //   if (X1 == lastX1 && X2 == minX2) {
-  //     nondomIndizes.push_back(points2[i].first);
-  //   } else if ((X1 > lastX1)) {
-  //     lastX1 = X1;
-  //     if (X2 < minX2) {
-  //       nondomIndizes.push_back(points2[i].first);
-  //       minX2 = X2;
-  //     }
-  //   }
 
   std::vector<int> nondomIndizes;
   double currentX1 = points2[0].second[0];
@@ -1170,6 +1142,15 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) 
     if (X1 == currentX1 && X2 < bestX2) {
       tokeep = i;
       bestX2 = X2;
+    // keep identical points - start
+    } else if (X1 == currentX1 && X2 == bestX2 && i < (n - 1) && points2[i+1].second[0] > currentX1) {
+      // Solution with equal quality
+      nondomIndizes.push_back(points2[tokeep].first);
+      tokeep = i;
+    } else if (X1 == currentX1 && X2 == bestX2 && i == (n - 1)) {
+      nondomIndizes.push_back(points2[tokeep].first);
+      tokeep = i;
+    // keep identical points - end
     } else if (X1 > currentX1 && X2 < bestX2) {
       nondomIndizes.push_back(points2[tokeep].first);
       tokeep = i;
@@ -1193,7 +1174,7 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points) 
   //     }
   //     std::vector<double> p1 = points[i];
   //     std::vector<double> p2 = points[j];
-  //     if ((p2[0] < p1[0] && p2[1] <= p1[1]) || (p2[0] <= p1[0] && p2[1] < p1[1]) || ((j < i) && (p1[0] == p2[0]) && (p1[1] == p2[1]))) {
+  //     if ((p2[0] < p1[0] && p2[1] <= p1[1]) || (p2[0] <= p1[0] && p2[1] < p1[1])) { //|| ((j < i) && (p1[0] == p2[0]) && (p1[1] == p2[1]))) {
   //       nondominated[i] = false;
   //       break; // break nested loop
   //     }
