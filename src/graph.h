@@ -754,6 +754,90 @@ public:
 
     std::vector<Graph> trees;
 
+    // wlog the start node is not 1
+    int startNode = 1;
+
+    // now get all edges (1, v) which are non-dominated
+    std::vector<Edge2> firstEdges;
+    for (Edge2 edge : this->edgeVector) {
+      if (edge.first.first == startNode || edge.first.second == startNode) {
+        firstEdges.push_back(edge);
+      }
+    }
+    std::vector<Edge2> nonDomEdges = this->getNonDominatedEdges(firstEdges);
+
+    // now build initial partial trees, each one for each non-dominated edge
+    for (Edge2 edge: nonDomEdges) {
+      Graph tree(V, W, false);
+      tree.addEdge(edge.first.first, edge.first.second, edge.second.first, edge.second.second);
+      trees.push_back(tree);
+    }
+
+    // now loop until partial trees are actually spanning trees
+    unsigned int i = 1;
+    while (i < V - 1) {
+      Rcout << "Adding " << i + 1 << "-th edge" << std::endl;
+      std::vector<Graph> trees2;
+      // for each partial tree, append non-dominated edges and check
+      for (Graph partialTree: trees) {
+        // go through neighbors of partial tree, i.e., determine candidate edges
+        std::vector<Edge2> candidateEdges;
+
+        for (Edge2 edge: this->edgeVector) {
+          int v = edge.first.first;
+          int w = edge.first.second;
+          if ((partialTree.getDegree(v) == 0 && partialTree.getDegree(w) > 0) ||
+            (partialTree.getDegree(v) > 0 && partialTree.getDegree(w) == 0)) {
+            candidateEdges.push_back(edge);
+          }
+        }
+
+        // now search for non dominated edges among those selected
+        nonDomEdges = getNonDominatedEdges(candidateEdges);
+        //Rcout << "Found " << nonDomEdges.size() << " nondominated edges!" << std::endl;
+        for (Edge2 edge: nonDomEdges) {
+          // make copy of partial tree
+          Graph partialTreeCopy(partialTree);
+          // add nondominated edge
+          partialTreeCopy.addEdge(edge.first.first, edge.first.second, edge.second.first, edge.second.second);
+          // check if we have a duplicate, i.e., this paertial tree was already created
+          bool alreadyExists = FALSE;
+          for (Graph otherTree: trees2) {
+            Graph intersectionTree = Graph::getIntersectionGraph(otherTree, partialTreeCopy);
+            // if intersection contains the same edges -> break
+            if (intersectionTree.getE() == partialTreeCopy.getE()) {
+              alreadyExists = TRUE;
+              break;
+            }
+          }
+          // save partial tree
+          if (!alreadyExists) {
+            trees2.push_back(partialTreeCopy);
+          }
+        }
+      }
+      trees = trees2;
+
+      Rcout << "Now we have " << trees.size() << " partial trees!" << std::endl;
+      i += 1;
+    }
+
+    trees = filterNondominatedTrees(trees);
+
+    for (Graph mst: trees) {
+      if (!mst.isSpanningTree()) {
+        Rcout << "FAIL" << std::endl;
+      }
+    }
+    return trees;
+  }
+
+  std::vector<Graph> doMCPrim2() {
+    int V = this->getV();
+    int W = this->getW();
+
+    std::vector<Graph> trees;
+
     // get non-dominated edges
     std::vector<Edge2> nonDomEdges = this->getNonDominatedEdges(this->edgeVector);
     // now build initial partial trees, each one for each non-dominated edge
