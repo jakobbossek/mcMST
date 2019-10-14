@@ -190,7 +190,7 @@ mutSubgraphMST = makeMutator(
 mutSubforestMST = makeMutator(
   mutator = function(ind, sigma = floor(ind$getV() / 2), scalarize = FALSE, instance = NULL) {
     n.select = sample(1:sigma, 1L)
-    instance$getMSTBySubforestMutation(ind, n.select)
+    instance$getMSTBySubforestMutation(ind, n.select, scalarize = scalarize)
   },
   supported = "custom"
 )

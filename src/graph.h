@@ -561,7 +561,7 @@ public:
 
   //FIXME: sample between {1, ..., maxDrop}. At the moment we just
   // use maxDrop
-  Graph getMSTBySubforestMutation(Graph &mst, unsigned int maxDrop) {
+  Graph getMSTBySubforestMutation(Graph &mst, unsigned int maxDrop, bool scalarize = true) {
     assert(maxDrop <= this->getE());
 
     Graph forest(mst);
@@ -591,6 +591,9 @@ public:
 
     // now sample a random weight in [0, 1]
     double rndWeight = (double)rand() / (double)RAND_MAX;
+    if (!scalarize) {
+      rndWeight = round(rndWeight);
+    }
 
     // build new spanning tree by reconnecting forest
     Graph mst2 = this->getMSTKruskal(rndWeight, forest);
@@ -753,7 +756,7 @@ public:
     int W = this->getW();
 
     std::vector<Graph> trees;
-
+    std::vector<Graph> trees2;
     // wlog the start node is not 1
     int startNode = 1;
 
@@ -776,8 +779,8 @@ public:
     // now loop until partial trees are actually spanning trees
     unsigned int i = 1;
     while (i < V - 1) {
+      trees2.clear();
       Rcout << "Adding " << i + 1 << "-th edge" << std::endl;
-      std::vector<Graph> trees2;
       // for each partial tree, append non-dominated edges and check
       for (Graph partialTree: trees) {
         // go through neighbors of partial tree, i.e., determine candidate edges
@@ -802,13 +805,26 @@ public:
           partialTreeCopy.addEdge(edge.first.first, edge.first.second, edge.second.first, edge.second.second);
           // check if we have a duplicate, i.e., this paertial tree was already created
           bool alreadyExists = FALSE;
+          std::vector<Edge2> partialTreeEdges = partialTreeCopy.getEdges();
           for (Graph otherTree: trees2) {
-            Graph intersectionTree = Graph::getIntersectionGraph(otherTree, partialTreeCopy);
-            // if intersection contains the same edges -> break
-            if (intersectionTree.getE() == partialTreeCopy.getE()) {
+            unsigned int commonEdges = 0;
+            for (Edge2 partialEdge: partialTreeEdges) {
+              if (!otherTree.hasEdge(partialEdge.first.first, partialEdge.first.second)) {
+                break;
+              }
+              commonEdges += 1;
+            }
+            if (commonEdges == partialTreeCopy.getE()) {
               alreadyExists = TRUE;
               break;
             }
+            // BACK-UP
+            // Graph intersectionTree = Graph::getIntersectionGraph(otherTree, partialTreeCopy);
+            // // if intersection contains the same edges -> break
+            // if (intersectionTree.getE() == partialTreeCopy.getE()) {
+            //   alreadyExists = TRUE;
+            //   break;
+            // }
           }
           // save partial tree
           if (!alreadyExists) {
@@ -816,11 +832,51 @@ public:
           }
         }
       }
+
+      // unsigned int ntrees = trees2.size();
+      // unsigned int treesize = trees2[0].getE();
+
+
+      // // all (partial) trees are considered not to be dups
+      // std::vector<bool> dups(ntrees, FALSE);
+      // // now iterate over all trees
+      // for (int i = 0; i < ntrees; ++i) {
+      //   // if already marked, just skip
+      //   if (dups[i]) {
+      //     continue;
+      //   }
+      //   // otherwise iterate over all other trees
+      //   for (int j = i + 1; j < ntrees; ++j) {
+      //     // dups do not need to be considered again
+      //     if (dups[j])
+      //       continue;
+      //     std::vector<Edge2> t1edges = trees2[i].getEdges();
+      //     int commonEdges = 0;
+      //     for (Edge2 e: t1edges) {
+      //        if (!trees2[j].hasEdge(e.first.first, e.first.second)) {
+      //          break;
+      //        }
+      //        commonEdges += 1;
+      //     }
+      //     // found dup
+      //     if (commonEdges == treesize) {
+      //       dups[j] = TRUE;
+      //     }
+      //   }
+      // }
+      // // finally filter all duplicates
+      // std::vector<Graph> trees3;
+      // for (int i = 0; i < ntrees; ++i) {
+      //   if (!dups[i]) {
+      //     trees3.push_back(trees2[i]);
+      //   }
+      // }
+      // trees = trees3;
       trees = trees2;
 
       Rcout << "Now we have " << trees.size() << " partial trees!" << std::endl;
       i += 1;
-    }
+    } // while
 
     trees = filterNondominatedTrees(trees);
 
@@ -984,15 +1040,18 @@ public:
   // }
 
   Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true) {
-    assert(maxSelect <= this->getV());
+    assert(maxSelect >= 2 && maxSelect <= this->getV());
 
+    Rcout << "maxSelect: " << maxSelect << std::endl;
+    Rcout << "scalarize: " << scalarize << std::endl;
+
+    // get number of nodes
     unsigned int V = this->getV();
 
-    // first make a copy of input
-    Graph forest(mst);
+    // first make a copy of input: Theta(|V|)
+    Graph mst2(mst);
 
     // get random start node
-    //FIXME: write helper getRandomInteger(max)
     int rndNode = (int)(((double)rand() / (double)RAND_MAX) * V) + 1;
     // prevent memory not mapped error
     if (rndNode > V) {
@@ -1004,6 +1063,7 @@ public:
     std::vector<int> queue;
     queue.push_back(rndNode);
 
+    // initialize which nodes have already been visited
     std::vector<bool> done(V + 1);
     for (int i = 0; i <= V; ++i) {
       done[i] = false;
@@ -1012,8 +1072,13 @@ public:
     //FIXME: we know the size (maxNodes)
     std::vector<int> nodesintree;
 
-    unsigned int nsel = 0;
+    // mapping from nodesintree to 1, ..., maxSelect
+    std::vector<int> revmapping(V + 1);
+    for (int i = 0; i <= V; ++i) {
+      revmapping[i] = 0;
+    }
 
+    unsigned int nsel = 0;
 
     // IDEA:
     // - copy mst O(V)
@@ -1025,6 +1090,7 @@ public:
     // - Apply Kruskal to forest: O(W^2 log(W))
 
 
+    // BFS: Theta(sigma * |V|)
     unsigned int curNode = -1;
     while (nsel < maxSelect && queue.size() > 0) {
       // get node
@@ -1034,28 +1100,161 @@ public:
       done[curNode] = true;
 
       // access adjList and put all neighbours into queue
-      for (Edge edge: forest.adjList[curNode]) {
+      for (Edge edge: mst2.adjList[curNode]) {
         // skip nodes already added
         if (!done[edge.first]) {
           queue.push_back(edge.first);
           // here we remove the edge
-          forest.removeEdge(curNode, edge.first);
+          //mst2.removeEdge(curNode, edge.first);
         }
       }
       nsel += 1;
     } // while
 
-    // now we need to rewire the edges
+    // remove edges from copy
+    for (Edge2 edge: mst2.getEdges()) {
+      if (done[edge.first.first] && done[edge.first.second]) {
+        mst2.removeEdge(edge.first.first, edge.first.second);
+      }
+    }
+
+    Rcout << "        T has nodes: " << mst.getV() << ", edges: "  << mst.getE() << std::endl;
+    Rcout << "Copy of T has nodes: " << mst2.getV() << ", edges: "  << mst2.getE() << std::endl;
+
+    // build rev-mapping: (O(|V|))
+    for (int i = 0; i < nodesintree.size(); ++i) {
+      revmapping[nodesintree[i]] = i + 1;
+    }
+
+    // now we need to rewire the edges: O(1)
     double rndWeight = (double)rand() / (double)RAND_MAX;
     if (!scalarize) {
       rndWeight = round(rndWeight);
     }
 
+    Rcout << "Nodes in tree: " << nodesintree.size() << std::endl;
+
+
+    // initialize new sub-graph: O(sigma * |V|)
+    Graph subgraph(maxSelect, this->getW(), false);
+    for (int i = 0; i < nodesintree.size(); ++i) {
+      int curNode = nodesintree[i];
+      for (Edge edge: this->adjList[curNode]) {
+        // if target is also selected
+        if (done[edge.first]) {
+          // add mapped node
+          int sourceNode = revmapping[curNode];
+          int targetNode = revmapping[edge.first];
+          subgraph.addEdge(sourceNode, targetNode, edge.second.first, edge.second.second);
+        }
+      }
+    }
+
+    // Graph subgraph(V, this->getW(), false);
+    // // now add all nodes and corresponding edges from source graph into sub-graph
+    // for (int i = 0; i < nodesintree.size(); ++i) {
+    //   int curNode = nodesintree[i];
+    //   for (Edge edge: this->adjList[curNode]) {
+    //     // if the target node is also selected, add it to. subgraph
+    //     if (done[edge.first]) {
+    //       subgraph.addEdge(curNode, edge.first, edge.second.first, edge.second.second);
+    //     }
+    //   }
+    // }
+
+    // Now calculate MST on sub-graph: O((sigma + sigma^2) * log(sigma)) = O(sigma^2 log(sigma)) = O(log(|V|)^2 log(log(|V|))) if sigma = log(|V|)
+    Graph subgraphMST = subgraph.getMSTKruskal(rndWeight);
+
+    Rcout << "Genertated subgraph with " << subgraph.getV() << " nodes and " << subgraph.getE() << " edges " << std::endl;
+
+
+    // Finally go through edges of subgraphMST and add to our copy: O(sigma)
+    std::vector<Edge2> subgraphMSTEdges = subgraphMST.getEdges();
+    for (Edge2 edge: subgraphMSTEdges) {
+      int sourceNode = nodesintree[edge.first.first - 1];
+      int targetNode = nodesintree[edge.first.second - 1];
+      mst2.addEdge(sourceNode, targetNode, edge.second.first, edge.second.second);
+    }
+
     // build new spanning tree by reconnecting forest
-    Graph mst2 = this->getMSTKruskal(rndWeight, forest);
+    //Graph mst2 = this->getMSTKruskal(rndWeight, forest);
 
     return mst2;
   }
+
+  // Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true) {
+  //   assert(maxSelect <= this->getV());
+
+  //   unsigned int V = this->getV();
+
+  //   // first make a copy of input
+  //   Graph forest(mst);
+
+  //   // get random start node
+  //   //FIXME: write helper getRandomInteger(max)
+  //   int rndNode = (int)(((double)rand() / (double)RAND_MAX) * V) + 1;
+  //   // prevent memory not mapped error
+  //   if (rndNode > V) {
+  //     rndNode = V;
+  //   }
+
+  //   // now we need to extract connected subtree and delete edges
+  //   // we need to store node and its predecessor in BFS tree
+  //   std::vector<int> queue;
+  //   queue.push_back(rndNode);
+
+  //   std::vector<bool> done(V + 1);
+  //   for (int i = 0; i <= V; ++i) {
+  //     done[i] = false;
+  //   }
+
+  //   //FIXME: we know the size (maxNodes)
+  //   std::vector<int> nodesintree;
+
+  //   unsigned int nsel = 0;
+
+
+  //   // IDEA:
+  //   // - copy mst O(V)
+  //   // - BFS until W nodes selected (keep boolean array
+  //   //   w with w[i] = true if i-th node selected) O(W)
+  //   // - go through nodes selected an go through their
+  //   //   adj. list in source graph, check whether neighbour
+  //   //   selected (O(1)) and eventually add to forest.
+  //   // - Apply Kruskal to forest: O(W^2 log(W))
+
+
+  //   unsigned int curNode = -1;
+  //   while (nsel < maxSelect && queue.size() > 0) {
+  //     // get node
+  //     curNode = queue.back();
+  //     queue.pop_back();
+  //     nodesintree.push_back(curNode);
+  //     done[curNode] = true;
+
+  //     // access adjList and put all neighbours into queue
+  //     for (Edge edge: forest.adjList[curNode]) {
+  //       // skip nodes already added
+  //       if (!done[edge.first]) {
+  //         queue.push_back(edge.first);
+  //         // here we remove the edge
+  //         forest.removeEdge(curNode, edge.first);
+  //       }
+  //     }
+  //     nsel += 1;
+  //   } // while
+
+  //   // now we need to rewire the edges
+  //   double rndWeight = (double)rand() / (double)RAND_MAX;
+  //   if (!scalarize) {
+  //     rndWeight = round(rndWeight);
+  //   }
+
+  //   // build new spanning tree by reconnecting forest
+  //   Graph mst2 = this->getMSTKruskal(rndWeight, forest);
+
+  //   return mst2;
+  // }
 
 private:
   int V;
@@ -1291,8 +1490,8 @@ Graph getMSTByWeightedSumScalarization(Graph* g, double weight) {
   return mst;
 }
 
-Graph getMSTBySubforestMutationR(Graph* g, Graph* mst, int maxDrop) {
-  Graph mstnew = g->getMSTBySubforestMutation(*mst, maxDrop);
+Graph getMSTBySubforestMutationR(Graph* g, Graph* mst, int maxDrop, bool scalarize) {
+  Graph mstnew = g->getMSTBySubforestMutation(*mst, maxDrop, scalarize);
   return mstnew;
 }
 
