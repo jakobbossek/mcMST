@@ -1042,8 +1042,8 @@ public:
   Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, bool scalarize = true) {
     assert(maxSelect >= 2 && maxSelect <= this->getV());
 
-    Rcout << "maxSelect: " << maxSelect << std::endl;
-    Rcout << "scalarize: " << scalarize << std::endl;
+    // Rcout << "maxSelect: " << maxSelect << std::endl;
+    // Rcout << "scalarize: " << scalarize << std::endl;
 
     // get number of nodes
     unsigned int V = this->getV();
@@ -1118,8 +1118,8 @@ public:
       }
     }
 
-    Rcout << "        T has nodes: " << mst.getV() << ", edges: "  << mst.getE() << std::endl;
-    Rcout << "Copy of T has nodes: " << mst2.getV() << ", edges: "  << mst2.getE() << std::endl;
+    // Rcout << "        T has nodes: " << mst.getV() << ", edges: "  << mst.getE() << std::endl;
+    // Rcout << "Copy of T has nodes: " << mst2.getV() << ", edges: "  << mst2.getE() << std::endl;
 
     // build rev-mapping: (O(|V|))
     for (int i = 0; i < nodesintree.size(); ++i) {
@@ -1132,7 +1132,7 @@ public:
       rndWeight = round(rndWeight);
     }
 
-    Rcout << "Nodes in tree: " << nodesintree.size() << std::endl;
+    // Rcout << "Nodes in tree: " << nodesintree.size() << std::endl;
 
 
     // initialize new sub-graph: O(sigma * |V|)
@@ -1165,7 +1165,7 @@ public:
     // Now calculate MST on sub-graph: O((sigma + sigma^2) * log(sigma)) = O(sigma^2 log(sigma)) = O(log(|V|)^2 log(log(|V|))) if sigma = log(|V|)
     Graph subgraphMST = subgraph.getMSTKruskal(rndWeight);
 
-    Rcout << "Genertated subgraph with " << subgraph.getV() << " nodes and " << subgraph.getE() << " edges " << std::endl;
+    // Rcout << "Genertated subgraph with " << subgraph.getV() << " nodes and " << subgraph.getE() << " edges " << std::endl;
 
 
     // Finally go through edges of subgraphMST and add to our copy: O(sigma)
