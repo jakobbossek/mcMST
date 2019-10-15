@@ -1,15 +1,17 @@
 grapheratorToGraph = function(g) {
   n = grapherator::getNumberOfNodes(g)
   w = grapherator::getNumberOfWeights(g)
+  weights = vector(mode = "numeric", length = w)
   gpp = new(Graph, n, w, FALSE)
   for (i in seq_len(n)) {
     for (j in seq_len(n)) {
       if (i == j)
         next
       if (g$adj.mat[i, j]) {
-        w1 = as.numeric(g$weights[[1]][i, j])
-        w2 = as.numeric(g$weights[[2]][i, j])
-        gpp$addEdge(i, j, w1, w2)
+        for (k in seq_len(w)) {
+          weights[k] = as.numeric(g$weights[[k]][i, j])
+        }
+        gpp$addEdge(i, j, weights)
       }
     }
   }
