@@ -559,6 +559,22 @@ public:
     return initialTree;
   }
 
+  std::vector<int> toBitstring(Graph &subgraph) {
+    std::vector<int> bitstring(this->getE());
+
+    std::vector<Edge2> edges = this->getEdges();
+    for (int i = 0; i < edges.size(); ++i) {
+      int from = edges[i].first.first;
+      int to = edges[i].first.second;
+      if (subgraph.hasEdge(from, to)) {
+        bitstring[i] = 1;
+      } else {
+        bitstring[i] = 0;
+      }
+    }
+    return bitstring;
+  }
+
   //FIXME: sample between {1, ..., maxDrop}. At the moment we just
   // use maxDrop
   Graph getMSTBySubforestMutation(Graph &mst, unsigned int maxDrop, bool scalarize = true) {
@@ -1599,6 +1615,16 @@ NumericMatrix toEdgeList(Graph *g) {
   return edgeMatrix;
 }
 
+NumericVector toBitstringR(Graph *g, Graph *subgraph) {
+  std::vector<int> bitstring = g->toBitstring(*subgraph);
+  int m = g->getE();
+  NumericVector bitstringR(m);
+  for (int i = 0; i < m; ++i) {
+    bitstringR[i] = bitstring[i];
+  }
+  return bitstringR;
+}
+
 List doMCPrim(Graph *g) {
   int V = g->getV();
 
@@ -1664,6 +1690,7 @@ RCPP_MODULE(graph_module) {
     .method("getMSTByEdgeExchange", &getMSTByEdgeExchangeR)
     .method("getWeightsAsMatrix", &getWeightsAsMatrix)
     .method("toEdgeList", &toEdgeList)
+    .method("toBitstring", &toBitstringR)
     .method("getEdgeProbabilities", &getEdgeProbabilitiesR)
     .method("setEdgeProbabilities", &setEdgeProbabilitiesR)
     .method("doMCPrim", &doMCPrim)
