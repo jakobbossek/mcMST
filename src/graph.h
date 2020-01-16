@@ -61,6 +61,68 @@ public:
     return this->degrees[v];
   }
 
+  unsigned int getMaximumDegree() const {
+    int maxDegree = this->degrees[1];
+    for (int i = 2; i <= this->getV(); ++i) {
+      if (this->degrees[i] > maxDegree) {
+        maxDegree = this->degrees[i];
+      }
+    }
+    return maxDegree;
+  }
+
+  unsigned int getNumberOfLeafs() const {
+    int nLeafs = 0;
+    for (int i = 1; i <= this->getV(); ++i) {
+      if (this->degrees[i] == 1) {
+        nLeafs += 1;
+      }
+    }
+    return nLeafs;
+  }
+
+  unsigned int getDiameter() const {
+    int V = this->getV();
+    std::vector<std::vector<int>> distances(V + 1, std::vector<int>(V + 1));
+
+    // for each node v in V ...
+    for (int v = 1; v <= V; ++v) {
+      // ... start BFS from v
+      std::vector<bool> visited(V + 1);
+      std::vector<int> queue = {v};
+      distances[v][v] = 0;
+      visited[v] = TRUE;
+
+      while (!queue.empty()) {
+        // get topmost element from queue
+        int w = queue.back();
+        queue.pop_back();
+
+        // go through adjacency list and eventually add neighbours to queue
+        for (auto edge: this->adjList[w]) {
+          int u = edge.first;
+          if (!visited[u]) {
+            visited[u] = TRUE;
+            distances[v][u] = distances[v][w] + 1L;
+            queue.push_back(u);
+          }
+        }
+      }
+    } // BFS
+
+    // now search for maximum distance
+    int diameter = -1;
+    for (int v = 1; v <= V; ++v) {
+      for (int w = 1; w <= V; ++w) {
+        if (distances[v][w] > diameter) {
+          diameter = distances[v][w];
+        }
+      }
+    }
+
+    return diameter;
+  }
+
   unsigned int getRandomNumber(unsigned int maxInt) {
     std::uniform_int_distribution<int> distribution(1, maxInt);
     return(distribution(this->rngGenerator));
@@ -1672,6 +1734,9 @@ RCPP_MODULE(graph_module) {
     .method("getE", &Graph::getE)
     .method("getW", &Graph::getW)
     .method("getDegree", &Graph::getDegree)
+    .method("getMaximumDegree", &Graph::getMaximumDegree)
+    .method("getNumberOfLeafs", &Graph::getNumberOfLeafs)
+    .method("getDiameter", &Graph::getDiameter)
     .method("saveVectorOfEdges", &Graph::saveVectorOfEdges)
     .method("addEdge", &Graph::addEdge)
     .method("isSpanningTree", &Graph::isSpanningTree)
