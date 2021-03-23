@@ -34,9 +34,9 @@ plotEdges = function(x, n = NULL, normalize = TRUE, ...) { # nocov start
   if (normalize)
     mat = mat / length(x)
 
-  qgraph.args = list(input = mat, layout = "spring", vsize = 3,
+  qgraph.args = list(input = mat, layout = "spring", vsize = 1,
     directed = FALSE, edge.labels = TRUE,
-    palette = "gray", theme = "gray")
+    palette = "gray", theme = "gray", label.color = "white")
   qgraph.args = BBmisc::insert(qgraph.args, list(...))
   do.call(qgraph::qgraph, qgraph.args)
 } # nocov end

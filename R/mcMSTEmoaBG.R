@@ -51,7 +51,8 @@
 mcMSTEmoaBG = function(instance,
   mu, lambda = mu,
   mut = mcMST::mutSubgraphMST,
-  selMating = NULL, selSurvival = ecr::selNondom,
+  selMating = NULL,
+  selSurvival = ecr::selNondom,
   ref.point = NULL,
   max.iter = 100L,
   ...) {

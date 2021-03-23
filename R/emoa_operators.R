@@ -132,6 +132,11 @@ mutKEdgeExchange = makeMutator(
   },
   supported = "custom")
 
+# Default sampling fun.
+defaultWeightSamplingFun = function(d) {
+  rpv::rpv(n = 1L, d = d, method = "normalization", shuffle = FALSE, as.df = FALSE)
+}
+
 #' @title Subgraph-mutator for edge list representation.
 #'
 #' @description \code{mutSubgraphMST} selects a random edge e = (u, v) and traverses
@@ -157,9 +162,27 @@ mutKEdgeExchange = makeMutator(
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubgraphMST = makeMutator(
-  mutator = function(ind, sigma = floor(ind$getV() / 2L), scalarize = FALSE, instance = NULL) {
+  mutator = function(ind, weightSamplingFun = defaultWeightSamplingFun, sigma = floor(ind$getV() / 2L), scalarize = FALSE, instance = NULL) {
     n.select = sample(3:sigma, 1L)
-    instance$getMSTBySubgraphMutation(ind, n.select, scalarize = scalarize)
+    weights = weightSamplingFun(ind$getW())
+    if (ind$getW() > 2L && !scalarize)
+      BBmisc::stopf("[mcMST::mutSubgraphMST] Option scalarize must not be FALSE if
+        number of objectives is greater than two.")
+    if (!scalarize) {
+      weights[1L] = round(weights[1L])
+      weights[2L] = 1 - weights[1L]
+    }
+    instance$getMSTBySubgraphMutation(ind, n.select, weights)
+  },
+  supported = "custom"
+)
+
+#' @export
+mutInsertionFirstSubgraphMST = makeMutator(
+  mutator = function(ind, weightSamplingFun = defaultWeightSamplingFun, sigma = ind$getV(), max.degree = ind$getV(), instance = NULL) {
+    n.select = sample(1:sigma, 1L)
+    weights = weightSamplingFun(ind$getW())
+    instance$getMSTByInsertionFirstSubgraphMutation(ind, n.select, weights, max.degree)
   },
   supported = "custom"
 )
@@ -188,9 +211,17 @@ mutSubgraphMST = makeMutator(
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubforestMST = makeMutator(
-  mutator = function(ind, sigma = floor(ind$getV() / 2), scalarize = FALSE, instance = NULL) {
+  mutator = function(ind, weightSamplingFun = defaultWeightSamplingFun, sigma = floor(ind$getV() / 2), scalarize = FALSE, instance = NULL) {
     n.select = sample(1:sigma, 1L)
-    instance$getMSTBySubforestMutation(ind, n.select, scalarize = scalarize)
+    weights = weightSamplingFun(ind$getW())
+    if (ind$getW() > 2L && !scalarize)
+      BBmisc::stopf("[mcMST::mutSubforestMST] Option scalarize must not be FALSE if
+        number of objectives is greater than two.")
+    if (!scalarize) {
+      weights[1L] = round(weights[1L])
+      weights[2L] = 1 - weights[1L]
+    }
+    instance$getMSTBySubforestMutation(ind, n.select, weights)
   },
   supported = "custom"
 )

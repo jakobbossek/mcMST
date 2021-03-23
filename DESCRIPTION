@@ -22,6 +22,7 @@ Imports:
     gtools,
     ggplot2 (>= 1.0.0),
     qgraph,
+    rpv,
     viridis
 Suggests:
     testthat (>= 0.9.1),

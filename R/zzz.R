@@ -3,6 +3,7 @@
 #' @importFrom gtools permutations
 #' @import ecr
 #' @import grapherator
+#' @import rpv
 #' @import methods
 #' @import Rcpp
 #' @importFrom stats dist runif rnorm as.formula

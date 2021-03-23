@@ -28,14 +28,14 @@
 #' print(res$pareto.front)
 #' @family mcMST algorithms
 #' @export
-mcMSTWeightedSum = function(instance, n.lambdas = NULL, lambdas = NULL) {
+mcMSTWeightedSum = function(instance, n.lambdas = NULL, lambdas = NULL, weightSamplingFun = defaultWeightSampling) {
   if (inherits(instance, "grapherator"))
     instance = grapheratorToGraph(instance)
   n.weights = instance$getW()
-  if (n.weights != 2L)
-    stopf("mcMSTWeightedSum: At the moment only bi-objective problems supported.")
+  if (n.weights < 2L)
+    BBmisc::stopf("[mcMST::mcMSTWeightedSum] Requires at least two weights per edge.")
   if (is.null(n.lambdas) & is.null(lambdas))
-    stopf("mcMSTWeightedSum: At least n.lambdas or lambdas must be set.")
+    BBmisc::stopf("[mcMST::mcMSTWeightedSum] At least n.lambdas or lambdas must be set.")
   if (is.null(lambdas) & !is.null(n.lambdas)) {
     n.lambdas = asInt(n.lambdas)
     lambdas = seq(0, 1, length.out = n.lambdas)
