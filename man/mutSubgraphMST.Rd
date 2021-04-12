@@ -4,8 +4,8 @@
 \alias{mutSubgraphMST}
 \title{Subgraph-mutator for edge list representation.}
 \usage{
-mutSubgraphMST(ind, sigma = floor(ind$getV()/2L), scalarize = FALSE,
-  instance = NULL)
+mutSubgraphMST(ind, weightSamplingFun = defaultWeightSamplingFun,
+  sigma = floor(ind$getV()/2L), scalarize = FALSE, instance = NULL)
 }
 \arguments{
 \item{ind}{[\code{matrix(2, m)}]\cr

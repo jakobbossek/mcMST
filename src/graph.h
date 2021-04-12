@@ -1150,13 +1150,45 @@ public:
       // std::cout << "v=" << v << std::endl;
 
       if (!uniong.hasEdge(u, v)) {
-        uniong.addEdge(u, v, e.second);
+        if ((uniong.getDegree(u) < maxDegree) && (uniong.getDegree(v) < maxDegree)) {
+          uniong.addEdge(u, v, e.second);
+        }
       }
     }
 
     Graph mst2 = uniong.getMSTKruskal(weights);
 
     return mst2;
+  }
+
+  Graph getMSTByUnionCrossover(Graph &mst1, Graph &mst2, std::vector<double> weights, unsigned int maxDegree  = INT_MAX) {
+    // FIXME: throws "memory not mapped error". I have no nclue why
+    // Graph uniong = Graph::getUnionGraph(mst1, mst2, maxDegree);
+
+    // FIXME: copy & paste from Graph::getUnionGraph
+    Graph uniong(mst1);
+    int V = uniong.getV();
+
+    // now iterate over all edges
+    // Should be possible in O(|E|)
+    unsigned int u;
+    for (u = 1; u <= V; ++u) {
+      // std::cout << "u = " << u << std::endl;
+      for (int j = 0; j < mst2.adjList[u].size(); ++j) {
+        // std::cout << "j = " << j << std::endl;
+        unsigned int v = mst2.adjList[u][j].first;
+        if ((
+          !uniong.hasEdge(u, v))
+          && (uniong.getDegree(v) < maxDegree)
+          && (uniong.getDegree(u) < maxDegree)) {
+          std::vector<double> weight = mst2.adjList[u][j].second;
+          uniong.addEdge(u, v, weight);
+        }
+      }
+    }
+
+    Graph mst = uniong.getMSTKruskal(weights);
+    return mst;
   }
 
   Graph getMSTBySubgraphMutation(Graph &mst, unsigned int maxSelect, std::vector<double> weights) {
@@ -1622,6 +1654,11 @@ Graph getMSTByInsertionFirstSubgraphMutationR(Graph* g, Graph* mst, int maxAdd, 
   return mstnew;
 }
 
+Graph getMSTByUnionCrossoverR(Graph* g, Graph* mst1, Graph* mst2, std::vector<double> weights, int maxDegree) {
+  Graph mstnew = g->getMSTByUnionCrossover(*mst1, *mst2, weights, maxDegree);
+  return mstnew;
+}
+
 Graph getMSTByEdgeExchangeR(Graph* g, Graph* mst, int repls, bool dropLargest) {
   Graph mstnew = g->getMSTByEdgeExchange(*mst, repls, dropLargest);
   return mstnew;
@@ -1657,8 +1694,6 @@ int getNumberOfCommonEdges(Graph* g1, Graph* g2) {
   Graph intersection = Graph::getIntersectionGraph(*g1, *g2);
   return intersection.getE();
 }
-
-
 
 int getNumberOfCommonComponents(Graph* g1, Graph* g2) {
   Graph intersection = Graph::getIntersectionGraph(*g1, *g2);
@@ -1796,6 +1831,7 @@ RCPP_MODULE(graph_module) {
     .method("getMSTBySubforestMutation", &getMSTBySubforestMutationR)
     .method("getMSTBySubgraphMutation", &getMSTBySubgraphMutationR)
     .method("getMSTByInsertionFirstSubgraphMutation", &getMSTByInsertionFirstSubgraphMutationR)
+    .method("getMSTByUnionCrossover", &getMSTByUnionCrossoverR)
     .method("getMSTByEdgeExchange", &getMSTByEdgeExchangeR)
     .method("getWeightsAsMatrix", &getWeightsAsMatrix)
     .method("toEdgeList", &toEdgeList)

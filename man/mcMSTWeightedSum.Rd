@@ -4,7 +4,8 @@
 \alias{mcMSTWeightedSum}
 \title{Multi-Objective Prim algorithm.}
 \usage{
-mcMSTWeightedSum(instance, n.lambdas = NULL, lambdas = NULL)
+mcMSTWeightedSum(instance, n.lambdas = NULL, lambdas = NULL,
+  weightSamplingFun = defaultWeightSampling)
 }
 \arguments{
 \item{instance}{[\code{\link[grapherator]{grapherator}}]\cr

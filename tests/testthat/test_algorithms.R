@@ -36,7 +36,7 @@ test_that("BG EMOA works well", {
   g = grapherator::addWeights(g, generator = addWeightsRandom, method = runif, min = 10, max = 100)
   gcpp = grapheratorToGraph(g)
 
-  res = mcMSTEmoaBG(gcpp, mu = 10L, max.iter = 50L)
+  res = mcMSTEmoaBG(gcpp, mu = 10L, max.iter = 50L, mut = ecr::setup(mcMST::mutSubforestMST, scalarize = TRUE, instance = gcpp))
   expect_class(res, "ecr_result")
   checkValidSpanningTrees(res$pareto.set, gcpp)
 })

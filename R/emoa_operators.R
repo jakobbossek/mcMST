@@ -187,6 +187,18 @@ mutInsertionFirstSubgraphMST = makeMutator(
   supported = "custom"
 )
 
+#' @export
+recUnionCrossover = makeRecombinator(
+  recombinator = function(inds, weightSamplingFun = defaultWeightSamplingFun, sigma = inds[[1]]$getV(), max.degree = NULL, instance = NULL) {
+    if (is.null(max.degree))
+      max.degree = max(inds[[1L]]$getMaximumDegree(), inds[[2L]]$getMaximumDegree())
+    weights = weightSamplingFun(inds[[1]]$getW())
+    instance$getMSTByUnionCrossover(inds[[1L]], inds[[2L]], weights, max.degree)
+  },
+  supported = "custom",
+  n.children = 1L
+)
+
 #' @title Forest-mutator for edge list representation.
 #'
 #' @description \code{mutForestMST} drops k edges randomly. In consequence the

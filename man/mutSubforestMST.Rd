@@ -4,8 +4,8 @@
 \alias{mutSubforestMST}
 \title{Forest-mutator for edge list representation.}
 \usage{
-mutSubforestMST(ind, sigma = floor(ind$getV()/2), scalarize = FALSE,
-  instance = NULL)
+mutSubforestMST(ind, weightSamplingFun = defaultWeightSamplingFun,
+  sigma = floor(ind$getV()/2), scalarize = FALSE, instance = NULL)
 }
 \arguments{
 \item{ind}{[\code{matrix(2, m)}]\cr
