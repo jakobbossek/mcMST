@@ -132,12 +132,11 @@ public:
     return(this->edgeDistribution(this->rngGenerator));
   }
 
-  void addEdge(int u, int v, std::vector<double> weights, int checkExists = 1) {
+  void addEdge(int u, int v, std::vector<double> weights, bool checkExists = true) {
     assert(u >= 1 && u <= this->V);
     assert(v >= 1 && u <= this->V);
-    assert(checkExists == 0 || checkExists == 1);
 
-    if ((checkExists == 0) || (!this->hasEdge(u, v))) {
+    if ((!checkExists) || (!this->hasEdge(u, v))) {
       this->adjList[u].push_back({v, weights});
       this->adjList[v].push_back({u, weights});
       this->degrees[u] += 1;
@@ -1165,7 +1164,7 @@ public:
     // FIXME: throws "memory not mapped error". I have no nclue why
     // Graph uniong = Graph::getUnionGraph(mst1, mst2, maxDegree);
 
-    // FIXME: copy & paste from Graph::getUnionGraph
+    // FIXME: copy & paste from Graph::getUnionGraph (see error reported above)
     Graph uniong(mst1);
     int V = uniong.getV();
 
@@ -1177,12 +1176,12 @@ public:
       for (int j = 0; j < mst2.adjList[u].size(); ++j) {
         // std::cout << "j = " << j << std::endl;
         unsigned int v = mst2.adjList[u][j].first;
-        if ((
-          !uniong.hasEdge(u, v))
-          && (uniong.getDegree(v) < maxDegree)
-          && (uniong.getDegree(u) < maxDegree)) {
+        if (
+          // (!uniong.hasEdge(u, v)) &&
+          (uniong.getDegree(v) < maxDegree) &&
+          (uniong.getDegree(u) < maxDegree)) {
           std::vector<double> weight = mst2.adjList[u][j].second;
-          uniong.addEdge(u, v, weight);
+          uniong.addEdge(u, v, weight, false); // do not check
         }
       }
     }
