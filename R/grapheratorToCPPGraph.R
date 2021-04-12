@@ -1,7 +1,7 @@
 grapheratorToGraph = function(g) {
   n = grapherator::getNumberOfNodes(g)
   w = grapherator::getNumberOfWeights(g)
-  gpp = new(Graph, n, w, FALSE)
+  gpp = new(Graph, n, w)
   for (i in 1:(n - 1L)) {
     for (j in (i + 1L):n) {
       if (g$adj.mat[i, j]) {

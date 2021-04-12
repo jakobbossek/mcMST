@@ -25,11 +25,10 @@ std::vector<int> getNondominatedPoints(std::vector<std::vector<double>> points);
 
 class Graph {
 public:
-  Graph(int V, int W, bool directed = false) {
+  Graph(int V, int W) {
     this->V = V;
     this->E = 0;
     this->W = W;
-    this->directed = directed;
     // Pay attention: we add a dummy element at position 0
     for (int i = 0; i <= V; ++i) {
       degrees.push_back(0);
@@ -51,10 +50,6 @@ public:
 
   int getW() const {
     return this->W;
-  }
-
-  bool isDirected() const {
-    return this->directed;
   }
 
   unsigned int getDegree(int v) const {
@@ -138,18 +133,15 @@ public:
   }
 
   void addEdge(int u, int v, std::vector<double> weights, int checkExists = 1) {
-    //FIXME: use templates to allow integer or double weights
     assert(u >= 1 && u <= this->V);
     assert(v >= 1 && u <= this->V);
     assert(checkExists == 0 || checkExists == 1);
 
     if ((checkExists == 0) || (!this->hasEdge(u, v))) {
       this->adjList[u].push_back({v, weights});
+      this->adjList[v].push_back({u, weights});
       this->degrees[u] += 1;
       this->degrees[v] += 1;
-      if (!this->directed) {
-        this->adjList[v].push_back({u, weights});
-      }
       this->E += 1;
     }
   }
@@ -217,17 +209,16 @@ public:
         }
       }
     }
-    if (!this->isDirected()) {
-      for (int i = 0; i < W; ++i) {
-        sum[i] /= 2;
-      }
+
+    for (int i = 0; i < W; ++i) {
+      sum[i] /= 2;
     }
+
     return sum;
   }
 
   static Graph getIntersectionGraph(const Graph &g1, const Graph &g2) {
     // sanity checks
-    assert(g1.isDirected() == g2.isDirected());
     assert(g1.getV() == g2.getV());
     assert(g1.getW() == g2.getW());
 
@@ -235,7 +226,7 @@ public:
 
     // std::cout << "Intersection of graphs with " << V << " nodes" << std::endl;
     // bare skeleton
-    Graph g(V, g1.getW(), g1.isDirected());
+    Graph g(V, g1.getW());
 
     // std::cout << "so far" << std::endl;
 
@@ -261,7 +252,6 @@ public:
 
   static Graph getUnionGraph(const Graph &g1, const Graph &g2, unsigned int maxDegree = INT_MAX) {
     // sanity checks
-    assert(g1.isDirected() == g2.isDirected());
     assert(g1.getV() == g2.getV());
     assert(g1.getW() == g2.getW());
 
@@ -303,7 +293,7 @@ public:
   //   infile >> V >> sep >> E >> sep >> C >> sep >> W;
 
   //   // init graph
-  //   Graph g(V, W, false);
+  //   Graph g(V, W);
 
   //   // now go to first character and ignore first 4 + |V| lines
   //   // (meta data + node coordinates)
@@ -348,14 +338,12 @@ public:
       }
     }
 
-    if (!this->directed) {
-      for (int j = 0; j < this->adjList[v].size(); ++j) {
-        if (this->adjList[v][j].first == u) {
-          // this is ugly!
-          this->adjList[v].erase(this->adjList[v].begin() + j);
-          this->degrees[v] -= 1;
-          break;
-        }
+    for (int j = 0; j < this->adjList[v].size(); ++j) {
+      if (this->adjList[v][j].first == u) {
+        // this is ugly!
+        this->adjList[v].erase(this->adjList[v].begin() + j);
+        this->degrees[v] -= 1;
+        break;
       }
     }
   }
@@ -512,7 +500,7 @@ public:
   }
 
   Graph getRandomMSTKruskal() {
-    Graph initialTree(this->getV(), this->getW(), false);
+    Graph initialTree(this->getV(), this->getW());
     UnionFind UF(this->V);
 
     std::vector<std::pair<double, std::pair<std::pair<int, int>, std::vector<double>>>> edgelist;
@@ -557,7 +545,7 @@ public:
     // assert(weight >= 0 && weight <= 1);
 
     // represent minimum spanning tree with graph object
-    Graph initialTree(this->getV(), this->getW(), false);
+    Graph initialTree(this->getV(), this->getW());
     UnionFind UF(this->V);
 
     return this->getMSTKruskal(weights, initialTree, UF);
@@ -587,7 +575,7 @@ public:
     // assert(weight >= 0 && weight <= 1);
 
     // // represent minimum spanning tree with graph object
-    // Graph mst(this->getV(), this->getW(), false);
+    // Graph mst(this->getV(), this->getW());
 
     // // init efficient set data structure
     // UnionFind UF(this->V);
@@ -856,7 +844,7 @@ public:
 
     // now build initial partial trees, each one for each non-dominated edge
     for (Edge2 edge: nonDomEdges) {
-      Graph tree(V, W, false);
+      Graph tree(V, W);
       tree.addEdge(edge.first.first, edge.first.second, edge.second);
       trees.push_back(tree);
     }
@@ -983,7 +971,7 @@ public:
     std::vector<Edge2> nonDomEdges = this->getNonDominatedEdges(this->edgeVector);
     // now build initial partial trees, each one for each non-dominated edge
     for (Edge2 edge: nonDomEdges) {
-      Graph tree(V, W, false);
+      Graph tree(V, W);
       tree.addEdge(edge.first.first, edge.first.second, edge.second);
       trees.push_back(tree);
     }
@@ -1261,7 +1249,7 @@ public:
     // Rcout << "Nodes in tree: " << nodesintree.size() << std::endl;
 
     // initialize new sub-graph: O(sigma * |V|)
-    Graph subgraph(maxSelect, this->getW(), false);
+    Graph subgraph(maxSelect, this->getW());
     for (int i = 0; i < nodesintree.size(); ++i) {
       int curNode = nodesintree[i];
       for (Edge edge: this->adjList[curNode]) {
@@ -1275,7 +1263,7 @@ public:
       }
     }
 
-    // Graph subgraph(V, this->getW(), false);
+    // Graph subgraph(V, this->getW());
     // // now add all nodes and corresponding edges from source graph into sub-graph
     // for (int i = 0; i < nodesintree.size(); ++i) {
     //   int curNode = nodesintree[i];
@@ -1385,7 +1373,6 @@ private:
   int V;
   int E;
   int W;
-  bool directed;
   std::vector<unsigned int> degrees;
   AdjacencyList adjList;
   std::vector<Edge2> edgeVector;
@@ -1409,7 +1396,7 @@ public:
     infile >> V >> sep >> E >> sep >> C >> sep >> W;
 
     // init graph
-    Graph g(V, W, false);
+    Graph g(V, W);
 
     // now go to first character and ignore first 4 + |V| lines
     // (meta data + node coordinates)
@@ -1451,7 +1438,7 @@ public:
     int n = pcode.size();
     int V = n + 2;
 
-    Graph tree(V, g->getW(), false);
+    Graph tree(V, g->getW());
 
     std::vector<int> degrees(V + 1);
 
@@ -1503,7 +1490,7 @@ public:
   }
 
   Graph edgeListToGraph(Graph *g, NumericMatrix edgeList) {
-    Graph g2(g->getV(), g->getW(), false);
+    Graph g2(g->getV(), g->getW());
 
     for (int i = 0; i < edgeList.ncol(); ++i) {
       int u = edgeList(0, i);
@@ -1785,7 +1772,7 @@ RCPP_EXPOSED_CLASS(RepresentationConverter)
 RCPP_MODULE(graph_module) {
   using namespace Rcpp;
   class_<Graph>("Graph")
-    .constructor<int, int, bool>()
+    .constructor<int, int>()
     .method("getV", &Graph::getV)
     .method("getE", &Graph::getE)
     .method("getW", &Graph::getW)
