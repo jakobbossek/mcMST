@@ -1148,11 +1148,11 @@ public:
       int v = e.first;
       // std::cout << "v=" << v << std::endl;
 
-      if (!uniong.hasEdge(u, v)) {
-        if ((uniong.getDegree(u) < maxDegree) && (uniong.getDegree(v) < maxDegree)) {
-          uniong.addEdge(u, v, e.second);
-        }
+      // Note: we do not check for duplicate edges since these are dropped later by Kruskal
+      if ((uniong.getDegree(u) < maxDegree) && (uniong.getDegree(v) < maxDegree)) {
+          uniong.addEdge(u, v, e.second, false);
       }
+
     }
 
     Graph mst2 = uniong.getMSTKruskal(weights);
@@ -1166,23 +1166,23 @@ public:
 
     // FIXME: copy & paste from Graph::getUnionGraph (see error reported above)
     Graph uniong(mst1);
-    int V = uniong.getV();
 
-    // now iterate over all edges
-    // Should be possible in O(|E|)
-    unsigned int u;
-    for (u = 1; u <= V; ++u) {
-      // std::cout << "u = " << u << std::endl;
-      for (int j = 0; j < mst2.adjList[u].size(); ++j) {
-        // std::cout << "j = " << j << std::endl;
-        unsigned int v = mst2.adjList[u][j].first;
-        if (
-          // (!uniong.hasEdge(u, v)) &&
-          (uniong.getDegree(v) < maxDegree) &&
-          (uniong.getDegree(u) < maxDegree)) {
-          std::vector<double> weight = mst2.adjList[u][j].second;
-          uniong.addEdge(u, v, weight, false); // do not check
-        }
+    // now iterate over all edges of the second tree in random order
+    std::vector<Edge2> mst2edges = mst2.getEdges();
+    int E = mst2.getE();
+
+    // shuffle indizes
+    std::vector<int> is(E);
+    for (int i = 0; i < E; ++i) is.push_back(i); // O(E)
+    std::random_shuffle(is.begin(), is.end()); // O(E)
+
+    for (int i = 0; i < E; ++i) {
+      Edge2 e = mst2edges[is[i]];
+      int u = e.first.first;
+      int v = e.first.second;
+      // check degree constraint
+      if ((uniong.getDegree(v) < maxDegree) && (uniong.getDegree(u) < maxDegree)) {
+        uniong.addEdge(u, v, e.second, false); // do not check existence
       }
     }
 
@@ -1289,7 +1289,7 @@ public:
           // add mapped node
           int sourceNode = revmapping[curNode];
           int targetNode = revmapping[edge.first];
-          subgraph.addEdge(sourceNode, targetNode, edge.second);
+          subgraph.addEdge(sourceNode, targetNode, edge.second, false);
         }
       }
     }
