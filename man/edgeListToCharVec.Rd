@@ -30,10 +30,12 @@ cvec = edgeListToCharVec(edgelist, n = 4)
 print(cvec)
 }
 \seealso{
-Other transformation functions: \code{\link{charVecToEdgelist}},
-  \code{\link{nodelistToEdgelist}},
-  \code{\link{permutationToCharVec}},
-  \code{\link{permutationToEdgelist}},
-  \code{\link{prueferToCharVec}},
-  \code{\link{prueferToEdgeList}}
+Other transformation functions: 
+\code{\link{charVecToEdgelist}()},
+\code{\link{nodelistToEdgelist}()},
+\code{\link{permutationToCharVec}()},
+\code{\link{permutationToEdgelist}()},
+\code{\link{prueferToCharVec}()},
+\code{\link{prueferToEdgeList}()}
 }
+\concept{transformation functions}

@@ -23,10 +23,12 @@ pcode = sample(1:10, 8, replace = TRUE)#'
 edgelist = charVecToEdgelist(prueferToCharVec(pcode))
 }
 \seealso{
-Other transformation functions: \code{\link{edgeListToCharVec}},
-  \code{\link{nodelistToEdgelist}},
-  \code{\link{permutationToCharVec}},
-  \code{\link{permutationToEdgelist}},
-  \code{\link{prueferToCharVec}},
-  \code{\link{prueferToEdgeList}}
+Other transformation functions: 
+\code{\link{edgeListToCharVec}()},
+\code{\link{nodelistToEdgelist}()},
+\code{\link{permutationToCharVec}()},
+\code{\link{permutationToEdgelist}()},
+\code{\link{prueferToCharVec}()},
+\code{\link{prueferToEdgeList}()}
 }
+\concept{transformation functions}

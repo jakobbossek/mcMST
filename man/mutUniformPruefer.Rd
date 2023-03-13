@@ -24,8 +24,10 @@ with probability \code{p} with a random node number between 1 and n.
 \seealso{
 Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaZhou}}
 
-Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
-  \code{\link{mutKEdgeExchange}},
-  \code{\link{mutSubforestMST}},
-  \code{\link{mutSubgraphMST}}
+Other mcMST EMOA mutators: 
+\code{\link{mutEdgeExchange}()},
+\code{\link{mutKEdgeExchange}()},
+\code{\link{mutSubforestMST}()},
+\code{\link{mutSubgraphMST}()}
 }
+\concept{mcMST EMOA mutators}

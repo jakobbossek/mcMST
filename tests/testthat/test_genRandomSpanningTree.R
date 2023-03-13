@@ -7,7 +7,7 @@ test_that("random spanning tree generation returns reasonable results", {
 
   tree = genRandomSpanningTree(n, type = "edgelist")
   expect_matrix(tree, mode = "integer", nrows = 2L, ncols = n - 1L, any.missing = FALSE, all.missing = FALSE)
-  expect_true(all(tree >= 1 && tree <= n))
+  expect_true(all(tree >= 1 & tree <= n))
 
   tree = genRandomSpanningTree(n, type = "charvec")
   expect_integer(tree, lower = 0, upper = 1, len = n * n, any.missing = FALSE, all.missing = FALSE)

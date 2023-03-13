@@ -1,11 +1,10 @@
 # mcMST: A Toolbox for the Multi-Criteria Minimum Spanning Tree Problem
 
 [![DOI](http://joss.theoj.org/papers/10.21105/joss.00374/status.svg)](https://doi.org/10.21105/joss.00374)
-[![CRAN Status Badge](http://www.r-pkg.org/badges/version/mcMST)](http://cran.r-project.org/web/packages/mcMST)
-[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/mcMST)](http://cran.rstudio.com/web/packages/mcMST/index.html)
-[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/mcMST?color=orange)](http://cran.rstudio.com/web/packages/mcMST/index.html)
-[![Build Status](https://travis-ci.org/jakobbossek/mcMST.svg?branch=master)](https://travis-ci.org/jakobbossek/mcMST)
-[![Build status](https://ci.appveyor.com/api/projects/status/f83u7suaxqxmtc80/branch/master?svg=true)](https://ci.appveyor.com/project/jakobbossek/mcmst/branch/master)
+[![CRAN Status Badge](http://www.r-pkg.org/badges/version/mcMST)](https://cran.r-project.org/package=mcMST)
+[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/mcMST)](https://cran.r-project.org/package=mcMST)
+[![CRAN Downloads](http://cranlogs.r-pkg.org/badges/grand-total/mcMST?color=orange)](https://cran.r-project.org/package=mcMST)
+[![R-CMD-check](https://github.com/jakobbossek/smoof/workflows/R-CMD-check/badge.svg)](https://github.com/jakobbossek/mcMST/actions)
 [![Coverage Status](https://coveralls.io/repos/github/jakobbossek/mcMST/badge.svg?branch=master)](https://coveralls.io/github/jakobbossek/mcMST?branch=master)
 
 ## Introduction
@@ -42,11 +41,11 @@ See the package vignettes for more details.
 
 ## Installation Instructions
 
-Install the [CRAN](http://cran.r-project.org) release version via:
+Install the [CRAN](https://cran.r-project.org) release version via:
 ```r
 install.packages("mcMST")
 ```
-If you are interested in trying out and playing around with the current development version use the [devtools](https://github.com/hadley/devtools) package and install directly from GitHub:
+If you are interested in trying out and playing around with the current development version use the [devtools](https://github.com/r-lib/devtools) package and install directly from GitHub:
 
 ```r
 install.packages("devtools", dependencies = TRUE)

@@ -4,8 +4,7 @@
 \alias{getExactFront}
 \title{Enumerate all Pareto-optimal solutions.}
 \usage{
-getExactFront(instance, obj.fun, enumerator.fun, n.objectives,
-  simplify = TRUE)
+getExactFront(instance, obj.fun, enumerator.fun, n.objectives, simplify = TRUE)
 }
 \arguments{
 \item{instance}{[any]\cr

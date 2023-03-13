@@ -1,3 +1,8 @@
+# mcMST 1.1.1
+
+* fixed some warnings related to r-devel
+* fixed issue in getRandomSpanningTree
+
 # mcMST 1.1.0
 
 * added genRandomSpanningTree(s)

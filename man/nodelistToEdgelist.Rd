@@ -24,10 +24,12 @@ nodelist = sample(1:8)
 nodelistToEdgelist(nodelist)
 }
 \seealso{
-Other transformation functions: \code{\link{charVecToEdgelist}},
-  \code{\link{edgeListToCharVec}},
-  \code{\link{permutationToCharVec}},
-  \code{\link{permutationToEdgelist}},
-  \code{\link{prueferToCharVec}},
-  \code{\link{prueferToEdgeList}}
+Other transformation functions: 
+\code{\link{charVecToEdgelist}()},
+\code{\link{edgeListToCharVec}()},
+\code{\link{permutationToCharVec}()},
+\code{\link{permutationToEdgelist}()},
+\code{\link{prueferToCharVec}()},
+\code{\link{prueferToEdgeList}()}
 }
+\concept{transformation functions}

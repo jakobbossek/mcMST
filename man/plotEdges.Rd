@@ -31,5 +31,7 @@ only if it is contained in at least one of the graphs. The edge thickness
 indicates the number of graphs the edge is part of.
 }
 \seealso{
-Other result visualization: \code{\link{plotEdgeFrequency}}
+Other result visualization: 
+\code{\link{plotEdgeFrequency}()}
 }
+\concept{result visualization}

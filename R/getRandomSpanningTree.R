@@ -20,12 +20,14 @@ getRandomSpanningTree = function(graph) {
 
   # construct random distance matrix
   dmat = matrix(1 * runif(n * n) + 0.01, ncol = n, nrow = n)
+  dmat[lower.tri(dmat)] = t(dmat)[lower.tri(dmat)]
 
   # stick to adjacency structure
-  if (!is.null(adj.mat))
+  if (!is.null(adj.mat)) {
     dmat[!adj.mat] = Inf
-  else
+  } else {
     diag(dmat) = Inf
+  }
 
   nodes = 1:n
 

@@ -29,8 +29,10 @@ edge list is indeed the edge list of a spanning tree.
 \seealso{
 Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 
-Other mcMST EMOA mutators: \code{\link{mutKEdgeExchange}},
-  \code{\link{mutSubforestMST}},
-  \code{\link{mutSubgraphMST}},
-  \code{\link{mutUniformPruefer}}
+Other mcMST EMOA mutators: 
+\code{\link{mutKEdgeExchange}()},
+\code{\link{mutSubforestMST}()},
+\code{\link{mutSubgraphMST}()},
+\code{\link{mutUniformPruefer}()}
 }
+\concept{mcMST EMOA mutators}

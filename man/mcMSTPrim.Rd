@@ -43,6 +43,8 @@ of the 2001 Congress on Evolutionary Computation (IEEE Cat. No.01TH8546),
 vol. 1, 2001, pp. 544–551 vol. 1.
 }
 \seealso{
-Other mcMST algorithms: \code{\link{mcMSTEmoaBG}},
-  \code{\link{mcMSTEmoaZhou}}
+Other mcMST algorithms: 
+\code{\link{mcMSTEmoaBG}()},
+\code{\link{mcMSTEmoaZhou}()}
 }
+\concept{mcMST algorithms}

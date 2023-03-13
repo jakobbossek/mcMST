@@ -4,8 +4,17 @@
 \alias{mcMSTEmoaBG}
 \title{Subgraph EMOA for the multi-criteria MST problem.}
 \usage{
-mcMSTEmoaBG(instance, mu, lambda = mu, mut = NULL, selMating = NULL,
-  selSurvival = ecr::selNondom, ref.point = NULL, max.iter = 100L, ...)
+mcMSTEmoaBG(
+  instance,
+  mu,
+  lambda = mu,
+  mut = NULL,
+  selMating = NULL,
+  selSurvival = ecr::selNondom,
+  ref.point = NULL,
+  max.iter = 100L,
+  ...
+)
 }
 \arguments{
 \item{instance}{[\code{\link[grapherator]{grapherator}}]\cr
@@ -82,8 +91,12 @@ for the Multi-Criteria Minimum Spanning Tree Problem. In Proceedings of the
 \seealso{
 Mutators \code{\link{mutSubgraphMST}} and \code{\link{mutEdgeExchange}}
 
-Other mcMST EMOAs: \code{\link{mcMSTEmoaZhou}}
+Other mcMST EMOAs: 
+\code{\link{mcMSTEmoaZhou}()}
 
-Other mcMST algorithms: \code{\link{mcMSTEmoaZhou}},
-  \code{\link{mcMSTPrim}}
+Other mcMST algorithms: 
+\code{\link{mcMSTEmoaZhou}()},
+\code{\link{mcMSTPrim}()}
 }
+\concept{mcMST EMOAs}
+\concept{mcMST algorithms}

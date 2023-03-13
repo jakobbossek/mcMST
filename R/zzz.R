@@ -1,4 +1,4 @@
-#' @import BBmisc
+#' @importFrom BBmisc collapse insert stopf warningf requirePackages
 #' @import checkmate
 #' @importFrom gtools permutations
 #' @import ecr

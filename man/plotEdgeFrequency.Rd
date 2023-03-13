@@ -38,5 +38,7 @@ plotEdgeFrequency(list(g), list(res$pareto.set))
 }
 }
 \seealso{
-Other result visualization: \code{\link{plotEdges}}
+Other result visualization: 
+\code{\link{plotEdges}()}
 }
+\concept{result visualization}

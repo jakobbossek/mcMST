@@ -4,8 +4,12 @@
 \alias{mutSubgraphMST}
 \title{Subgraph-mutator for edge list representation.}
 \usage{
-mutSubgraphMST(ind, sigma = floor(ncol(ind)/2), scalarize = FALSE,
-  instance = NULL)
+mutSubgraphMST(
+  ind,
+  sigma = floor(ncol(ind)/2),
+  scalarize = FALSE,
+  instance = NULL
+)
 }
 \arguments{
 \item{ind}{[\code{matrix(2, m)}]\cr
@@ -38,8 +42,10 @@ regarding one of the objectives with equal probability.
 \seealso{
 Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 
-Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
-  \code{\link{mutKEdgeExchange}},
-  \code{\link{mutSubforestMST}},
-  \code{\link{mutUniformPruefer}}
+Other mcMST EMOA mutators: 
+\code{\link{mutEdgeExchange}()},
+\code{\link{mutKEdgeExchange}()},
+\code{\link{mutSubforestMST}()},
+\code{\link{mutUniformPruefer}()}
 }
+\concept{mcMST EMOA mutators}

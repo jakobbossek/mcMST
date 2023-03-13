@@ -28,10 +28,12 @@ print(perm)
 permutationToCharVec(perm, n = 10)
 }
 \seealso{
-Other transformation functions: \code{\link{charVecToEdgelist}},
-  \code{\link{edgeListToCharVec}},
-  \code{\link{nodelistToEdgelist}},
-  \code{\link{permutationToEdgelist}},
-  \code{\link{prueferToCharVec}},
-  \code{\link{prueferToEdgeList}}
+Other transformation functions: 
+\code{\link{charVecToEdgelist}()},
+\code{\link{edgeListToCharVec}()},
+\code{\link{nodelistToEdgelist}()},
+\code{\link{permutationToEdgelist}()},
+\code{\link{prueferToCharVec}()},
+\code{\link{prueferToEdgeList}()}
 }
+\concept{transformation functions}

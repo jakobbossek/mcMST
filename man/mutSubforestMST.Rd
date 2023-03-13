@@ -4,8 +4,7 @@
 \alias{mutSubforestMST}
 \title{Forest-mutator for edge list representation.}
 \usage{
-mutSubforestMST(ind, sigma = ncol(ind), scalarize = FALSE,
-  instance = NULL)
+mutSubforestMST(ind, sigma = ncol(ind), scalarize = FALSE, instance = NULL)
 }
 \arguments{
 \item{ind}{[\code{matrix(2, m)}]\cr
@@ -37,8 +36,10 @@ subtrees by constructing a minimum spanning tree between the components.
 \seealso{
 Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 
-Other mcMST EMOA mutators: \code{\link{mutEdgeExchange}},
-  \code{\link{mutKEdgeExchange}},
-  \code{\link{mutSubgraphMST}},
-  \code{\link{mutUniformPruefer}}
+Other mcMST EMOA mutators: 
+\code{\link{mutEdgeExchange}()},
+\code{\link{mutKEdgeExchange}()},
+\code{\link{mutSubgraphMST}()},
+\code{\link{mutUniformPruefer}()}
 }
+\concept{mcMST EMOA mutators}

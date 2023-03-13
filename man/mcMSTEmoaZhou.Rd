@@ -4,9 +4,16 @@
 \alias{mcMSTEmoaZhou}
 \title{Pruefer-EMOA for the multi-objective MST problem.}
 \usage{
-mcMSTEmoaZhou(instance, mu, lambda = mu, mut = mutUniformPruefer,
-  selMating = ecr::selSimple, selSurvival = ecr::selNondom,
-  ref.point = NULL, max.iter = 100L)
+mcMSTEmoaZhou(
+  instance,
+  mu,
+  lambda = mu,
+  mut = mutUniformPruefer,
+  selMating = ecr::selSimple,
+  selSurvival = ecr::selNondom,
+  ref.point = NULL,
+  max.iter = 100L
+)
 }
 \arguments{
 \item{instance}{[\code{\link[grapherator]{grapherator}}]\cr
@@ -75,8 +82,12 @@ Minimum Spanning Tree Problem. In: European Journal of Operational Research (199
 \seealso{
 Mutator \code{\link{mutUniformPruefer}}
 
-Other mcMST EMOAs: \code{\link{mcMSTEmoaBG}}
+Other mcMST EMOAs: 
+\code{\link{mcMSTEmoaBG}()}
 
-Other mcMST algorithms: \code{\link{mcMSTEmoaBG}},
-  \code{\link{mcMSTPrim}}
+Other mcMST algorithms: 
+\code{\link{mcMSTEmoaBG}()},
+\code{\link{mcMSTPrim}()}
 }
+\concept{mcMST EMOAs}
+\concept{mcMST algorithms}
