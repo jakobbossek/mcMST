@@ -162,8 +162,8 @@ defaultWeightSamplingFun = function(d) {
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubgraphMST = makeMutator(
-  mutator = function(ind, weightSamplingFun = defaultWeightSamplingFun, sigma = floor(ind$getV() / 2L), scalarize = FALSE, instance = NULL) {
-    n.select = sample(3:sigma, 1L)
+  mutator = function(ind, weightSamplingFun = defaultWeightSamplingFun, sigma = floor(ind$getV() / 2L), scalarize = FALSE, sample.sigma = TRUE, instance = NULL) {
+    n.select = if (sample.sigma) sample(3:sigma, 1L) else sigma
     weights = weightSamplingFun(ind$getW())
     if (ind$getW() > 2L && !scalarize)
       BBmisc::stopf("[mcMST::mutSubgraphMST] Option scalarize must not be FALSE if
@@ -179,8 +179,8 @@ mutSubgraphMST = makeMutator(
 
 #' @export
 mutInsertionFirstSubgraphMST = makeMutator(
-  mutator = function(ind, weightSamplingFun = defaultWeightSamplingFun, sigma = ind$getV(), max.degree = ind$getV(), instance = NULL) {
-    n.select = sample(1:sigma, 1L)
+  mutator = function(ind, weightSamplingFun = defaultWeightSamplingFun, sigma = ind$getV(), max.degree = ind$getV(), sample.sigma = TRUE, instance = NULL) {
+    n.select = if (sample.sigma) sample(1:sigma, 1L) else sigma
     weights = weightSamplingFun(ind$getW())
     instance$getMSTByInsertionFirstSubgraphMutation(ind, n.select, weights, max.degree)
   },
@@ -223,8 +223,8 @@ recUnionCrossover = makeRecombinator(
 #' @seealso Evolutionary multi-objective algorithm \code{\link{mcMSTEmoaBG}}
 #' @export
 mutSubforestMST = makeMutator(
-  mutator = function(ind, weightSamplingFun = defaultWeightSamplingFun, sigma = floor(ind$getV() / 2), scalarize = FALSE, instance = NULL) {
-    n.select = sample(1:sigma, 1L)
+  mutator = function(ind, weightSamplingFun = defaultWeightSamplingFun, sigma = floor(ind$getV() / 2), scalarize = FALSE, sample.sigma = TRUE, instance = NULL) {
+    n.select = if (sample.sigma) sample(1:sigma, 1L) else sigma
     weights = weightSamplingFun(ind$getW())
     if (ind$getW() > 2L && !scalarize)
       BBmisc::stopf("[mcMST::mutSubforestMST] Option scalarize must not be FALSE if
